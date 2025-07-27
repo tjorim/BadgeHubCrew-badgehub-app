@@ -1,7 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const AppEditActions: React.FC = () => (
+interface AppEditActionsProps {
+  onClickDeleteApplication: () => unknown;
+}
+
+const AppEditActions: React.FC<AppEditActionsProps> = ({
+  onClickDeleteApplication,
+}) => (
   <section className="bg-gray-800 p-6 rounded-lg shadow-lg">
     <h2 className="text-2xl font-semibold text-slate-100 mb-4">Actions</h2>
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -19,11 +25,11 @@ const AppEditActions: React.FC = () => (
           Cancel
         </Link>
       </div>
-      <div className="todoElement">
+      <div>
         <button
           type="button"
           className="btn-danger bg-red-700 px-6 py-3 rounded-lg font-semibold transition-all duration-200 ease-in-out flex items-center"
-          // TODO: Add delete logic
+          onClick={onClickDeleteApplication}
         >
           <svg
             className="icon h-5 w-5 mr-2"

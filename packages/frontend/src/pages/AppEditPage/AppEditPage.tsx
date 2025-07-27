@@ -15,6 +15,7 @@ import {
   AppMetadataJSON,
   IconSize,
 } from "@shared/domain/readModels/project/AppMetadataJSON.ts";
+import { useNavigate } from "react-router-dom";
 
 const AppEditPage: React.FC<{
   tsRestClient?: typeof defaultTsRestClient;
@@ -28,6 +29,7 @@ const AppEditPage: React.FC<{
     ProjectEditFormData | undefined
   >(undefined);
   const { user, keycloak } = useSession();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (project && !project.stale) return;
@@ -87,6 +89,16 @@ const AppEditPage: React.FC<{
     }
   };
 
+  const handleDeleteApplication = async () => {
+    const response = await tsRestClient.deleteProject({
+      headers: { authorization: `Bearer ${keycloak?.token}` },
+      params: { slug },
+    });
+    if (response.status >= 200 && response.status < 300) {
+      navigate("/page/my-projects");
+    }
+  };
+
   const onSetIcon = (size: IconSize, filePath: string) =>
     setAppMetadata((prev) => {
       return prev
@@ -143,7 +155,9 @@ const AppEditPage: React.FC<{
                 iconFilePath={appMetadata?.icon_map?.["64x64"]}
                 onDeleteFile={handleDeleteFile}
               />
-              <AppEditActions />
+              <AppEditActions
+                onClickDeleteApplication={handleDeleteApplication}
+              />
             </form>
           </>
         )}
