@@ -19,7 +19,7 @@ const AppEditActions: React.FC = () => (
           Cancel
         </Link>
       </div>
-      <div>
+      <div className="todoElement">
         <button
           type="button"
           className="btn-danger bg-red-700 px-6 py-3 rounded-lg font-semibold transition-all duration-200 ease-in-out flex items-center"
