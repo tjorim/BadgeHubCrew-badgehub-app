@@ -181,20 +181,71 @@ describe("createSwaggerDoc", () => {
                               "type": "string",
                             },
                             "icon_map": {
-                              "description": "Icon Map of the project that maps from accepted sizes to a file path. Icon format is quite strict because BadgeHub is the first user of these icons.
-          Badge implementations can use these icons but they are not required to. For example if a badge's launcher an icon as an icon.py file, this file can still just be uploaded and the path could be indicated as custom property in the variant json.".",
+                              "description": "Icon Map of the project that maps from accepted sizes to a file path and url.",
                               "properties": {
                                 "16x16": {
-                                  "type": "string",
+                                  "properties": {
+                                    "full_path": {
+                                      "type": "string",
+                                    },
+                                    "url": {
+                                      "format": "uri",
+                                      "type": "string",
+                                    },
+                                  },
+                                  "required": [
+                                    "full_path",
+                                    "url",
+                                  ],
+                                  "type": "object",
                                 },
                                 "32x32": {
-                                  "type": "string",
+                                  "properties": {
+                                    "full_path": {
+                                      "type": "string",
+                                    },
+                                    "url": {
+                                      "format": "uri",
+                                      "type": "string",
+                                    },
+                                  },
+                                  "required": [
+                                    "full_path",
+                                    "url",
+                                  ],
+                                  "type": "object",
                                 },
                                 "64x64": {
-                                  "type": "string",
+                                  "properties": {
+                                    "full_path": {
+                                      "type": "string",
+                                    },
+                                    "url": {
+                                      "format": "uri",
+                                      "type": "string",
+                                    },
+                                  },
+                                  "required": [
+                                    "full_path",
+                                    "url",
+                                  ],
+                                  "type": "object",
                                 },
                                 "8x8": {
-                                  "type": "string",
+                                  "properties": {
+                                    "full_path": {
+                                      "type": "string",
+                                    },
+                                    "url": {
+                                      "format": "uri",
+                                      "type": "string",
+                                    },
+                                  },
+                                  "required": [
+                                    "full_path",
+                                    "url",
+                                  ],
+                                  "type": "object",
                                 },
                               },
                               "type": "object",
@@ -2177,20 +2228,71 @@ describe("createSwaggerDoc", () => {
                               "type": "string",
                             },
                             "icon_map": {
-                              "description": "Icon Map of the project that maps from accepted sizes to a file path. Icon format is quite strict because BadgeHub is the first user of these icons.
-          Badge implementations can use these icons but they are not required to. For example if a badge's launcher an icon as an icon.py file, this file can still just be uploaded and the path could be indicated as custom property in the variant json.".",
+                              "description": "Icon Map of the project that maps from accepted sizes to a file path and url.",
                               "properties": {
                                 "16x16": {
-                                  "type": "string",
+                                  "properties": {
+                                    "full_path": {
+                                      "type": "string",
+                                    },
+                                    "url": {
+                                      "format": "uri",
+                                      "type": "string",
+                                    },
+                                  },
+                                  "required": [
+                                    "full_path",
+                                    "url",
+                                  ],
+                                  "type": "object",
                                 },
                                 "32x32": {
-                                  "type": "string",
+                                  "properties": {
+                                    "full_path": {
+                                      "type": "string",
+                                    },
+                                    "url": {
+                                      "format": "uri",
+                                      "type": "string",
+                                    },
+                                  },
+                                  "required": [
+                                    "full_path",
+                                    "url",
+                                  ],
+                                  "type": "object",
                                 },
                                 "64x64": {
-                                  "type": "string",
+                                  "properties": {
+                                    "full_path": {
+                                      "type": "string",
+                                    },
+                                    "url": {
+                                      "format": "uri",
+                                      "type": "string",
+                                    },
+                                  },
+                                  "required": [
+                                    "full_path",
+                                    "url",
+                                  ],
+                                  "type": "object",
                                 },
                                 "8x8": {
-                                  "type": "string",
+                                  "properties": {
+                                    "full_path": {
+                                      "type": "string",
+                                    },
+                                    "url": {
+                                      "format": "uri",
+                                      "type": "string",
+                                    },
+                                  },
+                                  "required": [
+                                    "full_path",
+                                    "url",
+                                  ],
+                                  "type": "object",
                                 },
                               },
                               "type": "object",

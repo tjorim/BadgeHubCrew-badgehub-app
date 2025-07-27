@@ -1,9 +1,13 @@
-import { ProjectSummary } from "@shared/domain/readModels/project/ProjectDetails";
+import {
+  IconMapWithUrls,
+  ProjectSummary,
+} from "@shared/domain/readModels/project/ProjectDetails";
 import moment from "moment";
 import { DBProject } from "@shared/dbModels/project/DBProject";
 import { DBVersion } from "@shared/dbModels/project/DBVersion";
 import sql, { raw } from "sql-template-tag";
 import { LatestOrDraftAlias } from "@shared/domain/readModels/project/Version";
+import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
 
 export function getBaseSelectProjectQuery(
   revision: LatestOrDraftAlias = "latest"
@@ -36,7 +40,10 @@ export const projectQueryResponseToReadModel = (
     git: enrichedDBProject.git,
     license_type: appMetadata.license_type,
     name: appMetadata.name ?? enrichedDBProject.slug,
-    published_at: moment(enrichedDBProject.published_at).toDate(),
+    published_at:
+      (enrichedDBProject.published_at &&
+        moment(enrichedDBProject.published_at).toDate()) ||
+      undefined,
     revision: enrichedDBProject.revision,
     slug: enrichedDBProject.slug,
     // states: undefined,
@@ -44,7 +51,23 @@ export const projectQueryResponseToReadModel = (
     // dependencies: undefined, // TODO
     // votes: undefined, // TODO
     // warnings: undefined, // TODO
-    icon_map: appMetadata.icon_map,
+    icon_map:
+      appMetadata.icon_map &&
+      (Object.fromEntries(
+        Object.entries(appMetadata.icon_map).map(([key, full_path]) => [
+          key,
+          {
+            full_path,
+            url: getFileDownloadUrl(
+              enrichedDBProject.slug,
+              enrichedDBProject.published_at
+                ? enrichedDBProject.revision
+                : "draft",
+              full_path
+            ),
+          },
+        ])
+      ) as IconMapWithUrls),
     badges: appMetadata.badges,
   };
 };

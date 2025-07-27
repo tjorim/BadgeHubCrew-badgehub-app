@@ -10,3 +10,5 @@ export const BADGEHUB_API_BASE_URL = sharedConfig.badgeHubBaseUrl;
 export const KEYCLOAK_URL = sharedConfig.keycloakIssuer.url;
 export const KEYCLOAK_REALM = sharedConfig.keycloakIssuer.realm;
 export const KEYCLOAK_CLIENT_ID = sharedConfig.keycloakIssuer.clientId;
+export const FALLBACK_ICON_URL = `${BADGEHUB_FRONTEND_BASE_URL}/assets/no-icon-uploaded.png`;
+export const ERROR_ICON_URL = `${BADGEHUB_FRONTEND_BASE_URL}/assets/no-icon-uploaded.png`;

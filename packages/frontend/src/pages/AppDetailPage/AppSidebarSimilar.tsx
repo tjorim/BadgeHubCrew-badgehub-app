@@ -4,7 +4,7 @@ import {
   ProjectSummary,
 } from "@shared/domain/readModels/project/ProjectDetails.ts";
 import { tsRestClient as defaultTsRestClient } from "../../api/tsRestClient.ts";
-import { BADGEHUB_API_BASE_URL } from "@config.ts";
+import { ERROR_ICON_URL } from "@config.ts";
 
 /**
  * Renders a single project item in the list.
@@ -13,14 +13,12 @@ const ProjectItem: React.FC<{ project: ProjectSummary }> = ({ project }) => (
   <div className="flex items-start space-x-3">
     {project.icon_map?.["64x64"] && (
       <img
-        src={
-          `${BADGEHUB_API_BASE_URL}/api/v3/projects/${project.slug}/rev${project.revision}/files/${encodeURIComponent(project.icon_map?.["64x64"])}` // TODO add urls to icons
-        }
+        src={project.icon_map["64x64"].url}
         alt={`${project.name} Icon`}
         className="h-12 w-12 flex-shrink-0 rounded-md bg-gray-700 object-cover"
         // Basic fallback in case the image URL is broken
         onError={(e) => {
-          e.currentTarget.src = ``;
+          e.currentTarget.src = ERROR_ICON_URL;
         }}
       />
     )}

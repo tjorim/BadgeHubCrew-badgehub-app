@@ -43,7 +43,10 @@ describe(
           "description": "With CodeCraft, you can do interesting things with the sensors.",
           "git": null,
           "icon_map": {
-            "64x64": "icon5.png",
+            "64x64": {
+              "full_path": "icon5.png",
+              "url": "http://localhost:8081/api/v3/projects/codecraft/rev0/files/icon5.png",
+            },
           },
           "idp_user_id": "CyberSherpa",
           "license_type": "MIT",

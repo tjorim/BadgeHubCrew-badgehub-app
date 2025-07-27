@@ -50,22 +50,9 @@ import {
 } from "@shared/domain/readModels/project/Category";
 import { BadgeSlug, getBadgeSlugs } from "@shared/domain/readModels/Badge";
 import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON";
-import { sharedConfig } from "@config";
+import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
 
 const ONE_KILO = 1024;
-type RevisionPathPart = "draft" | `rev${number}` | "latest";
-
-function getFileDownloadUrl(
-  project: string,
-  versionRevision: RevisionNumberOrAlias,
-  full_path: string
-) {
-  const revisionPathPart: RevisionPathPart =
-    typeof versionRevision === "number"
-      ? `rev${versionRevision}`
-      : versionRevision;
-  return `${sharedConfig.badgeHubBaseUrl}/api/v3/projects/${project}/${revisionPathPart}/files/${encodeURIComponent(full_path)}`;
-}
 
 function dbFileToFileMetadata(
   dbFile: DBFileMetadata,

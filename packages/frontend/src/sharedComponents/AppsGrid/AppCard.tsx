@@ -1,7 +1,12 @@
 import React from "react";
 import type { AppCardProps } from "../types.ts";
 import { MLink } from "@sharedComponents/MLink.tsx";
-import { BADGEHUB_API_BASE_URL, BADGEHUB_FRONTEND_BASE_URL } from "@config.ts";
+import {
+  BADGEHUB_API_BASE_URL,
+  BADGEHUB_FRONTEND_BASE_URL,
+  ERROR_ICON_URL,
+  FALLBACK_ICON_URL,
+} from "@config.ts";
 
 const AppCard: React.FC<AppCardProps> = ({
   name,
@@ -14,13 +19,9 @@ const AppCard: React.FC<AppCardProps> = ({
   icon_map,
   editable,
 }) => {
-  const draftOrRevision = published_at
-    ? `rev${revision}`
-    : `rev${revision - 1}`;
   const icon = icon_map?.["64x64"];
-  const iconSrc = icon
-    ? `${BADGEHUB_API_BASE_URL}/api/v3/projects/${slug}/${draftOrRevision}/files/${encodeURIComponent(icon)}`
-    : `${BADGEHUB_FRONTEND_BASE_URL}/assets/no-icon-uploaded.png`;
+
+  const iconSrc = icon ? icon.url : FALLBACK_ICON_URL;
   return (
     <div
       data-testid="AppCard"
@@ -35,6 +36,9 @@ const AppCard: React.FC<AppCardProps> = ({
               alt={name || "App icon"}
               className="w-8 h-8 object-contain"
               loading="lazy"
+              onError={(e) => {
+                e.currentTarget.src = ERROR_ICON_URL;
+              }}
             />
           </div>
           <MLink
