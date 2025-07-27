@@ -70,22 +70,37 @@ const AppEditPage: React.FC<{
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!appMetadata) return;
-    await tsRestClient.changeDraftAppMetadata({
-      headers: { authorization: `Bearer ${keycloak?.token}` },
-      params: { slug },
-      body: appMetadata,
-    });
-    await tsRestClient.publishVersion({
-      headers: { authorization: `Bearer ${keycloak?.token}` },
-      params: { slug },
-      body: undefined,
-    });
-    if (project) {
-      setProject({
-        ...project,
-        stale: true,
-        version: { ...project.version, app_metadata: appMetadata },
+    try {
+      const changeAppMetdataResult = await tsRestClient.changeDraftAppMetadata({
+        headers: { authorization: `Bearer ${keycloak?.token}` },
+        params: { slug },
+        body: appMetadata,
       });
+      if (changeAppMetdataResult.status !== 204) {
+        console.error("changeDraftAppMetadata failed", changeAppMetdataResult);
+        window.alert("save failed");
+        return;
+      }
+      const publishResult = await tsRestClient.publishVersion({
+        headers: { authorization: `Bearer ${keycloak?.token}` },
+        params: { slug },
+        body: undefined,
+      });
+      if (publishResult.status !== 204) {
+        console.error("publish failed", changeAppMetdataResult);
+        window.alert("publish failed");
+        return;
+      }
+      if (project) {
+        setProject({
+          ...project,
+          stale: true,
+          version: { ...project.version, app_metadata: appMetadata },
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      window.alert("Something went wrong during Save & Publish.");
     }
   };
 
