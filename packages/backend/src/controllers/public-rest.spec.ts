@@ -80,7 +80,7 @@ describe(
     test("GET /api/v3/projects with category filter", async () => {
       const res = await request(app).get("/api/v3/projects?category=Silly");
       expect(res.statusCode).toBe(200);
-      expect(res.body.length).toBeGreaterThan(0);
+      expect(res.body.length).toMatchInlineSnapshot(`4`);
       expect(
         res.body.every((app: ProjectSummary) =>
           app.categories?.includes("Silly")
@@ -89,6 +89,24 @@ describe(
       expect(
         res.body.find((app: ProjectSummary) =>
           app.categories?.includes("Silly")
+        )
+      ).toBeDefined();
+    });
+
+    test("GET /api/v3/projects with category name in search", async () => {
+      const res = await request(app).get(
+        "/api/v3/projects?search=Uncategorised"
+      );
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toMatchInlineSnapshot(`2`);
+      expect(
+        res.body.every((app: ProjectSummary) =>
+          app.categories?.includes("Uncategorised")
+        )
+      ).toBe(true);
+      expect(
+        res.body.find((app: ProjectSummary) =>
+          app.categories?.includes("Uncategorised")
         )
       ).toBeDefined();
     });

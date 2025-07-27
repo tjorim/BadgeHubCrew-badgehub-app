@@ -374,20 +374,22 @@ export class PostgreSQLBadgeHubMetadata {
     revision?: LatestOrDraftAlias
   ): Promise<ProjectSummary[]> {
     let query = getBaseSelectProjectQuery(revision);
-    if (filter?.badge) {
-      query = sql`${query}
-                    inner join project_latest_badges plb on p.slug = plb.project_slug and plb.badge_slug =
-      ${filter.badge}`;
-    }
-
-    if (filter?.category) {
-      query = sql`${query}
-                    inner join project_latest_categories plc on p.slug = plc.project_slug and plc.category_name =
-      ${filter.category}`;
-    }
-
     query = sql`${query}
     where p.deleted_at is null`;
+
+    if (filter?.category) {
+      const categoryJsonBMatcher = `["${filter.category}"]`;
+      query = sql`${query}
+and v.app_metadata->'categories' @>
+      ${categoryJsonBMatcher}`;
+    }
+
+    if (filter?.badge) {
+      const badgesJsonBMatcher = `["${filter.badge}"]`;
+      query = sql`${query}
+and v.app_metadata->'badges' @>
+      ${badgesJsonBMatcher}`;
+    }
 
     if (revision !== "draft") {
       query = sql`${query}
@@ -403,7 +405,8 @@ export class PostgreSQLBadgeHubMetadata {
     if (filter?.search) {
       const matcher = `%${filter.search.toLowerCase()}%`;
       query = sql`${query}
-                    and (v.app_metadata->>'name' ilike ${matcher} or v.app_metadata->>'description' ilike ${matcher} or p.slug like ${matcher})`;
+                    and (v.app_metadata->>'name' ilike ${matcher} or v.app_metadata->>'description' ilike ${matcher} or p.slug like ${matcher})
+                    or exists (select 1 from project_latest_categories plc where plc.project_slug = p.slug and plc.category_name ilike ${matcher})`;
     }
 
     if (filter?.userId !== undefined) {
