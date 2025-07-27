@@ -42,7 +42,7 @@ const Filters: React.FC<FiltersProps> = ({
         />
         <OptionSelectorWithTitle
           title={"Sort By"}
-          noValueSetName={"No Sorting"}
+          noValueSetName={"last updated"}
           onValueSelection={onSortByChange}
           valueMap={undefined}
           value={sortBy}
