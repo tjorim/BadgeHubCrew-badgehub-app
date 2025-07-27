@@ -16,6 +16,7 @@ export const getProjectsQuerySchema = z.object({
   badge: badgeSlugSchema.optional(),
   category: categoryNameSchema.optional(),
   projectSlug: z.string().optional(),
+  userId: z.string().optional(),
   search: z
     .string()
     .optional()

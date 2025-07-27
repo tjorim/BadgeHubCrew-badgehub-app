@@ -42,13 +42,13 @@ const Filters: React.FC<FiltersProps> = ({
         />
         <OptionSelectorWithTitle
           title={"Sort By"}
-          noValueSetName={"last updated"}
+          noValueSetName={"Last Updated"}
           onValueSelection={onSortByChange}
-          valueMap={undefined}
+          valueMap={{}}
           value={sortBy}
         />
 
-        <div className="flex items-end todoElement">
+        <div className="flex items-end">
           <button
             className="w-full btn-primary px-4 py-2 rounded-md text-sm font-semibold flex items-center justify-center"
             type="button"

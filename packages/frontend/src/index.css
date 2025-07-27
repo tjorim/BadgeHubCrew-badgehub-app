@@ -178,6 +178,11 @@ button:focus-visible {
 
 .todoElement {
     position: relative;
+    display: none;
+}
+
+.debugEnabled .todoElement {
+    display: revert;
 }
 
 /* Only show overlay if a parent has .debugEnabled */

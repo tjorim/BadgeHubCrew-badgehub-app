@@ -7,6 +7,7 @@ export type SharedConfig = {
     realm: string;
     clientId: string;
   };
+  isDevEnvironment: boolean;
 };
 
 export function getAndAssertEnv(envVarName: string) {
@@ -30,6 +31,7 @@ export const getSharedConfig = (): SharedConfig => {
       badgeHubBaseUrl: getAndAssertEnv("BADGEHUB_API_BASE_URL"),
       badges: getAndAssertEnv("BADGE_SLUGS")?.split(","),
       categories: getAndAssertEnv("CATEGORY_NAMES")?.split(","),
+      isDevEnvironment: process.env.NODE_ENV === "development",
     }
   );
 };
