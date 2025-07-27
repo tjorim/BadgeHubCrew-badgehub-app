@@ -8,10 +8,6 @@ import {
 } from "@shared/domain/readModels/project/Category";
 import { z } from "zod/v3";
 import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
-import {
-  IconMap,
-  iconMapSchema,
-} from "@shared/domain/readModels/project/AppMetadataJSON";
 
 export type ProjectStatusName =
   | "working"
@@ -31,6 +27,7 @@ export interface ProjectCore {
   idp_user_id: User["idp_user_id"];
   git?: string; // Git URL of the project, if it exists
 }
+
 export type FullPathAndUrl = {
   full_path: string;
   url: string;

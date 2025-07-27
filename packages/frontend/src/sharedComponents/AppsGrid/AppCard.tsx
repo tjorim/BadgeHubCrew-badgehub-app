@@ -1,12 +1,7 @@
 import React from "react";
 import type { AppCardProps } from "../types.ts";
 import { MLink } from "@sharedComponents/MLink.tsx";
-import {
-  BADGEHUB_API_BASE_URL,
-  BADGEHUB_FRONTEND_BASE_URL,
-  ERROR_ICON_URL,
-  FALLBACK_ICON_URL,
-} from "@config.ts";
+import { ERROR_ICON_URL, FALLBACK_ICON_URL } from "@config.ts";
 
 const AppCard: React.FC<AppCardProps> = ({
   name,
