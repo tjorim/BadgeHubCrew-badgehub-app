@@ -12,7 +12,6 @@ import { FileMetadata } from "@shared/domain/readModels/project/FileMetadata";
 import { BadgeSlug } from "@shared/domain/readModels/Badge";
 import { CategoryName } from "@shared/domain/readModels/project/Category";
 import { DBProject } from "@shared/dbModels/project/DBProject";
-import { BadgeHubMetadata } from "@shared/domain/BadgeHubMetadata";
 import { BadgeHubFiles } from "@shared/domain/BadgeHubFiles";
 import { UploadedFile } from "@shared/domain/UploadedFile";
 import { DBDatedData } from "@shared/dbModels/project/DBDatedData";
@@ -22,6 +21,7 @@ import { CreateProjectProps } from "@shared/domain/writeModels/project/WriteProj
 import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON";
 import { LRUCache } from "lru-cache";
 import { appMetadataJSONSchema } from "@shared/domain/readModels/project/AppMetadataJSON";
+import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
 
 type FileContext =
   | { projectSlug: string; revision: number; filePath: string }
@@ -51,7 +51,7 @@ export class BadgeHubData {
   >;
 
   constructor(
-    private badgeHubMetadata: BadgeHubMetadata,
+    private badgeHubMetadata: PostgreSQLBadgeHubMetadata,
     private badgeHubFiles: BadgeHubFiles
   ) {
     this.immutableFileCache = new LRUCache({
