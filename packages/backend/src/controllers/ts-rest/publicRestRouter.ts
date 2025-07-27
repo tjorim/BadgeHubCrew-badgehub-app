@@ -59,7 +59,15 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
       return ok(details);
     },
     getProjects: async ({
-      query: { pageStart, pageLength, badge, category, search, projectSlug },
+      query: {
+        pageStart,
+        pageLength,
+        badge,
+        category,
+        search,
+        projectSlug,
+        userId,
+      },
     }) => {
       const data = await badgeHubData.getProjectSummaries(
         {
@@ -69,6 +77,7 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
           badge,
           category,
           search,
+          userId,
         },
         "latest"
       );

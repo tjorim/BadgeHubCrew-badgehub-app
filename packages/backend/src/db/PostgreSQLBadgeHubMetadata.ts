@@ -33,7 +33,6 @@ import {
   assertValidColumKey,
   getInsertKeysAndValuesSql,
 } from "@db/sqlHelpers/objectToSQL";
-import { BadgeHubMetadata } from "@shared/domain/BadgeHubMetadata";
 import { UploadedFile } from "@shared/domain/UploadedFile";
 import path from "node:path";
 import { DBFileMetadata } from "@shared/dbModels/project/DBFileMetadata";
@@ -138,7 +137,7 @@ const getVersionQuery = (
   }
 };
 
-export class PostgreSQLBadgeHubMetadata implements BadgeHubMetadata {
+export class PostgreSQLBadgeHubMetadata {
   private readonly pool: Pool = getPool();
 
   constructor() {}

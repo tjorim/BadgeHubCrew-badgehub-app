@@ -15,12 +15,15 @@ const AppDetailHeader: React.FC<{ project: ProjectDetails }> = ({
           >
             {appMetadata.name}
           </h1>
-          <p className="text-slate-400 mb-1">
-            By{" "}
-            <a href="#" className="text-emerald-400 hover:underline">
-              {project.version?.app_metadata.author ?? "Unknown"}
-            </a>
-          </p>
+          {(project.version?.app_metadata.author && (
+            <p className="text-slate-400 mb-1">
+              By{" "}
+              <a href="#" className="text-emerald-400 hover:underline">
+                {project.version?.app_metadata.author}
+              </a>
+            </p>
+          )) ||
+            null}
           <p className="text-xs text-slate-500">
             Published:{" "}
             {project.version?.published_at

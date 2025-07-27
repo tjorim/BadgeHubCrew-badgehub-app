@@ -68,7 +68,7 @@ const AppDetailPage: React.FunctionComponent<{
           <aside className="lg:col-span-1 space-y-8">
             <AppSidebarDetails project={project} />
             <AppSidebarAuthor project={project} />
-            <AppSidebarSimilar project={project} />
+            <AppSidebarSimilar project={project} tsRestClient={tsRestClient} />
           </aside>
         </div>
       </main>

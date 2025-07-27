@@ -140,6 +140,13 @@ describe("createSwaggerDoc", () => {
                   },
                 },
                 {
+                  "in": "query",
+                  "name": "userId",
+                  "schema": {
+                    "type": "string",
+                  },
+                },
+                {
                   "description": "allow a text search over the apps' slug, name and descriptions",
                   "in": "query",
                   "name": "search",
@@ -326,6 +333,17 @@ describe("createSwaggerDoc", () => {
                     "application/json": {
                       "schema": {
                         "properties": {
+                          "author": {
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "name",
+                            ],
+                            "type": "object",
+                          },
                           "created_at": {
                             "format": "date-time",
                             "type": "string",
@@ -798,6 +816,17 @@ describe("createSwaggerDoc", () => {
                     "application/json": {
                       "schema": {
                         "properties": {
+                          "author": {
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "name",
+                            ],
+                            "type": "object",
+                          },
                           "created_at": {
                             "format": "date-time",
                             "type": "string",
@@ -1736,6 +1765,17 @@ describe("createSwaggerDoc", () => {
                     "application/json": {
                       "schema": {
                         "properties": {
+                          "author": {
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "name",
+                            ],
+                            "type": "object",
+                          },
                           "created_at": {
                             "format": "date-time",
                             "type": "string",

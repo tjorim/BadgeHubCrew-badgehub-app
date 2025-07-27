@@ -1,7 +1,11 @@
 import React from "react";
+import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
 
-const AppSidebarAuthor: React.FC<{ project: any }> = ({ project }) => {
-  const author = project.author || {};
+const AppSidebarAuthor: React.FC<{ project: ProjectDetails }> = ({
+  project,
+}) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const author = (project as any).author || {}; // TODO
   return (
     <section className="bg-gray-800 p-6 rounded-lg shadow-lg todoElement">
       <h2 className="text-xl font-semibold text-slate-100 mb-4 border-b border-gray-700 pb-2">
