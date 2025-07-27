@@ -1,6 +1,6 @@
 export type SharedConfig = {
-  badges: string[];
-  categories: string[];
+  badges: [string, ...string[]];
+  categories: [string, ...string[]];
   badgeHubBaseUrl: string;
   keycloakIssuer: {
     url: string;

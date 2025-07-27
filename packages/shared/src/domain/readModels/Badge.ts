@@ -4,12 +4,9 @@ import { getSharedConfig } from "@shared/config/sharedConfig";
 
 export type BadgeSlug = string;
 
-export const badgeSlugSchema = z
-  .string()
-  // .regex(/^a-z[a-z0-9_]*$/) // TODO check
-  .describe("badge slug");
+export const badgeSlugSchema = z.enum(getBadgeSlugs()).describe("badge slug");
 
-export function getBadgeSlugs(): BadgeSlug[] {
+export function getBadgeSlugs(): [BadgeSlug, ...BadgeSlug[]] {
   return getSharedConfig().badges;
 }
 

@@ -19,6 +19,7 @@ export const getProjectsQuerySchema = z.object({
   userId: z.string().optional(),
   search: z
     .string()
+    .max(50, "the search string should not be longer than 50 characters long")
     .optional()
     .describe("allow a text search over the apps' slug, name and descriptions"),
 });

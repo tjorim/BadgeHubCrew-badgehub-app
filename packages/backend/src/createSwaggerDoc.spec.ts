@@ -53,6 +53,11 @@ describe("createSwaggerDoc", () => {
                       "schema": {
                         "items": {
                           "description": "badge slug",
+                          "enum": [
+                            "why2025",
+                            "troopers23",
+                            "mch2022",
+                          ],
                           "type": "string",
                         },
                         "type": "array",
@@ -80,6 +85,24 @@ describe("createSwaggerDoc", () => {
                     "application/json": {
                       "schema": {
                         "items": {
+                          "enum": [
+                            "Uncategorised",
+                            "Event related",
+                            "Games",
+                            "Graphics",
+                            "Hardware",
+                            "Utility",
+                            "Wearable",
+                            "Data",
+                            "Silly",
+                            "Hacking",
+                            "Troll",
+                            "Unusable",
+                            "Adult",
+                            "Virus",
+                            "SAO",
+                            "Interpreter",
+                          ],
                           "type": "string",
                         },
                         "type": "array",
@@ -122,6 +145,11 @@ describe("createSwaggerDoc", () => {
                   "in": "query",
                   "name": "badge",
                   "schema": {
+                    "enum": [
+                      "why2025",
+                      "troopers23",
+                      "mch2022",
+                    ],
                     "type": "string",
                   },
                 },
@@ -129,6 +157,24 @@ describe("createSwaggerDoc", () => {
                   "in": "query",
                   "name": "category",
                   "schema": {
+                    "enum": [
+                      "Uncategorised",
+                      "Event related",
+                      "Games",
+                      "Graphics",
+                      "Hardware",
+                      "Utility",
+                      "Wearable",
+                      "Data",
+                      "Silly",
+                      "Hacking",
+                      "Troll",
+                      "Unusable",
+                      "Adult",
+                      "Virus",
+                      "SAO",
+                      "Interpreter",
+                    ],
                     "type": "string",
                   },
                 },
@@ -151,6 +197,7 @@ describe("createSwaggerDoc", () => {
                   "in": "query",
                   "name": "search",
                   "schema": {
+                    "maxLength": 50,
                     "type": "string",
                   },
                 },
@@ -170,6 +217,24 @@ describe("createSwaggerDoc", () => {
                             },
                             "categories": {
                               "items": {
+                                "enum": [
+                                  "Uncategorised",
+                                  "Event related",
+                                  "Games",
+                                  "Graphics",
+                                  "Hardware",
+                                  "Utility",
+                                  "Wearable",
+                                  "Data",
+                                  "Silly",
+                                  "Hacking",
+                                  "Troll",
+                                  "Unusable",
+                                  "Adult",
+                                  "Virus",
+                                  "SAO",
+                                  "Interpreter",
+                                ],
                                 "type": "string",
                               },
                               "type": "array",
@@ -445,6 +510,11 @@ describe("createSwaggerDoc", () => {
                                           "description": "list of badges that that this variant is made for. This should be subset of the badges in the top level appmetadata.json and it should not overlap with any other variants.",
                                           "items": {
                                             "description": "badge slug",
+                                            "enum": [
+                                              "why2025",
+                                              "troopers23",
+                                              "mch2022",
+                                            ],
                                             "type": "string",
                                           },
                                           "type": "array",
@@ -478,6 +548,11 @@ describe("createSwaggerDoc", () => {
                                     "description": "list of badges that are compatible with this project.",
                                     "items": {
                                       "description": "badge slug",
+                                      "enum": [
+                                        "why2025",
+                                        "troopers23",
+                                        "mch2022",
+                                      ],
                                       "type": "string",
                                     },
                                     "type": "array",
@@ -485,6 +560,24 @@ describe("createSwaggerDoc", () => {
                                   "categories": {
                                     "description": "Categories that the app falls into, eg. 'Event Related'. Categories are defined by the specific badgehub instance's config.",
                                     "items": {
+                                      "enum": [
+                                        "Uncategorised",
+                                        "Event related",
+                                        "Games",
+                                        "Graphics",
+                                        "Hardware",
+                                        "Utility",
+                                        "Wearable",
+                                        "Data",
+                                        "Silly",
+                                        "Hacking",
+                                        "Troll",
+                                        "Unusable",
+                                        "Adult",
+                                        "Virus",
+                                        "SAO",
+                                        "Interpreter",
+                                      ],
                                       "type": "string",
                                     },
                                     "type": "array",
@@ -928,6 +1021,11 @@ describe("createSwaggerDoc", () => {
                                           "description": "list of badges that that this variant is made for. This should be subset of the badges in the top level appmetadata.json and it should not overlap with any other variants.",
                                           "items": {
                                             "description": "badge slug",
+                                            "enum": [
+                                              "why2025",
+                                              "troopers23",
+                                              "mch2022",
+                                            ],
                                             "type": "string",
                                           },
                                           "type": "array",
@@ -961,6 +1059,11 @@ describe("createSwaggerDoc", () => {
                                     "description": "list of badges that are compatible with this project.",
                                     "items": {
                                       "description": "badge slug",
+                                      "enum": [
+                                        "why2025",
+                                        "troopers23",
+                                        "mch2022",
+                                      ],
                                       "type": "string",
                                     },
                                     "type": "array",
@@ -968,6 +1071,24 @@ describe("createSwaggerDoc", () => {
                                   "categories": {
                                     "description": "Categories that the app falls into, eg. 'Event Related'. Categories are defined by the specific badgehub instance's config.",
                                     "items": {
+                                      "enum": [
+                                        "Uncategorised",
+                                        "Event related",
+                                        "Games",
+                                        "Graphics",
+                                        "Hardware",
+                                        "Utility",
+                                        "Wearable",
+                                        "Data",
+                                        "Silly",
+                                        "Hacking",
+                                        "Troll",
+                                        "Unusable",
+                                        "Adult",
+                                        "Virus",
+                                        "SAO",
+                                        "Interpreter",
+                                      ],
                                       "type": "string",
                                     },
                                     "type": "array",
@@ -1482,6 +1603,11 @@ describe("createSwaggerDoc", () => {
                                 "description": "list of badges that that this variant is made for. This should be subset of the badges in the top level appmetadata.json and it should not overlap with any other variants.",
                                 "items": {
                                   "description": "badge slug",
+                                  "enum": [
+                                    "why2025",
+                                    "troopers23",
+                                    "mch2022",
+                                  ],
                                   "type": "string",
                                 },
                                 "type": "array",
@@ -1515,6 +1641,11 @@ describe("createSwaggerDoc", () => {
                           "description": "list of badges that are compatible with this project.",
                           "items": {
                             "description": "badge slug",
+                            "enum": [
+                              "why2025",
+                              "troopers23",
+                              "mch2022",
+                            ],
                             "type": "string",
                           },
                           "type": "array",
@@ -1522,6 +1653,24 @@ describe("createSwaggerDoc", () => {
                         "categories": {
                           "description": "Categories that the app falls into, eg. 'Event Related'. Categories are defined by the specific badgehub instance's config.",
                           "items": {
+                            "enum": [
+                              "Uncategorised",
+                              "Event related",
+                              "Games",
+                              "Graphics",
+                              "Hardware",
+                              "Utility",
+                              "Wearable",
+                              "Data",
+                              "Silly",
+                              "Hacking",
+                              "Troll",
+                              "Unusable",
+                              "Adult",
+                              "Virus",
+                              "SAO",
+                              "Interpreter",
+                            ],
                             "type": "string",
                           },
                           "type": "array",
@@ -1877,6 +2026,11 @@ describe("createSwaggerDoc", () => {
                                           "description": "list of badges that that this variant is made for. This should be subset of the badges in the top level appmetadata.json and it should not overlap with any other variants.",
                                           "items": {
                                             "description": "badge slug",
+                                            "enum": [
+                                              "why2025",
+                                              "troopers23",
+                                              "mch2022",
+                                            ],
                                             "type": "string",
                                           },
                                           "type": "array",
@@ -1910,6 +2064,11 @@ describe("createSwaggerDoc", () => {
                                     "description": "list of badges that are compatible with this project.",
                                     "items": {
                                       "description": "badge slug",
+                                      "enum": [
+                                        "why2025",
+                                        "troopers23",
+                                        "mch2022",
+                                      ],
                                       "type": "string",
                                     },
                                     "type": "array",
@@ -1917,6 +2076,24 @@ describe("createSwaggerDoc", () => {
                                   "categories": {
                                     "description": "Categories that the app falls into, eg. 'Event Related'. Categories are defined by the specific badgehub instance's config.",
                                     "items": {
+                                      "enum": [
+                                        "Uncategorised",
+                                        "Event related",
+                                        "Games",
+                                        "Graphics",
+                                        "Hardware",
+                                        "Utility",
+                                        "Wearable",
+                                        "Data",
+                                        "Silly",
+                                        "Hacking",
+                                        "Troll",
+                                        "Unusable",
+                                        "Adult",
+                                        "Virus",
+                                        "SAO",
+                                        "Interpreter",
+                                      ],
                                       "type": "string",
                                     },
                                     "type": "array",
@@ -2217,6 +2394,24 @@ describe("createSwaggerDoc", () => {
                             },
                             "categories": {
                               "items": {
+                                "enum": [
+                                  "Uncategorised",
+                                  "Event related",
+                                  "Games",
+                                  "Graphics",
+                                  "Hardware",
+                                  "Utility",
+                                  "Wearable",
+                                  "Data",
+                                  "Silly",
+                                  "Hacking",
+                                  "Troll",
+                                  "Unusable",
+                                  "Adult",
+                                  "Virus",
+                                  "SAO",
+                                  "Interpreter",
+                                ],
                                 "type": "string",
                               },
                               "type": "array",
