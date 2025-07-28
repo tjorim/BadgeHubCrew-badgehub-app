@@ -11,7 +11,7 @@ import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
 import { nok, ok } from "@controllers/ts-rest/httpResponses";
 import { Readable } from "node:stream";
 import { RouterImplementation } from "@ts-rest/express/src/lib/types";
-import { z } from "zod";
+import { ProjectLatestRevisions } from "@shared/domain/readModels/project/ProjectRevision";
 
 const createFilesRouter = (badgeHubData: BadgeHubData) => {
   const filesRouter: RouterImplementation<typeof publicFilesContracts> = {
@@ -60,20 +60,21 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
       }
       return ok(details);
     },
-    getProjects: async ({
+    getProjectSummaries: async ({
       query: {
         pageStart,
         pageLength,
         badge,
         category,
         search,
-        projectSlug,
+        slugs: projectSlugsString,
         userId,
       },
     }) => {
+      const projectSlugs = projectSlugsString?.split(",") || [];
       const data = await badgeHubData.getProjectSummaries(
         {
-          projectSlug,
+          slugs: projectSlugs,
           pageStart,
           pageLength,
           badge,
@@ -84,6 +85,19 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
         "latest"
       );
       return ok(data);
+    },
+    getProjectLatestRevisions: async ({ query }) => {
+      const slugs = (query.slugs && query.slugs?.split(",")) || undefined;
+      const data = await badgeHubData.getProjectSummaries(
+        { slugs: slugs },
+        "latest"
+      );
+      // TODO optimize this
+      const projectRevisionMap: ProjectLatestRevisions = data.map((p) => ({
+        slug: p.slug,
+        revision: p.revision,
+      }));
+      return ok(projectRevisionMap);
     },
     getProjectForRevision: async ({ params: { slug, revision }, res }) => {
       const details = await badgeHubData.getProject(slug, revision);

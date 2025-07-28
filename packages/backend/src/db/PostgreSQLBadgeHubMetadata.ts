@@ -362,8 +362,8 @@ export class PostgreSQLBadgeHubMetadata {
   }
 
   async getProjectSummaries(
-    filter?: {
-      projectSlug?: ProjectDetails["slug"];
+    filter: {
+      slugs?: ProjectSlug[];
       pageStart?: number;
       pageLength?: number;
       badge?: BadgeSlug;
@@ -377,14 +377,14 @@ export class PostgreSQLBadgeHubMetadata {
     query = sql`${query}
     where p.deleted_at is null`;
 
-    if (filter?.category) {
+    if (filter.category) {
       const categoryJsonBMatcher = `["${filter.category}"]`;
       query = sql`${query}
 and v.app_metadata->'categories' @>
       ${categoryJsonBMatcher}`;
     }
 
-    if (filter?.badge) {
+    if (filter.badge) {
       const badgesJsonBMatcher = `["${filter.badge}"]`;
       query = sql`${query}
 and v.app_metadata->'badges' @>
@@ -396,37 +396,43 @@ and v.app_metadata->'badges' @>
       and v.published_at is not null`;
     }
 
-    if (filter?.projectSlug) {
-      query = sql`${query}
+    if (filter.slugs?.length) {
+      if (filter.slugs.length == 1) {
+        query = sql`${query}
       and p.slug =
-      ${filter.projectSlug}`;
+        ${filter.slugs[0]}`;
+      } else {
+        query = sql`${query}
+      and p.slug = any(${filter.slugs})`;
+      }
     }
 
-    if (filter?.search) {
+    if (filter.search) {
       const matcher = `%${filter.search.toLowerCase()}%`;
       query = sql`${query}
                     and (v.app_metadata->>'name' ilike ${matcher} or v.app_metadata->>'description' ilike ${matcher} or p.slug like ${matcher})
                     or exists (select 1 from project_latest_categories plc where plc.project_slug = p.slug and plc.category_name ilike ${matcher})`;
     }
 
-    if (filter?.userId !== undefined) {
+    if (filter.userId !== undefined) {
       query = sql`${query}
       and p.idp_user_id =
       ${filter.userId}`;
     }
     query = sql`${query} order by v.updated_at desc`;
 
-    if (filter?.pageLength) {
+    if (filter.pageLength) {
       query = sql`${query}
       limit
       ${filter.pageLength}
       offset
-      ${filter?.pageStart ?? 0}`;
+      ${filter.pageStart ?? 0}`;
     }
 
     const projects: ProjectQueryResponse[] = await this.pool
       .query(query)
       .then((res) => res.rows);
+
     return projects.map(projectQueryResponseToReadModel);
   }
 

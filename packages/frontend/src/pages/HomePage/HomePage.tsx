@@ -14,7 +14,7 @@ interface AppProps {
 
 const HomePage = memo(({ tsRestClient = defaultTsRestClient }: AppProps) => {
   const appFetcher: AppFetcher = async (filters) => {
-    const result = await tsRestClient?.getProjects({
+    const result = await tsRestClient?.getProjectSummaries({
       query: {
         category: filters.category,
         badge: filters.badge,

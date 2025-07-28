@@ -8,6 +8,7 @@ import {
 } from "@shared/domain/readModels/project/ProjectDetails";
 import { isInDebugMode } from "@util/debug";
 import { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON";
+import { ProjectLatestRevisions } from "@shared/domain/readModels/project/ProjectRevision";
 
 describe(
   "Public API Routes",
@@ -23,8 +24,8 @@ describe(
       expect(res.body).toContain("why2025");
     });
 
-    test("GET /api/v3/projects", async () => {
-      const res = await request(app).get("/api/v3/projects");
+    test("GET /api/v3/project-summaries", async () => {
+      const res = await request(app).get("/api/v3/project-summaries");
       expect(res.statusCode).toBe(200);
       expect(
         res.body.find((app: ProjectSummary) => app.name === "PixelPulse")
@@ -58,16 +59,18 @@ describe(
       `);
     });
 
-    test("GET /api/v3/projects should not contain unpublished apps", async () => {
-      const res = await request(app).get("/api/v3/projects");
+    test("GET /api/v3/project-summaries should not contain unpublished apps", async () => {
+      const res = await request(app).get("/api/v3/project-summaries");
       expect(res.statusCode).toBe(200);
       expect(
         res.body.find((app: ProjectSummary) => !app.published_at)?.name
       ).toBeUndefined();
     });
 
-    test("GET /api/v3/projects with device filter", async () => {
-      const res = await request(app).get("/api/v3/projects?badge=why2025");
+    test("GET /api/v3/project-summaries with device filter", async () => {
+      const res = await request(app).get(
+        "/api/v3/project-summaries?badge=why2025"
+      );
       expect(res.statusCode).toBe(200);
       expect(
         res.body.every((app: ProjectSummary) => app.badges?.includes("why2025"))
@@ -77,8 +80,10 @@ describe(
       ).toBeDefined();
     });
 
-    test("GET /api/v3/projects with category filter", async () => {
-      const res = await request(app).get("/api/v3/projects?category=Silly");
+    test("GET /api/v3/project-summaries with category filter", async () => {
+      const res = await request(app).get(
+        "/api/v3/project-summaries?category=Silly"
+      );
       expect(res.statusCode).toBe(200);
       expect(res.body.length).toMatchInlineSnapshot(`4`);
       expect(
@@ -93,9 +98,9 @@ describe(
       ).toBeDefined();
     });
 
-    test("GET /api/v3/projects with category name in search", async () => {
+    test("GET /api/v3/project-summaries with category name in search", async () => {
       const res = await request(app).get(
-        "/api/v3/projects?search=Uncategorised"
+        "/api/v3/project-summaries?search=Uncategorised"
       );
       expect(res.statusCode).toBe(200);
       expect(res.body.length).toMatchInlineSnapshot(`2`);
@@ -111,17 +116,20 @@ describe(
       ).toBeDefined();
     });
 
-    test("GET /api/v3/projects with search query filter searching for name", async () => {
-      const res = await request(app).get("/api/v3/projects?search=oDecrafTE");
+    test("GET /api/v3/project-summaries with search query filter searching for name", async () => {
+      const res = await request(app).get(
+        "/api/v3/project-summaries?search=oDecrafTE"
+      );
       expect(res.statusCode).toBe(200);
       const result: ProjectSummary[] = res.body;
       expect(result.length).toBe(1);
       expect(result[0]!.slug).toEqual("codecrafter");
     });
 
-    test("GET /api/v3/projects with search query filter searching for description", async () => {
+    test("GET /api/v3/project-summaries with search query filter searching for description", async () => {
       const res = await request(app).get(
-        "/api/v3/projects?search=" + encodeURIComponent("interesting things")
+        "/api/v3/project-summaries?search=" +
+          encodeURIComponent("interesting things")
       );
       expect(res.statusCode).toBe(200);
       const result: ProjectSummary[] = res.body;
@@ -133,9 +141,9 @@ describe(
       ).toBe(true);
     });
 
-    test("GET /api/v3/projects with device and category filters", async () => {
+    test("GET /api/v3/project-summaries with device and category filters", async () => {
       const res = await request(app).get(
-        "/api/v3/projects?badge=troopers23&category=Silly"
+        "/api/v3/project-summaries?badge=troopers23&category=Silly"
       );
       expect(res.statusCode).toBe(200);
       expect(res.body.length).toBeGreaterThan(0);
@@ -151,6 +159,28 @@ describe(
           app.categories?.includes("Silly")
         )
       ).toBeDefined();
+    });
+
+    test("GET /api/v3/project-summariesslugs=codecraft,codecrafter", async () => {
+      const res = await request(app).get(
+        "/api/v3/project-summaries?slugs=codecraft,codecrafter"
+      );
+      expect(res.statusCode).toBe(200);
+      expect(res.body.map((p: ProjectSummary) => p.slug)).toEqual([
+        "codecraft",
+        "codecrafter",
+      ]);
+    });
+
+    test("GET /api/v3/project-summaries?slugs=codecraft", async () => {
+      const res = await request(app).get(
+        "/api/v3/project-summaries?slugs=codecraft"
+      );
+      expect(res.statusCode).toBe(200);
+      expect(res.body.length).toBe(1);
+      expect(res.body.map((p: ProjectSummary) => p.slug)).toEqual([
+        "codecraft",
+      ]);
     });
 
     test("GET /api/v3/projects/non-existent should return 404", async () => {
@@ -438,7 +468,7 @@ describe(
       });
     });
 
-    describe("unpublished versions should be be requestable", () => {
+    describe("unpublished versions should not be requestable", () => {
       test.each(["rev1", "rev2"])(
         "GET /projects/{slug}/%s/files/metadata.json",
         async (revision) => {
@@ -458,6 +488,63 @@ describe(
           expect(getRes.statusCode).toBe(404);
         }
       );
+    });
+
+    describe("project-summaries fields query parameter", () => {
+      test("GET /api/v3/project-latest-revisions", async () => {
+        const getRes = await request(app).get(
+          `/api/v3/project-latest-revisions`
+        );
+        expect(getRes.statusCode).toBe(200);
+        const projectRevisionMap = getRes.body as ProjectLatestRevisions;
+        expect(Object.keys(projectRevisionMap).length).toBeGreaterThanOrEqual(
+          20
+        );
+        expect(projectRevisionMap.find((p) => p.slug === "codecraft"))
+          .toMatchInlineSnapshot(`
+          {
+            "revision": 0,
+            "slug": "codecraft",
+          }
+        `);
+      });
+      test("GET /api/v3/project-latest-revisions?slugs=codecraft,codecrafter", async () => {
+        const getRes = await request(app).get(
+          `/api/v3/project-latest-revisions?slugs=codecraft,codecrafter`
+        );
+        expect(getRes.statusCode).toBe(200);
+        const projectRevisionMap = getRes.body as ProjectLatestRevisions;
+        expect(Object.keys(projectRevisionMap)).toHaveLength(2);
+        expect(projectRevisionMap).toMatchInlineSnapshot(`
+          [
+            {
+              "revision": 0,
+              "slug": "codecraft",
+            },
+            {
+              "revision": 0,
+              "slug": "codecrafter",
+            },
+          ]
+        `);
+      });
+
+      test("GET /api/v3/project-latest-revisions?slugs=codecraft", async () => {
+        const getRes = await request(app).get(
+          `/api/v3/project-latest-revisions?slugs=codecraft`
+        );
+        expect(getRes.statusCode).toBe(200);
+        const projectRevisionMap = getRes.body as ProjectLatestRevisions;
+        expect(Object.keys(projectRevisionMap)).toHaveLength(1);
+        expect(projectRevisionMap).toMatchInlineSnapshot(`
+          [
+            {
+              "revision": 0,
+              "slug": "codecraft",
+            },
+          ]
+        `);
+      });
     });
   },
   { timeout: isInDebugMode() ? 3600_000 : undefined }

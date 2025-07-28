@@ -231,7 +231,7 @@ export class BadgeHubData {
       badge?: BadgeSlug;
       category?: CategoryName;
       search?: string;
-      projectSlug?: ProjectSlug;
+      slugs?: ProjectSlug[];
       userId?: User["idp_user_id"];
     },
     revision: LatestOrDraftAlias

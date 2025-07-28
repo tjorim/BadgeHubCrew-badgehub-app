@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { ProjectDetails, ProjectSummary } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import {
+  ProjectDetails,
+  ProjectSummary,
+} from "@shared/domain/readModels/project/ProjectDetails.ts";
 import { tsRestClient as defaultTsRestClient } from "../../api/tsRestClient.ts";
 import { ERROR_ICON_URL } from "@config.ts";
 
@@ -78,7 +81,7 @@ const AppSidebarSimilar: React.FC<{
       try {
         // Fetch projects by the same user, requesting one more than we need
         // to account for the current project potentially being in the list.
-        const result = await tsRestClient.getProjects({
+        const result = await tsRestClient.getProjectSummaries({
           query: {
             userId: project.idp_user_id,
             pageLength: 4,

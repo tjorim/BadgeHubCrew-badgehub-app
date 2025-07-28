@@ -160,11 +160,58 @@ describe("createSwaggerDoc", () => {
               ],
             },
           },
-          "/api/v3/projects": {
+          "/api/v3/project-latest-revisions": {
             "get": {
               "deprecated": undefined,
               "description": undefined,
-              "operationId": "getProjects",
+              "operationId": "getProjectLatestRevisions",
+              "parameters": [
+                {
+                  "in": "query",
+                  "name": "slugs",
+                  "schema": {
+                    "type": "string",
+                  },
+                },
+              ],
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "items": {
+                          "properties": {
+                            "revision": {
+                              "type": "number",
+                            },
+                            "slug": {
+                              "type": "string",
+                            },
+                          },
+                          "required": [
+                            "slug",
+                            "revision",
+                          ],
+                          "type": "object",
+                        },
+                        "type": "array",
+                      },
+                    },
+                  },
+                  "description": "200",
+                },
+              },
+              "summary": "Get the latest revisions for a list of project slugs. Allows for quickly checking for updates.",
+              "tags": [
+                "Public",
+              ],
+            },
+          },
+          "/api/v3/project-summaries": {
+            "get": {
+              "deprecated": undefined,
+              "description": undefined,
+              "operationId": "getProjectSummaries",
               "parameters": [
                 {
                   "in": "query",
@@ -221,8 +268,9 @@ describe("createSwaggerDoc", () => {
                   },
                 },
                 {
+                  "description": "optional comma separated list of project slugs to filter on",
                   "in": "query",
-                  "name": "projectSlug",
+                  "name": "slugs",
                   "schema": {
                     "type": "string",
                   },

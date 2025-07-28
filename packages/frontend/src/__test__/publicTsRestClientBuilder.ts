@@ -32,7 +32,7 @@ export function tsRestClientWithApps(apps: DummyApp[] = dummyApps) {
           return notFound();
         }
         return { status: 200, body: app.details, headers: new Headers() };
-      } else if (matchRoute(args, tsRestApiContracts.getProjects)) {
+      } else if (matchRoute(args, tsRestApiContracts.getProjectSummaries)) {
         // Parse and validate query params using schema
         const parsedQuery = parseProjectsQuery(args.rawQuery);
         let filteredSummaries: ProjectSummary[] = apps.map(

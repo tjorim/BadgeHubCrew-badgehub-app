@@ -6,6 +6,7 @@ import {
 } from "@shared/domain/readModels/project/ProjectDetails";
 import { categoryNameSchema } from "@shared/domain/readModels/project/Category";
 import { badgeSlugSchema } from "@shared/domain/readModels/Badge";
+import { projectLatestRevisionsSchema } from "@shared/domain/readModels/project/ProjectRevision";
 
 const c = initContract();
 
@@ -15,7 +16,10 @@ export const getProjectsQuerySchema = z.object({
   pageLength: z.coerce.number().optional(),
   badge: badgeSlugSchema.optional(),
   category: categoryNameSchema.optional(),
-  projectSlug: z.string().optional(),
+  slugs: z
+    .string()
+    .describe("optional comma separated list of project slugs to filter on")
+    .optional(),
   userId: z.string().optional(),
   search: z
     .string()
@@ -35,14 +39,26 @@ export const publicProjectContracts = c.router({
     },
     summary: "Get (Latest) Project Details by Slug",
   },
-  getProjects: {
+  getProjectSummaries: {
     method: "GET",
-    path: `/projects`,
+    path: `/project-summaries`,
     query: getProjectsQuerySchema,
     responses: {
       200: z.array(projectSummarySchema),
     },
     summary: "Get all Projects",
+  },
+  getProjectLatestRevisions: {
+    method: "GET",
+    path: `/project-latest-revisions`,
+    query: z.object({
+      slugs: z.string().optional(),
+    }),
+    responses: {
+      200: projectLatestRevisionsSchema,
+    },
+    summary:
+      "Get the latest revisions for a list of project slugs. Allows for quickly checking for updates.",
   },
   getProjectForRevision: {
     method: "GET",
