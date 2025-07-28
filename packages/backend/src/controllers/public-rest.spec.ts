@@ -416,6 +416,28 @@ describe(
         );
       }
     );
+
+    describe("ping should return pong", () => {
+      test.each([
+        { id: "testid", mac: "testmac" },
+        { id: "testid", mac: "testmac" },
+        { id: "testid", mac: "" },
+        { id: "testid2", mac: undefined },
+        { id: undefined, mac: undefined },
+      ])("GET /api/v3/ping id=$id, mac=$mac", async ({ id, mac }) => {
+        let url = `/api/v3/ping`;
+        if (id) {
+          url += `?id=${id}`;
+        }
+        if (mac) {
+          url += `&mac=${mac}`;
+        }
+        const getRes = await request(app).get(url);
+        expect(getRes.statusCode).toBe(200);
+        expect(getRes.text).toBe('"pong"');
+      });
+    });
+
     describe("unpublished versions should be be requestable", () => {
       test.each(["rev1", "rev2"])(
         "GET /projects/{slug}/%s/files/metadata.json",

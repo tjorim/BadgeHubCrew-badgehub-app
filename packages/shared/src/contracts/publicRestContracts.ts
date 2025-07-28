@@ -90,6 +90,11 @@ export const publicFilesContracts = c.router({
   },
 });
 
+export const pingQuerySchema = z.object({
+  mac: z.string().describe("the mac address of the badge").optional(),
+  id: z.string().describe("the id of the badge").optional(),
+});
+
 export const publicRestContracts = c.router({
   ...publicProjectContracts,
   ...publicFilesContracts,
@@ -105,6 +110,14 @@ export const publicRestContracts = c.router({
     path: `/badges`,
     responses: {
       200: z.array(badgeSlugSchema),
+    },
+  },
+  ping: {
+    method: "GET",
+    path: `/ping`,
+    query: pingQuerySchema,
+    responses: {
+      200: z.string().describe("Ping the server to check if it's alive"),
     },
   },
 });

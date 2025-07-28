@@ -464,4 +464,15 @@ and v.app_metadata->'badges' @>
       dbFileToFileMetadata(dbFile, dbVersion.project_slug, versionRevision)
     );
   }
+
+  async registerBadge(id: string, mac: string | undefined) {
+    return this.pool.query(
+      sql`insert into registered_badges (id, mac)
+          values (${id}, ${mac || null})
+          on conflict (id)
+            do update set
+                        mac = coalesce(registered_badges.mac, excluded.mac),
+                        last_seen_at = now();`
+    );
+  }
 }

@@ -1,5 +1,6 @@
 import { initServer } from "@ts-rest/express";
 import {
+  type pingQuerySchema,
   publicFilesContracts,
   publicProjectContracts,
   publicRestContracts,
@@ -10,6 +11,7 @@ import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
 import { nok, ok } from "@controllers/ts-rest/httpResponses";
 import { Readable } from "node:stream";
 import { RouterImplementation } from "@ts-rest/express/src/lib/types";
+import { z } from "zod";
 
 const createFilesRouter = (badgeHubData: BadgeHubData) => {
   const filesRouter: RouterImplementation<typeof publicFilesContracts> = {
@@ -115,6 +117,16 @@ export const createPublicRestRouter = (
     getCategories: async () => {
       const data = await badgeHubData.getCategories();
       return ok(data);
+    },
+    ping: async ({
+      query: { id, mac },
+    }: {
+      query: z.infer<typeof pingQuerySchema>;
+    }) => {
+      if (id) {
+        await badgeHubData.registerBadge(id, mac);
+      }
+      return ok("pong");
     },
   } as any);
 };

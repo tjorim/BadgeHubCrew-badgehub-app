@@ -333,4 +333,8 @@ export class BadgeHubData {
     }
     await this.badgeHubMetadata.deleteDraftFile(slug, filePath);
   }
+
+  async registerBadge(id: string, mac: string | undefined) {
+    await this.badgeHubMetadata.registerBadge(id, mac);
+  }
 }

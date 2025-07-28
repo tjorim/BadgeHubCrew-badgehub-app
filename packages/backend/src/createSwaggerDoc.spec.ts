@@ -118,6 +118,48 @@ describe("createSwaggerDoc", () => {
               ],
             },
           },
+          "/api/v3/ping": {
+            "get": {
+              "deprecated": undefined,
+              "description": undefined,
+              "operationId": "ping",
+              "parameters": [
+                {
+                  "description": "the mac address of the badge",
+                  "in": "query",
+                  "name": "mac",
+                  "schema": {
+                    "type": "string",
+                  },
+                },
+                {
+                  "description": "the id of the badge",
+                  "in": "query",
+                  "name": "id",
+                  "schema": {
+                    "type": "string",
+                  },
+                },
+              ],
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "description": "Ping the server to check if it's alive",
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "description": "Ping the server to check if it's alive",
+                },
+              },
+              "summary": undefined,
+              "tags": [
+                "Public",
+              ],
+            },
+          },
           "/api/v3/projects": {
             "get": {
               "deprecated": undefined,
