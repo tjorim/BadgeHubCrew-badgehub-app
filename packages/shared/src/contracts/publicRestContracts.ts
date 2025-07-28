@@ -95,9 +95,7 @@ export const pingQuerySchema = z.object({
   id: z.string().describe("the id of the badge").optional(),
 });
 
-export const publicRestContracts = c.router({
-  ...publicProjectContracts,
-  ...publicFilesContracts,
+export const publicOtherContracts = c.router({
   getCategories: {
     method: "GET",
     path: `/categories`,
@@ -120,4 +118,10 @@ export const publicRestContracts = c.router({
       200: z.string().describe("Ping the server to check if it's alive"),
     },
   },
+});
+
+export const publicRestContracts = c.router({
+  ...publicProjectContracts,
+  ...publicFilesContracts,
+  ...publicOtherContracts,
 });

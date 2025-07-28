@@ -1,7 +1,7 @@
 import { initServer } from "@ts-rest/express";
 import {
-  type pingQuerySchema,
   publicFilesContracts,
+  publicOtherContracts,
   publicProjectContracts,
   publicRestContracts,
 } from "@shared/contracts/publicRestContracts";
@@ -101,6 +101,26 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
   return projectRouter;
 };
 
+const createPublicOtherRouter = (badgeHubData: BadgeHubData) => {
+  const otherRouter: RouterImplementation<typeof publicOtherContracts> = {
+    getBadges: async () => {
+      const data = await badgeHubData.getBadges();
+      return ok(data);
+    },
+    getCategories: async () => {
+      const data = await badgeHubData.getCategories();
+      return ok(data);
+    },
+    ping: async ({ query: { id, mac } }) => {
+      if (id) {
+        await badgeHubData.registerBadge(id, mac);
+      }
+      return ok("pong");
+    },
+  };
+  return otherRouter;
+};
+
 export const createPublicRestRouter = (
   badgeHubData: BadgeHubData = new BadgeHubData(
     new PostgreSQLBadgeHubMetadata(),
@@ -110,23 +130,6 @@ export const createPublicRestRouter = (
   return initServer().router(publicRestContracts, {
     ...createProjectRouter(badgeHubData),
     ...createFilesRouter(badgeHubData),
-    getBadges: async () => {
-      const data = await badgeHubData.getBadges();
-      return ok(data);
-    },
-    getCategories: async () => {
-      const data = await badgeHubData.getCategories();
-      return ok(data);
-    },
-    ping: async ({
-      query: { id, mac },
-    }: {
-      query: z.infer<typeof pingQuerySchema>;
-    }) => {
-      if (id) {
-        await badgeHubData.registerBadge(id, mac);
-      }
-      return ok("pong");
-    },
+    ...createPublicOtherRouter(badgeHubData),
   } as any);
 };
