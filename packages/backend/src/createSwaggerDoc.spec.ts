@@ -207,6 +207,39 @@ describe("createSwaggerDoc", () => {
               ],
             },
           },
+          "/api/v3/project-latest-revisions/{slug}": {
+            "get": {
+              "deprecated": undefined,
+              "description": undefined,
+              "operationId": "getProjectLatestRevision",
+              "parameters": [
+                {
+                  "in": "path",
+                  "name": "slug",
+                  "required": true,
+                  "schema": {
+                    "type": "string",
+                  },
+                },
+              ],
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "number",
+                      },
+                    },
+                  },
+                  "description": "200",
+                },
+              },
+              "summary": "Get the latest revision number for a project. Allows for quickly checking for updates.",
+              "tags": [
+                "Public",
+              ],
+            },
+          },
           "/api/v3/project-summaries": {
             "get": {
               "deprecated": undefined,
@@ -408,6 +441,9 @@ describe("createSwaggerDoc", () => {
                             "idp_user_id": {
                               "type": "string",
                             },
+                            "latest_revision": {
+                              "type": "number",
+                            },
                             "license_type": {
                               "type": "string",
                             },
@@ -559,6 +595,9 @@ describe("createSwaggerDoc", () => {
                           },
                           "idp_user_id": {
                             "type": "string",
+                          },
+                          "latest_revision": {
+                            "type": "number",
                           },
                           "slug": {
                             "type": "string",
@@ -1070,6 +1109,9 @@ describe("createSwaggerDoc", () => {
                           },
                           "idp_user_id": {
                             "type": "string",
+                          },
+                          "latest_revision": {
+                            "type": "number",
                           },
                           "slug": {
                             "type": "string",
@@ -2076,6 +2118,9 @@ describe("createSwaggerDoc", () => {
                           "idp_user_id": {
                             "type": "string",
                           },
+                          "latest_revision": {
+                            "type": "number",
+                          },
                           "slug": {
                             "type": "string",
                           },
@@ -2584,6 +2629,9 @@ describe("createSwaggerDoc", () => {
                             },
                             "idp_user_id": {
                               "type": "string",
+                            },
+                            "latest_revision": {
+                              "type": "number",
                             },
                             "license_type": {
                               "type": "string",

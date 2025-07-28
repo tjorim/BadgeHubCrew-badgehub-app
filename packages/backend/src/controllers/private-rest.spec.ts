@@ -284,6 +284,30 @@ describe("Authenticated API Routes", () => {
             "Test App Description Before Publish"
           );
         });
+
+        test("publish version to check revision change", async () => {
+          // Create a new project
+          const publishTestAppId = `test_app_publish_${Date.now()}`;
+          const appName = "Test App Name";
+          const postRes = await request(app)
+            .post(`/api/v3/projects/${publishTestAppId}`)
+            .auth(USER1_TOKEN, { type: "bearer" })
+            .send();
+          expect(postRes.statusCode).toBe(204);
+
+          for (let i = 0; i < 7; i++) {
+            const publishRes = await request(app)
+              .patch(`/api/v3/projects/${publishTestAppId}/publish`)
+              .auth(USER1_TOKEN, { type: "bearer" });
+            expect(publishRes.statusCode).toBe(204);
+          }
+
+          const getLatestVersionRes = await request(app).get(
+            `/api/v3/project-latest-revisions/${publishTestAppId}`
+          );
+          expect(getLatestVersionRes.statusCode).toBe(200);
+          expect(getLatestVersionRes.body).toBe(6);
+        });
       });
 
       describe("/users/{userId}/drafts", () => {

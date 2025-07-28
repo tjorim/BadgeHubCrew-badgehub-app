@@ -26,6 +26,7 @@ export interface ProjectCore {
   slug: string;
   idp_user_id: User["idp_user_id"];
   git?: string; // Git URL of the project, if it exists
+  latest_revision?: number; // Latest revision number of the project
 }
 
 export type FullPathAndUrl = {
@@ -68,6 +69,7 @@ export const projectCoreSchema = z.object({
   slug: z.string(),
   idp_user_id: z.string(),
   git: z.string().optional(),
+  latest_revision: z.number().optional(),
 });
 
 export const detailedProjectSchema = projectCoreSchema

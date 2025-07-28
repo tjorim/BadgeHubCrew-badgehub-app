@@ -99,6 +99,14 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
       }));
       return ok(projectRevisionMap);
     },
+    getProjectLatestRevision: async ({ params: { slug } }) => {
+      // TODO optimize this
+      const projectDetails = await badgeHubData.getProject(slug, "latest");
+      if (projectDetails?.latest_revision === undefined) {
+        return nok(404, `No published app with slug '${slug}' found`);
+      }
+      return ok(projectDetails?.latest_revision);
+    },
     getProjectForRevision: async ({ params: { slug, revision }, res }) => {
       const details = await badgeHubData.getProject(slug, revision);
       if (!details) {

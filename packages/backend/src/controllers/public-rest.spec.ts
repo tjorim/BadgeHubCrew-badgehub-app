@@ -545,6 +545,15 @@ describe(
           ]
         `);
       });
+
+      test("GET /api/v3/project-latest-revisions/codecraft", async () => {
+        const getRes = await request(app).get(
+          `/api/v3/project-latest-revisions/codecraft`
+        );
+        expect(getRes.statusCode).toBe(200);
+        const projectRevisionMap = getRes.body as number;
+        expect(getRes.body).toBe(0);
+      });
     });
   },
   { timeout: isInDebugMode() ? 3600_000 : undefined }

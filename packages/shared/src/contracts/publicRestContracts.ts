@@ -60,6 +60,14 @@ export const publicProjectContracts = c.router({
     summary:
       "Get the latest revisions for a list of project slugs. Allows for quickly checking for updates.",
   },
+  getProjectLatestRevision: {
+    method: "GET",
+    path: `/project-latest-revisions/:slug`,
+    pathParams: z.object({ slug: z.string() }),
+    responses: { 200: z.number() },
+    summary:
+      "Get the latest revision number for a project. Allows for quickly checking for updates.",
+  },
   getProjectForRevision: {
     method: "GET",
     path: `/projects/:slug/rev:revision`,
