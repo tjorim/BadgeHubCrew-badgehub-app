@@ -59,7 +59,8 @@ function dbFileToFileMetadata(
   project: string,
   versionRevision: RevisionNumberOrAlias
 ): FileMetadata {
-  const { version_id, ...dbFileWithoutVersionId } = dbFile;
+  const { image_width, image_height, version_id, ...dbFileWithoutVersionId } =
+    dbFile;
   const size_of_content = Number.parseInt(dbFile.size_of_content);
   const full_path = path.join(dbFile.dir, dbFile.name + dbFile.ext);
   const fileDownloadUrl = getFileDownloadUrl(
@@ -67,8 +68,11 @@ function dbFileToFileMetadata(
     versionRevision,
     full_path
   );
+  const image_data =
+    image_width && image_height ? { image_width, image_height } : {};
   return {
     ...convertDatedData(dbFileWithoutVersionId),
+    ...image_data,
     size_of_content,
     url: fileDownloadUrl, // TODO profile files/sha endpoint and use that in the urls
     full_path,
@@ -170,13 +174,12 @@ export class PostgreSQLBadgeHubMetadata {
     mockDates?: DBDatedData & DBSoftDeletable
   ): Promise<void> {
     const { dir, name, ext } = parsePath(pathParts);
-    const mimetype = uploadedFile.mimetype;
-    const size = uploadedFile.size;
+    const { mimetype, size, image_width, image_height } = uploadedFile;
 
     await this.pool.query(
-      sql`insert into files (version_id, dir, name, ext, mimetype, size_of_content, sha256)
+      sql`insert into files (version_id, dir, name, ext, mimetype, size_of_content, sha256, image_width, image_height)
           values (${getVersionQuery(projectSlug, "draft")}, ${dir}, ${name}, ${ext}, ${mimetype},
-                  ${size}, ${sha256})
+                  ${size}, ${sha256}, ${image_width}, ${image_height})
           on conflict (version_id, dir, name, ext) do update set mimetype        = ${mimetype},
                                                                  size_of_content = ${size},
                                                                  sha256          = ${sha256},

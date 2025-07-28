@@ -11,12 +11,12 @@ import { BadgeHubData } from "@domain/BadgeHubData";
 import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
 import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
 import { stringToSemiRandomNumber } from "@dev/stringToSemiRandomNumber";
-import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import { getCategoryNames } from "@shared/domain/readModels/project/Category";
 import { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON";
 import { getBadgeSlugs } from "@shared/domain/readModels/Badge";
+import sharp from "sharp";
 
 const CATEGORY_NAMES = getCategoryNames();
 
@@ -247,7 +247,7 @@ const writeDraftAppFiles = async (
 
     // Read icon file from disk
     try {
-      iconBuffer = fs.readFileSync(iconFullPath);
+      iconBuffer = await sharp(iconFullPath).resize(64, 64).toBuffer();
     } catch (e) {
       console.warn(`Could not read icon file: ${iconFullPath}`);
     }

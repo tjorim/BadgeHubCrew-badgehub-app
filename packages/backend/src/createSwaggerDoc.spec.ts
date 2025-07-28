@@ -782,6 +782,12 @@ describe("createSwaggerDoc", () => {
                                     "full_path": {
                                       "type": "string",
                                     },
+                                    "image_height": {
+                                      "type": "number",
+                                    },
+                                    "image_width": {
+                                      "type": "number",
+                                    },
                                     "mimetype": {
                                       "type": "string",
                                     },
@@ -1295,6 +1301,12 @@ describe("createSwaggerDoc", () => {
                                     },
                                     "full_path": {
                                       "type": "string",
+                                    },
+                                    "image_height": {
+                                      "type": "number",
+                                    },
+                                    "image_width": {
+                                      "type": "number",
                                     },
                                     "mimetype": {
                                       "type": "string",
@@ -2303,6 +2315,12 @@ describe("createSwaggerDoc", () => {
                                     },
                                     "full_path": {
                                       "type": "string",
+                                    },
+                                    "image_height": {
+                                      "type": "number",
+                                    },
+                                    "image_width": {
+                                      "type": "number",
                                     },
                                     "mimetype": {
                                       "type": "string",

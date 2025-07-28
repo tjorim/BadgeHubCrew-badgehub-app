@@ -7,6 +7,8 @@ export interface FileMetadata extends DatedData {
   name: string; // file name without extension
   ext: string; // file extension
   mimetype: string; // Can include info about the programming language
+  image_width?: number;
+  image_height?: number;
   size_of_content: number;
   sha256: string; // lowercase hex sha256 digest, allows verifying whether content is the same as other file.
   // Computed
@@ -20,6 +22,8 @@ export const fileMetadataSchema = datedDataSchema.extend({
   name: z.string(),
   ext: z.string(),
   mimetype: z.string(),
+  image_width: z.number().optional(),
+  image_height: z.number().optional(),
   size_of_content: z.number(),
   sha256: z.string().regex(/^[a-f0-9]{64}$/), // Lowercase hex sha256 digest
   size_formatted: z.string(), // Human readable size_of_content

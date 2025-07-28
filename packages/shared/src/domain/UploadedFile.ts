@@ -5,6 +5,8 @@ export type UploadedFile =
       size: number;
       directory?: undefined;
       fileName?: undefined;
+      image_width?: number;
+      image_height?: number;
     }
   | {
       mimetype: string;
@@ -12,4 +14,6 @@ export type UploadedFile =
       fileContent: Uint8Array;
       directory: string;
       fileName: string;
+      image_width?: number;
+      image_height?: number;
     };

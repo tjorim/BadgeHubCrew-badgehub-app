@@ -22,6 +22,7 @@ import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON
 import { LRUCache } from "lru-cache";
 import { appMetadataJSONSchema } from "@shared/domain/readModels/project/AppMetadataJSON";
 import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
+import { getImageProps } from "@util/imageProcessing";
 
 type FileContext =
   | { projectSlug: string; revision: number; filePath: string }
@@ -245,6 +246,7 @@ export class BadgeHubData {
     uploadedFile: UploadedFile,
     mockDates?: DBDatedData
   ): Promise<void> {
+    Object.assign(uploadedFile, await getImageProps(uploadedFile));
     await this._writeDraftFile(
       projectSlug,
       filePath.split("/"),
