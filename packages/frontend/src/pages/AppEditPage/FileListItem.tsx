@@ -36,9 +36,16 @@ export const FileListItem: React.FC<FileListItemProps> = ({
   onDeleteFile,
 }) => {
   const isCurrentIcon = iconFilePath === file.full_path;
-  const canBeIcon = onSetIcon && isPng(file.full_path);
+  const showIconButton = onSetIcon && isPng(file.full_path);
+  const isRightSize =
+    showIconButton && file.image_height === 64 && file.image_width === 64;
   const deletable = isDeletable(file);
 
+  const widthXHeight =
+    (file.image_width &&
+      file.image_height &&
+      `${file.image_width}x${file.image_height}`) ||
+    false;
   return (
     <li className="flex items-center gap-2 p-1 rounded-md transition-colors duration-200 hover:bg-gray-700/50">
       {/* Delete Button */}
@@ -55,17 +62,18 @@ export const FileListItem: React.FC<FileListItemProps> = ({
           <DeleteIcon />
         </button>
       )}
-
       {/* File Path and Size */}
       <p className="flex-grow font-mono text-slate-400">{file.full_path}</p>
       {file.size_formatted && (
         <span className="ml-2 text-slate-500 text-xs">
           {file.size_formatted}
         </span>
+      )}{" "}
+      {widthXHeight && (
+        <span className="ml-2 text-slate-500 text-xs">{widthXHeight}px</span>
       )}
-
       {/* "Set as Icon" Button */}
-      {canBeIcon && (
+      {showIconButton && (
         <button
           type="button"
           className={`ml-2 px-2 py-1 rounded text-xs transition-colors duration-200 ${
@@ -77,9 +85,11 @@ export const FileListItem: React.FC<FileListItemProps> = ({
           title={
             isCurrentIcon
               ? "This file is the current icon"
-              : "Set as " + bigIconSize + " icon"
+              : isRightSize
+                ? "Set as " + bigIconSize + " icon"
+                : `Image is ${widthXHeight}, icons should be ${bigIconSize}`
           }
-          disabled={isCurrentIcon}
+          disabled={isCurrentIcon || !isRightSize}
         >
           {isCurrentIcon ? "Icon" : "Set as Icon"}
         </button>
