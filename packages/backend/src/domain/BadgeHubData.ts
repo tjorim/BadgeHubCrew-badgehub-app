@@ -80,7 +80,7 @@ export class BadgeHubData {
     });
     this.latestProjectCache = new LRUCache({
       max: 1000,
-      ttl: 60_000 * 60 * 12,
+      ttl: 10_000,
       fetchMethod: (_key, _staleValue, { context }) => {
         return this.badgeHubMetadata.getProject(
           context.projectSlug,
@@ -90,7 +90,7 @@ export class BadgeHubData {
     });
     this.immutableProjectCache = new LRUCache({
       max: 1000,
-      ttl: 10_000,
+      ttl: 60_000 * 60 * 12,
       allowStale: true,
       fetchMethod: (_key, _staleValue, { context }) => {
         return this.badgeHubMetadata.getProject(
