@@ -180,6 +180,9 @@ const AppEditPage: React.FC<{
               Editing {project!.slug}/rev{project!.version.revision}
             </h1>
             <form className="space-y-8" onSubmit={handleSubmit}>
+              <AppEditActions
+                onClickDeleteApplication={handleDeleteApplication}
+              />
               <AppEditBasicInfo
                 form={appMetadata as ProjectEditFormData}
                 onChange={handleFormChange}
@@ -201,9 +204,6 @@ const AppEditPage: React.FC<{
                 onSetIcon={onSetIcon}
                 iconFilePath={appMetadata?.icon_map?.["64x64"]}
                 onDeleteFile={handleDeleteFile}
-              />
-              <AppEditActions
-                onClickDeleteApplication={handleDeleteApplication}
               />
             </form>
           </>
