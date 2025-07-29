@@ -2,16 +2,23 @@
 // This is only put into the database for making interesting read queries possible.
 // These contents should never be updated directly, but instead the metadata.json file should be modified and then read out again in order to fill the fields here.
 // Metadata for a published version cannot be edited, except by republishing this version which would overwrite the old version.
-import { CategoryName, categoryNameSchema } from "@shared/domain/readModels/project/Category";
+import {
+  CategoryName,
+  categoryNameSchema,
+} from "@shared/domain/readModels/project/Category";
 
 import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
 import { z } from "zod/v3";
 import { BadgeSlug, badgeSlugSchema } from "@shared/domain/readModels/Badge";
-import { VariantJSON, variantJSONSchema } from "@shared/domain/readModels/project/VariantJSON";
+import {
+  VariantJSON,
+  variantJSONSchema,
+} from "@shared/domain/readModels/project/VariantJSON";
 
 export interface AppMetadataJSON {
   name?: string;
   project_type?: "app" | "library" | "firmware" | "other";
+  hidden?: boolean;
   description?: string;
   version?: string;
   categories?: CategoryName[];
@@ -63,6 +70,12 @@ export const appMetadataJSONSchema = z.object({
     .enum(["app", "library", "firmware", "other"])
     .optional()
     .describe("Type of the project, eg. 'app' or 'library'"),
+  hidden: z
+    .boolean()
+    .describe(
+      "Whether the project should be hidden from the launcher and from discovery on BadgeHub. Note that this does not make it private, just harder to find."
+    )
+    .optional(),
   name: z
     .string()
     .optional()

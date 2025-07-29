@@ -715,6 +715,10 @@ describe("createSwaggerDoc", () => {
                                     "description": "Some more details about the app. Allows users to decide whether they want to install the app.",
                                     "type": "string",
                                   },
+                                  "hidden": {
+                                    "description": "Whether the project should be hidden from the launcher and from discovery on BadgeHub. Note that this does not make it private, just harder to find.",
+                                    "type": "boolean",
+                                  },
                                   "icon_map": {
                                     "description": "Icon Map of the project that maps from accepted sizes to a file path. Icon format is quite strict because BadgeHub is the first user of these icons.
           Badge implementations can use these icons but they are not required to. For example if a badge's launcher an icon as an icon.py file, this file can still just be uploaded and the path could be indicated as custom property in the variant json.".",
@@ -1234,6 +1238,10 @@ describe("createSwaggerDoc", () => {
                                   "description": {
                                     "description": "Some more details about the app. Allows users to decide whether they want to install the app.",
                                     "type": "string",
+                                  },
+                                  "hidden": {
+                                    "description": "Whether the project should be hidden from the launcher and from discovery on BadgeHub. Note that this does not make it private, just harder to find.",
+                                    "type": "boolean",
                                   },
                                   "icon_map": {
                                     "description": "Icon Map of the project that maps from accepted sizes to a file path. Icon format is quite strict because BadgeHub is the first user of these icons.
@@ -1823,6 +1831,10 @@ describe("createSwaggerDoc", () => {
                           "description": "Some more details about the app. Allows users to decide whether they want to install the app.",
                           "type": "string",
                         },
+                        "hidden": {
+                          "description": "Whether the project should be hidden from the launcher and from discovery on BadgeHub. Note that this does not make it private, just harder to find.",
+                          "type": "boolean",
+                        },
                         "icon_map": {
                           "description": "Icon Map of the project that maps from accepted sizes to a file path. Icon format is quite strict because BadgeHub is the first user of these icons.
           Badge implementations can use these icons but they are not required to. For example if a badge's launcher an icon as an icon.py file, this file can still just be uploaded and the path could be indicated as custom property in the variant json.".",
@@ -2248,6 +2260,10 @@ describe("createSwaggerDoc", () => {
                                   "description": {
                                     "description": "Some more details about the app. Allows users to decide whether they want to install the app.",
                                     "type": "string",
+                                  },
+                                  "hidden": {
+                                    "description": "Whether the project should be hidden from the launcher and from discovery on BadgeHub. Note that this does not make it private, just harder to find.",
+                                    "type": "boolean",
                                   },
                                   "icon_map": {
                                     "description": "Icon Map of the project that maps from accepted sizes to a file path. Icon format is quite strict because BadgeHub is the first user of these icons.
