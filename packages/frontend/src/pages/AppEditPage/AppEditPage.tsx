@@ -65,9 +65,27 @@ const AppEditPage: React.FC<{
       headers: await getAuthorizationHeader(keycloak),
       params: { slug, filePath },
     });
-    setProject(null); // Refresh project data after deletion
+    await updateDraftFiles(); // Refresh project data after deletion
   };
 
+  const updateDraftFiles = async () => {
+    await keycloak?.updateToken(30);
+    const updatedDraftProject = await tsRestClient.getDraftProject({
+      headers: await getAuthorizationHeader(keycloak),
+      params: { slug },
+    });
+    if (updatedDraftProject.status === 200 && project) {
+      setProject({
+        ...project,
+        version: {
+          ...project.version,
+          files: updatedDraftProject.body.version.files,
+        },
+      });
+    } else {
+      window.alert("File refresh after upload failed");
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!appMetadata) return;
@@ -169,8 +187,8 @@ const AppEditPage: React.FC<{
               <AppEditFileUpload
                 slug={slug}
                 tsRestClient={tsRestClient}
-                onUploadSuccess={() => setProject(null)}
                 keycloak={keycloak}
+                onUploadSuccess={updateDraftFiles}
               />
               <AppEditFilePreview
                 tsRestClient={tsRestClient}
