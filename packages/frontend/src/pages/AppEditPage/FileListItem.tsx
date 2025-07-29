@@ -91,11 +91,7 @@ export const FileListItem: React.FC<FileListItemProps> = ({
           }
           disabled={isCurrentIcon || !isRightSize}
         >
-          {isCurrentIcon
-            ? "Icon"
-            : isRightSize
-              ? "Set as Icon"
-              : "Wrong Size for Icon"}
+          {isCurrentIcon ? "Icon" : isRightSize ? "Set as Icon" : "Wrong Size"}
         </button>
       )}
     </li>
