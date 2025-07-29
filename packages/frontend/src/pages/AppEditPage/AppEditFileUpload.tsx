@@ -6,7 +6,10 @@ import { getAuthorizationHeader } from "@api/authorization.ts";
 const AppEditFileUpload: React.FC<{
   slug: string;
   tsRestClient?: typeof defaultTsRestClient;
-  onUploadSuccess: (appMetadataChanged?: boolean) => void;
+  onUploadSuccess: (result: {
+    metadataChanged?: boolean;
+    firstValidExecutable?: string | null;
+  }) => void;
   keycloak?: Keycloak | undefined;
 }> = ({
   slug,
@@ -17,6 +20,19 @@ const AppEditFileUpload: React.FC<{
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const excludedExtensions = [
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".svg",
+    ".md",
+    ".txt",
+    ".json",
+  ];
+  const isExecutable = (fileName: string) =>
+    !excludedExtensions.some((ext) => fileName.toLowerCase().endsWith(ext));
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null);
@@ -38,17 +54,26 @@ const AppEditFileUpload: React.FC<{
           appMetadataChanged = true;
         }
         if (res.status !== 204) {
-          throw new Error("Upload failed");
+          throw new Error(`Upload failed for ${file.name}`);
         }
       }
       setSuccess("File(s) uploaded successfully.");
-      onUploadSuccess(appMetadataChanged);
+
+      const firstValidFile = Array.from(files).find((f) =>
+        isExecutable(f.name)
+      );
+      onUploadSuccess({
+        metadataChanged: appMetadataChanged,
+        firstValidExecutable: firstValidFile ? firstValidFile.name : null,
+      });
     } catch (err: unknown) {
       console.error(err);
       if (appMetadataChanged) {
-        onUploadSuccess(appMetadataChanged);
+        onUploadSuccess({ metadataChanged: appMetadataChanged });
       }
-      setError("Failed to upload file(s).");
+      setError(
+        err instanceof Error ? err.message : "Failed to upload file(s)."
+      );
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -71,7 +96,8 @@ const AppEditFileUpload: React.FC<{
           onChange={handleFileChange}
         />
         <p className="text-xs text-slate-500 mt-1">
-          You can upload any file type (e.g., code, images, docs).
+          You can upload any file type (e.g., code, images, docs). Executable
+          file types will be selectable as "Main".
         </p>
         {uploading && (
           <p className="text-xs text-emerald-400 mt-2">Uploading...</p>

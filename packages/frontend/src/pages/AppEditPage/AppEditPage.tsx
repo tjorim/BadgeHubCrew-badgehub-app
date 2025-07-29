@@ -7,7 +7,7 @@ import AppEditBasicInfo from "./AppEditBasicInfo.tsx";
 import AppEditCategorization from "./AppEditCategorization.tsx";
 import AppEditActions from "./AppEditActions.tsx";
 import AppEditFileUpload from "./AppEditFileUpload";
-import AppEditFilePreview from "./AppEditFilePreview";
+import AppEditFileList from "./AppEditFileList.tsx";
 import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
 import { ProjectEditFormData } from "@pages/AppEditPage/ProjectEditFormData.ts";
 import { useSession } from "@sharedComponents/keycloakSession/SessionContext.tsx";
@@ -17,14 +17,23 @@ import {
 } from "@shared/domain/readModels/project/AppMetadataJSON.ts";
 import { useNavigate } from "react-router-dom";
 import { getAuthorizationHeader } from "@api/authorization.ts";
+import { VariantJSON } from "@shared/domain/readModels/project/VariantJSON.ts";
 
+function getAndEnsureApplication(newProjectData: ProjectDetails): VariantJSON {
+  const application: VariantJSON =
+    newProjectData.version.app_metadata.application?.[0] || {};
+  newProjectData.version.app_metadata.application =
+    newProjectData.version.app_metadata.application || [];
+  newProjectData.version.app_metadata.application[0] = application;
+  return application;
+}
+
+type PossiblyStaleProject = ProjectDetails & { stale?: true };
 const AppEditPage: React.FC<{
   tsRestClient?: typeof defaultTsRestClient;
   slug: string;
 }> = ({ tsRestClient = defaultTsRestClient, slug }) => {
-  const [project, setProject] = useState<
-    (ProjectDetails & { stale?: true }) | null
-  >(null);
+  const [project, setProject] = useState<PossiblyStaleProject | null>(null);
   const [loading, setLoading] = useState(true);
   const { user, keycloak } = useSession();
   const navigate = useNavigate();
@@ -50,6 +59,7 @@ const AppEditPage: React.FC<{
     });
   };
   const appMetadata = project?.version.app_metadata;
+
   useEffect(() => {
     if (project && !project.stale) return;
     let mounted = true;
@@ -75,19 +85,13 @@ const AppEditPage: React.FC<{
     setAppMetadata((prev) => ({ ...prev, ...changes }) as ProjectEditFormData);
   };
 
-  const handleDeleteFile = async (filePath: string) => {
-    if (!keycloak?.token) return;
-    await tsRestClient.deleteDraftFile({
-      headers: await getAuthorizationHeader(keycloak),
-      params: { slug, filePath },
-    });
-    await updateDraftFiles(); // Refresh project data after deletion
-  };
-
-  const updateDraftFiles = async (metadataChanged?: boolean) => {
+  const updateDraftFiles = async (result: {
+    metadataChanged?: boolean;
+    firstValidExecutable?: string | null;
+  }) => {
     await keycloak?.updateToken(30);
-    if (metadataChanged) {
-      // Full refresh
+    if (result.metadataChanged) {
+      // Full refresh if metadata.json was uploaded
       setProject(null);
       return;
     }
@@ -96,20 +100,67 @@ const AppEditPage: React.FC<{
       params: { slug },
     });
     if (updatedDraftProject.status === 200 && project) {
-      setProject({
-        ...project,
-        version: {
-          ...project.version,
-          files: updatedDraftProject.body.version.files,
-        },
+      setProject((prevProject) => {
+        if (!prevProject) return null;
+        const newProjectData = {
+          ...prevProject,
+          version: {
+            ...prevProject.version,
+            files: updatedDraftProject.body.version.files,
+          },
+        };
+        // If no main executable is set, and a valid one was uploaded, set it as default.
+        const newMainExecutable =
+          newProjectData.version.app_metadata.application?.[0]?.executable;
+
+        if (!newMainExecutable && result.firstValidExecutable) {
+          const application = getAndEnsureApplication(newProjectData);
+          application.executable = result.firstValidExecutable;
+        }
+        return newProjectData;
       });
     } else {
       window.alert("File refresh after upload failed");
     }
   };
+
+  const handleDeleteFile = async (filePath: string) => {
+    if (!keycloak?.token) return;
+    await tsRestClient.deleteDraftFile({
+      headers: await getAuthorizationHeader(keycloak),
+      params: { slug, filePath },
+    });
+    setProject((p) => {
+      if (!p) return null;
+      const newFiles = p.version.files.filter((f) => f.full_path !== filePath);
+      const newMetadata = { ...p.version.app_metadata };
+      // If the deleted file was the main executable, unset it.
+      const application = newMetadata.application?.[0];
+      if (application && application?.executable === filePath) {
+        application.executable = undefined;
+      }
+      return {
+        ...p,
+        version: { ...p.version, files: newFiles, app_metadata: newMetadata },
+      };
+    });
+  };
+
+  const mainExecutable = appMetadata?.application?.[0]?.executable;
+  const setMainExecutable = (newMainExecutable: string) => {
+    setProject((prev: PossiblyStaleProject | null) => {
+      if (!prev) {
+        return prev;
+      }
+      const application = getAndEnsureApplication(prev);
+      application.executable = newMainExecutable;
+      return { ...prev };
+    });
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!appMetadata) return;
+
     try {
       await keycloak?.updateToken(30);
       const changeAppMetdataResult = await tsRestClient.changeDraftAppMetadata({
@@ -164,14 +215,13 @@ const AppEditPage: React.FC<{
   };
 
   const onSetIcon = (size: IconSize, filePath: string) =>
-    setAppMetadata((prev) => {
-      return prev
-        ? ({
-            ...prev,
-            icon_map: { ...prev?.icon_map, [size]: filePath },
-          } as const satisfies AppMetadataJSON)
-        : prev;
-    });
+    setAppMetadata((prev) => ({
+      ...prev,
+      icon_map: { ...prev.icon_map, [size]: filePath },
+    }));
+
+  const onSetMainExecutable = (filePath: string) => setMainExecutable(filePath);
+
   return (
     <div
       data-testid="app-edit-page"
@@ -214,13 +264,17 @@ const AppEditPage: React.FC<{
                 keycloak={keycloak}
                 onUploadSuccess={updateDraftFiles}
               />
-              <AppEditFilePreview
+              <AppEditFileList
                 tsRestClient={tsRestClient}
                 user={user}
                 project={project as ProjectDetails}
                 onSetIcon={onSetIcon}
                 iconFilePath={appMetadata?.icon_map?.["64x64"]}
                 onDeleteFile={handleDeleteFile}
+                mainExecutable={
+                  mainExecutable /*TODO multi variant support in frontend*/
+                }
+                onSetMainExecutable={onSetMainExecutable}
               />
             </form>
           </>

@@ -12,26 +12,28 @@ interface AppEditFilePreviewProps {
   onSetIcon?: (iconSize: IconSize, filePath: string) => void;
   iconFilePath?: string;
   onDeleteFile?: (filePath: string) => void;
+  mainExecutable?: string;
+  onSetMainExecutable?: (filePath: string) => void;
 }
 
 /**
- * Displays a list of project files with actions to delete or set an icon.
+ * Displays a list of project files with actions to delete or set an icon/main executable.
  * This is the main component that orchestrates the file preview section.
  */
-const AppEditFilePreview: React.FC<AppEditFilePreviewProps> = ({
+const AppEditFileList: React.FC<AppEditFilePreviewProps> = ({
   project,
   onSetIcon,
   iconFilePath,
   onDeleteFile,
+  mainExecutable,
+  onSetMainExecutable,
 }) => {
   // Use nullish coalescing for a cleaner way to handle potentially undefined files
   const files = project?.version?.files ?? [];
 
   return (
     <section className="bg-gray-800 p-6 rounded-lg shadow-lg text-left mt-8">
-      <h2 className="text-2xl font-semibold text-slate-100 mb-4">
-        Code Preview / Files
-      </h2>
+      <h2 className="text-2xl font-semibold text-slate-100 mb-4">Files</h2>
       <div>
         <h3 className="text-lg font-medium text-slate-200 mb-2">
           Project Files:
@@ -46,6 +48,8 @@ const AppEditFilePreview: React.FC<AppEditFilePreviewProps> = ({
                 onDeleteFile={onDeleteFile}
                 onSetIcon={onSetIcon}
                 iconFilePath={iconFilePath}
+                mainExecutable={mainExecutable}
+                onSetMainExecutable={onSetMainExecutable}
               />
             ))}
           </ul>
@@ -59,4 +63,4 @@ const AppEditFilePreview: React.FC<AppEditFilePreviewProps> = ({
   );
 };
 
-export default AppEditFilePreview;
+export default AppEditFileList;
