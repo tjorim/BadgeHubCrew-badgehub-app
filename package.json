@@ -25,7 +25,8 @@
     "prepare": "husky",
     "lint-staged": "pretty-quick --staged",
     "lint": "pretty-quick --check",
-    "lint:fix": "pretty-quick --check"
+    "lint:fix": "pretty-quick --check",
+    "validate": "npm run lint && npm run check:ts && npm run build && npm run test"
   },
   "dependencies": {
     "@ts-rest/core": "^3.53.0-rc.1",
