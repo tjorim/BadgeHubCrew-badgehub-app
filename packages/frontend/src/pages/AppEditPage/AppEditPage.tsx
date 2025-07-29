@@ -16,6 +16,7 @@ import {
   IconSize,
 } from "@shared/domain/readModels/project/AppMetadataJSON.ts";
 import { useNavigate } from "react-router-dom";
+import { getAuthorizationHeader } from "@api/authorization.ts";
 
 const AppEditPage: React.FC<{
   tsRestClient?: typeof defaultTsRestClient;
@@ -38,7 +39,7 @@ const AppEditPage: React.FC<{
     (async () => {
       await keycloak?.updateToken(30);
       const res = await tsRestClient.getDraftProject({
-        headers: { authorization: `Bearer ${keycloak?.token}` },
+        headers: await getAuthorizationHeader(keycloak),
         params: { slug },
       });
       if (mounted && res.status === 200) {
@@ -52,7 +53,7 @@ const AppEditPage: React.FC<{
     return () => {
       mounted = false;
     };
-  }, [keycloak, project, slug, tsRestClient, keycloak?.token]);
+  }, [keycloak, project, slug, tsRestClient]);
 
   const handleFormChange = (changes: Partial<ProjectEditFormData>) => {
     setAppMetadata((prev) => ({ ...prev, ...changes }) as ProjectEditFormData);
@@ -61,7 +62,7 @@ const AppEditPage: React.FC<{
   const handleDeleteFile = async (filePath: string) => {
     if (!keycloak?.token) return;
     await tsRestClient.deleteDraftFile({
-      headers: { authorization: `Bearer ${keycloak?.token}` },
+      headers: await getAuthorizationHeader(keycloak),
       params: { slug, filePath },
     });
     setProject(null); // Refresh project data after deletion
@@ -71,24 +72,25 @@ const AppEditPage: React.FC<{
     e.preventDefault();
     if (!appMetadata) return;
     try {
+      await keycloak?.updateToken(30);
       const changeAppMetdataResult = await tsRestClient.changeDraftAppMetadata({
-        headers: { authorization: `Bearer ${keycloak?.token}` },
+        headers: await getAuthorizationHeader(keycloak),
         params: { slug },
         body: appMetadata,
       });
       if (changeAppMetdataResult.status !== 204) {
         console.error("changeDraftAppMetadata failed", changeAppMetdataResult);
-        window.alert("save failed");
+        window.alert("Save failed");
         return;
       }
       const publishResult = await tsRestClient.publishVersion({
-        headers: { authorization: `Bearer ${keycloak?.token}` },
+        headers: await getAuthorizationHeader(keycloak),
         params: { slug },
         body: undefined,
       });
       if (publishResult.status !== 204) {
         console.error("publish failed", changeAppMetdataResult);
-        window.alert("publish failed");
+        window.alert("Publish failed");
         return;
       }
       if (project) {
@@ -105,12 +107,20 @@ const AppEditPage: React.FC<{
   };
 
   const handleDeleteApplication = async () => {
-    const response = await tsRestClient.deleteProject({
-      headers: { authorization: `Bearer ${keycloak?.token}` },
-      params: { slug },
-    });
-    if (response.status >= 200 && response.status < 300) {
+    try {
+      const response = await tsRestClient.deleteProject({
+        headers: await getAuthorizationHeader(keycloak),
+        params: { slug },
+      });
+      if (response.status !== 204) {
+        console.error("publish failed", response);
+        window.alert("Publish failed");
+        return;
+      }
       navigate("/page/my-projects");
+    } catch (e) {
+      console.error(e);
+      window.alert("Something went wrong during Save & Publish.");
     }
   };
 
@@ -159,8 +169,8 @@ const AppEditPage: React.FC<{
               <AppEditFileUpload
                 slug={slug}
                 tsRestClient={tsRestClient}
-                userToken={keycloak?.token}
                 onUploadSuccess={() => setProject(null)}
+                keycloak={keycloak}
               />
               <AppEditFilePreview
                 tsRestClient={tsRestClient}

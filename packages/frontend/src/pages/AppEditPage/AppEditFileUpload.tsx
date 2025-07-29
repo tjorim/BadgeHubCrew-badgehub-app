@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { tsRestClient as defaultTsRestClient } from "../../api/tsRestClient.ts";
+import Keycloak from "keycloak-js";
+import { getAuthorizationHeader } from "@api/authorization.ts";
 
 const AppEditFileUpload: React.FC<{
   slug: string;
   tsRestClient?: typeof defaultTsRestClient;
-  userToken: string | undefined;
   onUploadSuccess: () => void;
+  keycloak?: Keycloak | undefined;
 }> = ({
   slug,
   tsRestClient = defaultTsRestClient,
-  userToken,
   onUploadSuccess,
+  keycloak,
 }) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +29,7 @@ const AppEditFileUpload: React.FC<{
         const formData = new FormData();
         formData.append("file", file);
         const res = await tsRestClient.writeDraftFile({
-          headers: { authorization: `Bearer ${userToken}` },
+          headers: await getAuthorizationHeader(keycloak),
           params: { slug, filePath: file.name },
           body: formData,
         });
