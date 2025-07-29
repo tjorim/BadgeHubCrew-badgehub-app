@@ -6,7 +6,7 @@ import { getAuthorizationHeader } from "@api/authorization.ts";
 const AppEditFileUpload: React.FC<{
   slug: string;
   tsRestClient?: typeof defaultTsRestClient;
-  onUploadSuccess: () => void;
+  onUploadSuccess: (appMetadataChanged?: boolean) => void;
   keycloak?: Keycloak | undefined;
 }> = ({
   slug,
@@ -24,6 +24,7 @@ const AppEditFileUpload: React.FC<{
     const files = e.target.files;
     if (!files || files.length === 0) return;
     setUploading(true);
+    let appMetadataChanged = false;
     try {
       for (const file of Array.from(files)) {
         const formData = new FormData();
@@ -33,14 +34,20 @@ const AppEditFileUpload: React.FC<{
           params: { slug, filePath: file.name },
           body: formData,
         });
+        if (file.name === "metadata.json") {
+          appMetadataChanged = true;
+        }
         if (res.status !== 204) {
           throw new Error("Upload failed");
         }
       }
       setSuccess("File(s) uploaded successfully.");
-      onUploadSuccess();
+      onUploadSuccess(appMetadataChanged);
     } catch (err: unknown) {
       console.error(err);
+      if (appMetadataChanged) {
+        onUploadSuccess(appMetadataChanged);
+      }
       setError("Failed to upload file(s).");
     } finally {
       setUploading(false);

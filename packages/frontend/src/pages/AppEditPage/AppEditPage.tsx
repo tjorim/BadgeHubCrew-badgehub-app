@@ -45,8 +45,7 @@ const AppEditPage: React.FC<{
       if (mounted && res.status === 200) {
         const project = res.body;
         setProject(project);
-        const appMetadata = project.version.app_metadata;
-        setAppMetadata(appMetadata);
+        setAppMetadata(project.version.app_metadata);
       }
       setLoading(false);
     })();
@@ -68,8 +67,13 @@ const AppEditPage: React.FC<{
     await updateDraftFiles(); // Refresh project data after deletion
   };
 
-  const updateDraftFiles = async () => {
+  const updateDraftFiles = async (metadataChanged?: boolean) => {
     await keycloak?.updateToken(30);
+    if (metadataChanged) {
+      // Full refresh
+      setProject(null);
+      return;
+    }
     const updatedDraftProject = await tsRestClient.getDraftProject({
       headers: await getAuthorizationHeader(keycloak),
       params: { slug },
