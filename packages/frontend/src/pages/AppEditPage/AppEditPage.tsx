@@ -26,12 +26,30 @@ const AppEditPage: React.FC<{
     (ProjectDetails & { stale?: true }) | null
   >(null);
   const [loading, setLoading] = useState(true);
-  const [appMetadata, setAppMetadata] = useState<
-    ProjectEditFormData | undefined
-  >(undefined);
   const { user, keycloak } = useSession();
   const navigate = useNavigate();
 
+  const setAppMetadata = (
+    appMetadataOrFn:
+      | AppMetadataJSON
+      | ((prev: AppMetadataJSON) => AppMetadataJSON)
+  ) => {
+    setProject((currProject) => {
+      if (!currProject) return null;
+      const newAppMetadata =
+        typeof appMetadataOrFn === "function"
+          ? appMetadataOrFn(currProject.version.app_metadata)
+          : appMetadataOrFn;
+      return {
+        ...currProject,
+        version: {
+          ...currProject.version,
+          app_metadata: newAppMetadata,
+        },
+      };
+    });
+  };
+  const appMetadata = project?.version.app_metadata;
   useEffect(() => {
     if (project && !project.stale) return;
     let mounted = true;
@@ -45,7 +63,6 @@ const AppEditPage: React.FC<{
       if (mounted && res.status === 200) {
         const project = res.body;
         setProject(project);
-        setAppMetadata(project.version.app_metadata);
       }
       setLoading(false);
     })();
