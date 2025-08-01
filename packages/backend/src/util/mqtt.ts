@@ -37,6 +37,6 @@ export async function startMqtt(badgeHubData: BadgeHubData) {
         JSON.stringify({ ...stats, timestamp: new Date().toISOString() }),
         { qos: 1, retain: true }
       );
-    }, Number(interval));
+    }, Number(interval) * 1000);
   });
 }
