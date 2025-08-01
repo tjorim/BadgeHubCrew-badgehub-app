@@ -7,7 +7,6 @@ import {
 import { categoryNameSchema } from "@shared/domain/readModels/project/Category";
 import { badgeSlugSchema } from "@shared/domain/readModels/Badge";
 import { projectLatestRevisionsSchema } from "@shared/domain/readModels/project/ProjectRevision";
-import { userKCSchema } from "@shared/domain/readModels/project/User";
 
 const c = initContract();
 
@@ -125,6 +124,8 @@ export const statsSchema = z.object({
   appAuthors: z.number().describe("number of app authors").optional(),
   badges: z.number().describe("number of registered badges").optional(),
 });
+
+export type badgeStats = z.infer<typeof statsSchema>;
 
 export const publicOtherContracts = c.router({
   getCategories: {

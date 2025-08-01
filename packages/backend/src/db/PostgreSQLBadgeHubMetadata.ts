@@ -51,6 +51,7 @@ import {
 import { BadgeSlug, getBadgeSlugs } from "@shared/domain/readModels/Badge";
 import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON";
 import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
+import { badgeStats } from "@shared/contracts/publicRestContracts";
 
 const ONE_KILO = 1024;
 
@@ -201,6 +202,15 @@ export class PostgreSQLBadgeHubMetadata {
   async getCategories(): Promise<CategoryName[]> {
     return getAllCategoryNames();
   }
+
+  async getStats(): Promise<badgeStats> {
+    return   {
+      badges: 12,
+      apps: 14,
+      appAuthors: 16
+    };
+  }
+
 
   async insertProject(
     project: Omit<DBInsertProject, keyof DBDatedData>,
