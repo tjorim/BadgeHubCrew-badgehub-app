@@ -5,8 +5,8 @@ import mqtt from "mqtt";
 export async function startMqtt(badgeHubData: BadgeHubData) {
   const nodeEnv = getAndAssertEnv("NODE_ENV");
 
-  if (nodeEnv=='development') {
-    console.log('Not publishing to MQTT in development environment');
+  if (nodeEnv == "development") {
+    console.log("Not publishing to MQTT in development environment");
     return;
   }
 
@@ -17,18 +17,18 @@ export async function startMqtt(badgeHubData: BadgeHubData) {
   const interval = getAndAssertEnv("MQTT_INTERVAL_SEC");
 
   if (!server) {
-    console.log('MQTT_SERVER not set');
+    console.log("MQTT_SERVER not set");
     return;
   }
 
   let client = mqtt.connect(server, {
     username,
     password,
-    clean: true
+    clean: true,
   });
 
-  client.on('connect', () => {
-    console.log('Connected to MQTT server');
+  client.on("connect", () => {
+    console.log("Connected to MQTT server");
     setInterval(async () => {
       const stats = await badgeHubData.getStats();
 

@@ -125,7 +125,7 @@ export const statsSchema = z.object({
   badges: z.number().describe("number of registered badges").optional(),
 });
 
-export type badgeStats = z.infer<typeof statsSchema>;
+export type BadgeStats = z.infer<typeof statsSchema>;
 
 export const publicOtherContracts = c.router({
   getCategories: {

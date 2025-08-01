@@ -28,7 +28,7 @@ import { appMetadataJSONSchema } from "@shared/domain/readModels/project/AppMeta
 import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
 import { getImageProps } from "@util/imageProcessing";
 import { UserError } from "@domain/UserError";
-import { badgeStats } from "@shared/contracts/publicRestContracts";
+import { BadgeStats } from "@shared/contracts/publicRestContracts";
 
 type FileContext =
   | { projectSlug: string; revision: number; filePath: string }
@@ -232,7 +232,7 @@ export class BadgeHubData {
     return this.badgeHubMetadata.getCategories();
   }
 
-  getStats(): Promise<badgeStats> {
+  getStats(): Promise<BadgeStats> {
     return this.badgeHubMetadata.getStats();
   }
 
