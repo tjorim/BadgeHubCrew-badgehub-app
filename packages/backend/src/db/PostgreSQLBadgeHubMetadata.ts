@@ -204,10 +204,17 @@ export class PostgreSQLBadgeHubMetadata {
   }
 
   async getStats(): Promise<badgeStats> {
+
+    const appsP = this.pool.query(sql`SELECT COUNT(*) FROM badgehub.projects WHERE deleted_at IS NULL`);
+    const appAuthorsP = this.pool.query(sql`SELECT COUNT(DISTINCT idp_user_id) FROM badgehub.projects`);
+    const badgesP = this.pool.query(sql`SELECT COUNT(*) FROM  badgehub.registered_badges`);
+
+    const [apps,appAuthors,badges] = await Promise.all([appsP,appAuthorsP,badgesP]);
+
     return   {
-      badges: 12,
-      apps: 14,
-      appAuthors: 16
+      apps: Number(apps.rows[0].count),
+      appAuthors: Number(appAuthors.rows[0].count),
+      badges: Number(badges.rows[0].count),
     };
   }
 

@@ -140,11 +140,6 @@ const createPublicOtherRouter = (badgeHubData: BadgeHubData) => {
       return ok("pong");
     },
     getStats: async () => {
-      // const data = {
-      //   badges: 12,
-      //   apps: 14,
-      //   appAuthors: 16
-      // };
       const data = await badgeHubData.getStats();
       return ok(data);
     }
