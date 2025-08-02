@@ -153,6 +153,48 @@ This is actually just an alias for a post to /projects/:slug/draft/files/metadat
       body: z.unknown().optional().nullable(),
       summary: "Publish the current draft as a new version",
     },
+
+    createProjectAPIToken: {
+      method: "POST",
+      path: "/projects/:slug/token",
+      body: z.unknown().optional().nullable(),
+      responses: {
+        200: z
+          .object({ token: z.string() })
+          .describe(`An object containing the API token for the project.`),
+        403: errorResponseSchema,
+      },
+      summary: "Create an API token for the project.",
+    },
+    getProjectApiTokenMetadata: {
+      method: "GET",
+      path: "/projects/:slug/token",
+      responses: {
+        200: z
+          .object({
+            createdDate: z
+              .string()
+              .date()
+              .describe("ISO date of the creation date of the token"),
+            lastUseDate: z
+              .string()
+              .date()
+              .describe("ISO date of last use of the token"),
+          })
+          .describe(`Returns metadata about the token.`),
+        403: errorResponseSchema,
+      },
+      summary: "Create an API token for the project.",
+    },
+    revokeProjectAPIToken: {
+      method: "DELETE",
+      path: "/projects/:slug/token",
+      responses: {
+        204: z.void(),
+        403: errorResponseSchema,
+      },
+      summary: "Delete the API token for the project",
+    },
   },
   {
     baseHeaders: {

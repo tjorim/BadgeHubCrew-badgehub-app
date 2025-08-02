@@ -24,7 +24,6 @@ import {
 import { Readable } from "node:stream";
 import { MAX_UPLOAD_FILE_SIZE_BYTES } from "@config";
 import { ProjectAlreadyExistsError, UserError } from "@domain/UserError";
-import { getImageProps } from "@util/imageProcessing";
 import { startMqtt } from "@util/mqtt";
 
 const upload = multer({
@@ -178,6 +177,31 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
         );
       }
       return ok(Readable.from(fileContents));
+    },
+
+    createProjectAPIToken: async ({ params: { slug }, req }) => {
+      const user = getUser(req as unknown as RequestWithUser);
+      // badgeHubData.createProjectAPIToken(userId);
+      return ok({ token: "TODO" });
+    },
+
+    getProjectApiTokenMetadata: async ({ params: { slug }, req }) => {
+      const authorizationFailureResponse = await checkProjectAuthorization(
+        badgeHubData,
+        slug,
+        req
+      );
+      if (authorizationFailureResponse) return authorizationFailureResponse;
+      return ok({
+        lastUseDate: new Date().toDateString(), // TODO get from badgeHubData
+        createdDate: new Date().toDateString(), // TODO get from badgeHubData
+      });
+    },
+
+    revokeProjectAPIToken: async ({ params: { slug }, req }) => {
+      const user = getUser(req as unknown as RequestWithUser);
+      // badgeHubData.revokeProjectAPIToken(userId);  // TODO
+      return noContent();
     },
   };
   return privateProjectRouter;
