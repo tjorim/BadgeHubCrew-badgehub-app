@@ -14,7 +14,7 @@ import {
 } from "@shared/domain/readModels/project/Version";
 import { Pool } from "pg";
 import { getPool } from "@db/connectionPool";
-import { DBInsertProject, DBProject } from "@shared/dbModels/project/DBProject";
+import { DBInsertProject, DBProject } from "@db/models/project/DBProject";
 import sql, { join, raw, Sql } from "sql-template-tag";
 import { getEntriesWithDefinedValues } from "@shared/util/objectEntries";
 import {
@@ -27,7 +27,7 @@ import {
   stripDatedData,
   timestampTZToDate,
 } from "@db/sqlHelpers/dbDates";
-import { DBVersion } from "@shared/dbModels/project/DBVersion";
+import { DBVersion } from "@db/models/project/DBVersion";
 
 import {
   assertValidColumKey,
@@ -35,13 +35,10 @@ import {
 } from "@db/sqlHelpers/objectToSQL";
 import { UploadedFile } from "@shared/domain/UploadedFile";
 import path from "node:path";
-import { DBFileMetadata } from "@shared/dbModels/project/DBFileMetadata";
+import { DBFileMetadata } from "@db/models/project/DBFileMetadata";
 import { FileMetadata } from "@shared/domain/readModels/project/FileMetadata";
-import {
-  DBDatedData,
-  DBSoftDeletable,
-} from "@shared/dbModels/project/DBDatedData";
-import { TimestampTZ } from "@shared/dbModels/DBTypes";
+import { DBDatedData, DBSoftDeletable } from "@db/models/project/DBDatedData";
+import { TimestampTZ } from "@db/models/DBTypes";
 import { VALID_SLUG_REGEX } from "@shared/contracts/slug";
 import { ProjectAlreadyExistsError, UserError } from "@domain/UserError";
 import {
@@ -204,19 +201,28 @@ export class PostgreSQLBadgeHubMetadata {
   }
 
   async getStats(): Promise<BadgeStats> {
-    const appsP = this.pool.query(sql`SELECT COUNT(*) FROM badgehub.projects WHERE deleted_at IS NULL`);
-    const appAuthorsP = this.pool.query(sql`SELECT COUNT(DISTINCT idp_user_id) FROM badgehub.projects`);
-    const badgesP = this.pool.query(sql`SELECT COUNT(*) FROM  badgehub.registered_badges`);
+    const appsP = this.pool.query(
+      sql`SELECT COUNT(*) FROM badgehub.projects WHERE deleted_at IS NULL`
+    );
+    const appAuthorsP = this.pool.query(
+      sql`SELECT COUNT(DISTINCT idp_user_id) FROM badgehub.projects`
+    );
+    const badgesP = this.pool.query(
+      sql`SELECT COUNT(*) FROM  badgehub.registered_badges`
+    );
 
-    const [apps, appAuthors, badges] = await Promise.all([appsP, appAuthorsP, badgesP]);
+    const [apps, appAuthors, badges] = await Promise.all([
+      appsP,
+      appAuthorsP,
+      badgesP,
+    ]);
 
-    return   {
+    return {
       apps: Number(apps.rows[0].count),
       appAuthors: Number(appAuthors.rows[0].count),
       badges: Number(badges.rows[0].count),
     };
   }
-
 
   async insertProject(
     project: Omit<DBInsertProject, keyof DBDatedData>,

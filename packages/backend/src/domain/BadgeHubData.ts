@@ -15,12 +15,12 @@ import {
   getAdminOnlyCategoryNames,
   isAdminCategory,
 } from "@shared/domain/readModels/project/Category";
-import { DBProject } from "@shared/dbModels/project/DBProject";
-import { BadgeHubFiles } from "@shared/domain/BadgeHubFiles";
+import { DBProject } from "@db/models/project/DBProject";
+import { BadgeHubFiles } from "@domain/BadgeHubFiles";
 import { UploadedFile } from "@shared/domain/UploadedFile";
-import { DBDatedData } from "@shared/dbModels/project/DBDatedData";
+import { DBDatedData } from "@db/models/project/DBDatedData";
 import { calcSha256 } from "@util/sha256";
-import { TimestampTZ } from "@shared/dbModels/DBTypes";
+import { TimestampTZ } from "@db/models/DBTypes";
 import { CreateProjectProps } from "@shared/domain/writeModels/project/WriteProject";
 import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON";
 import { LRUCache } from "lru-cache";
