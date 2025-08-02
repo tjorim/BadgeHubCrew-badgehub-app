@@ -10,6 +10,10 @@ export async function startMqtt(badgeHubData: BadgeHubData) {
     return;
   }
 
+  if (process.env.NODE_APP_INSTANCE !== '0') {
+    return;
+  }
+
   const username = getAndAssertEnv("MQTT_USER");
   const password = getAndAssertEnv("MQTT_PASSWD");
   const topic = getAndAssertEnv("MQTT_TOPIC");
@@ -30,6 +34,9 @@ export async function startMqtt(badgeHubData: BadgeHubData) {
   client.on("connect", () => {
     console.log("Connected to MQTT server");
     setInterval(async () => {
+
+      console.log('MQTT: send message');
+
       const stats = await badgeHubData.getStats();
 
       client.publish(
