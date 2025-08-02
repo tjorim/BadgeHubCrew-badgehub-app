@@ -29,3 +29,14 @@ export const KEYCLOAK_CERTS_URL =
   KEYCLOAK_REALM_ISSUER_URL + "/protocol/openid-connect/certs";
 
 export * from "@shared/config/sharedConfig";
+
+// MQTT
+export const MQTT_CONFIG =
+  (process.env["MQTT_SERVER"] && {
+    MQTT_SERVER: getAndAssertEnv("MQTT_SERVER"),
+    MQTT_USER: getAndAssertEnv("MQTT_USER"),
+    MQTT_PASSWD: getAndAssertEnv("MQTT_PASSWD"),
+    MQTT_TOPIC: getAndAssertEnv("MQTT_TOPIC"),
+    MQTT_INTERVAL_SEC: getAndAssertEnv("MQTT_INTERVAL_SEC"),
+  }) ||
+  undefined;
