@@ -190,7 +190,11 @@ export const createPrivateRestRouter = (
 ) => {
   const s = initServer();
 
-  startMqtt(badgeHubData);
+  try {
+    startMqtt(badgeHubData);
+  } catch (err) {
+    console.error("MQTT: error thrown", err);
+  }
 
   return s.router(privateRestContracts, {
     ...createProjectRouter(badgeHubData),
