@@ -4,7 +4,8 @@ export type SharedConfig = {
   adminOnlyCategories: [string, ...string[]];
   badgeHubBaseUrl: string;
   keycloakIssuer: {
-    url: string;
+    realmUrl: string;
+    origin: string;
     realm: string;
     clientId: string;
   };
@@ -25,7 +26,8 @@ export const getSharedConfig = (): SharedConfig => {
   return (
     (globalThis as any).__SHARED_CONFIG__ ?? {
       keycloakIssuer: {
-        url: new URL(getAndAssertEnv("KEYCLOAK_ISSUER"))?.origin,
+        realmUrl: getAndAssertEnv("KEYCLOAK_ISSUER"),
+        origin: new URL(getAndAssertEnv("KEYCLOAK_ISSUER"))?.origin,
         realm: getAndAssertEnv("KEYCLOAK_ISSUER").split("/").at(-1),
         clientId: process.env.KEYCLOAK_CLIENT_ID ?? "badgehub-api-frontend",
       },

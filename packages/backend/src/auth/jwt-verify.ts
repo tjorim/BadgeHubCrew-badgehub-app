@@ -1,5 +1,5 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
-import { DISABLE_AUTH, KEYCLOAK_CERTS } from "@config";
+import { DISABLE_AUTH, KEYCLOAK_CERTS, sharedConfig } from "@config";
 import { NextFunction, Response } from "express";
 
 const JWKS = createRemoteJWKSet(new URL(KEYCLOAK_CERTS!));
@@ -40,7 +40,7 @@ async function jwtVerifyToken(token: string) {
   }
   try {
     await jwtVerify(token, JWKS, {
-      issuer: process.env.KEYCLOAK_ISSUER,
+      issuer: sharedConfig.keycloakIssuer.realmUrl,
       algorithms: ["RS256"],
     });
   } catch (error) {

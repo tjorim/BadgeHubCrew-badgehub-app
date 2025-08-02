@@ -14,9 +14,6 @@ export const POSTGRES_HOST = getAndAssertEnv("POSTGRES_HOST");
 export const POSTGRES_PORT = 5432;
 export const DISABLE_AUTH = process.env.DISABLE_AUTH === "true";
 export const MAX_UPLOAD_FILE_SIZE_BYTES = 32 * 1024 * 1024; // 32 MB
-export const KEYCLOAK_ISSUER = getAndAssertEnv("KEYCLOAK_ISSUER");
-export const KEYCLOAK_CERTS =
-  KEYCLOAK_ISSUER + "/protocol/openid-connect/certs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const FRONTEND_DIST_DIR = path.resolve(__dirname, "../../frontend/dist");
@@ -26,3 +23,5 @@ export const FRONTEND_PUBLIC_DIR = path.resolve(
 );
 
 export const sharedConfig = getSharedConfig();
+export const KEYCLOAK_CERTS =
+  sharedConfig.keycloakIssuer.realmUrl + "/protocol/openid-connect/certs";
