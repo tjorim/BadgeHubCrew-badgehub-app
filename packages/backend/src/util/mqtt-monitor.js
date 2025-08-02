@@ -3,7 +3,7 @@ import mqtt from "mqtt";
 const topic = process.env.MQTT_TOPIC;
 const server = process.env.MQTT_SERVER;
 
-const topicOnly = false; // true: only listen to topic, false: llisten to all topics
+const topicOnly = true; // true: only listen to topic, false: llisten to all topics
 
 const client = mqtt.connect(server, {
   protocolVersion: 4,
