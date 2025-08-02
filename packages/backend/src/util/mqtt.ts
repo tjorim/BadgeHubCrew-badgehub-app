@@ -27,27 +27,35 @@ export async function startMqtt(badgeHubData: BadgeHubData) {
 
   console.log("MQTT: ready to connect");
 
-  let client = mqtt.connect(server, {
-    username,
-    password,
-    clean: true,
-  });
+  try {
+    let client = mqtt.connect(server, {
+      username,
+      password,
+      clean: true,
+    });
 
-  async function sendMqttMessage() {
-    const stats = await badgeHubData.getStats();
+    async function sendMqttMessage() {
+      const stats = await badgeHubData.getStats();
 
-    console.log("MQTT: send message");
-    client.publish(
-      topic,
-      JSON.stringify({ ...stats, timestamp: new Date().toISOString() }),
-      { qos: 1, retain: true }
-    );
+      console.log("MQTT: send message");
+      try {
+        client.publish(
+          topic,
+          JSON.stringify({ ...stats, timestamp: new Date().toISOString() }),
+          { qos: 1, retain: true }
+        );
+      } catch (error) {
+        console.error(`MQTT: error publishing message`, error);
+      }
+    }
+
+    client.on("connect", async () => {
+      console.log("MQTT: connected to server");
+
+      sendMqttMessage();
+      setInterval(sendMqttMessage, Number(interval) * 1000);
+    });
+  } catch (error) {
+    console.error(`MQTT: error connecting to server ${server}`, error);
   }
-
-  client.on("connect", async () => {
-    console.log("MQTT: connected to server");
-
-    sendMqttMessage();
-    setInterval(sendMqttMessage, Number(interval) * 1000);
-  });
 }

@@ -192,8 +192,8 @@ export const createPrivateRestRouter = (
 
   try {
     startMqtt(badgeHubData);
-  } catch (err) {
-    console.error("MQTT: error thrown", err);
+  } catch (error) {
+    console.error("MQTT: error thrown", error);
   }
 
   return s.router(privateRestContracts, {
