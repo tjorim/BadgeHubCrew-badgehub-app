@@ -1,7 +1,10 @@
 import { config } from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { getAndAssertEnv, getSharedConfig } from "@shared/config/sharedConfig";
+import {
+  getAndAssertEnv,
+  KEYCLOAK_REALM_ISSUER_URL,
+} from "@shared/config/sharedConfig";
 
 config();
 export const EXPRESS_PORT = 8081;
@@ -22,6 +25,7 @@ export const FRONTEND_PUBLIC_DIR = path.resolve(
   "../../frontend/public"
 );
 
-export const sharedConfig = getSharedConfig();
-export const KEYCLOAK_CERTS =
-  sharedConfig.keycloakIssuer.realmUrl + "/protocol/openid-connect/certs";
+export const KEYCLOAK_CERTS_URL =
+  KEYCLOAK_REALM_ISSUER_URL + "/protocol/openid-connect/certs";
+
+export * from "@shared/config/sharedConfig";

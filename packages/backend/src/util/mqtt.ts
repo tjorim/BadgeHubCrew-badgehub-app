@@ -1,5 +1,6 @@
 import { BadgeHubData } from "@domain/BadgeHubData";
 import { getAndAssertEnv } from "@shared/config/sharedConfig";
+import { IS_DEV_ENVIRONMENT } from "@config";
 import mqtt from "mqtt";
 import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
 import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
@@ -16,9 +17,8 @@ export async function startMqtt(
     return;
   }
   try {
-    const nodeEnv = getAndAssertEnv("NODE_ENV");
 
-    if (nodeEnv == "development") {
+    if (IS_DEV_ENVIRONMENT) {
       console.log("Not publishing to MQTT in development environment");
       return;
     }

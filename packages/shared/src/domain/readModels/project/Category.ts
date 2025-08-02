@@ -6,13 +6,13 @@ export const categoryNameSchema = z.enum(getAllCategoryNames());
 export type CategoryName = string;
 
 export function getAllCategoryNames(): [CategoryName, ...CategoryName[]] {
-  return [...sharedConfig.categories, ...sharedConfig.adminOnlyCategories];
+  return [...sharedConfig.CATEGORY_NAMES, ...sharedConfig.ADMIN_CATEGORY_NAMES];
 }
 
 export function getAdminOnlyCategoryNames(): [CategoryName, ...CategoryName[]] {
-  return sharedConfig.adminOnlyCategories;
+  return sharedConfig.ADMIN_CATEGORY_NAMES;
 }
 
 export function isAdminCategory(category: CategoryName) {
-  return sharedConfig.adminOnlyCategories.includes(category);
+  return sharedConfig.ADMIN_CATEGORY_NAMES.includes(category);
 }
