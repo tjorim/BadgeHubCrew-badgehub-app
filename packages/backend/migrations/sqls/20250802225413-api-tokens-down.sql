@@ -1,0 +1,1 @@
+-- no need to delete the table, the -up sql is idempotent
