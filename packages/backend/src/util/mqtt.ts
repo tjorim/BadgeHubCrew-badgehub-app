@@ -10,7 +10,7 @@ export async function startMqtt(badgeHubData: BadgeHubData) {
     return;
   }
 
-  if (process.env.NODE_APP_INSTANCE !== '0') {
+  if (process.env.NODE_APP_INSTANCE !== "0") {
     return;
   }
 
@@ -25,25 +25,29 @@ export async function startMqtt(badgeHubData: BadgeHubData) {
     return;
   }
 
+  console.log("MQTT: ready to connect");
+
   let client = mqtt.connect(server, {
     username,
     password,
     clean: true,
   });
 
-  client.on("connect", () => {
-    console.log("Connected to MQTT server");
-    setInterval(async () => {
+  async function sendMqttMessage() {
+    const stats = await badgeHubData.getStats();
 
-      console.log('MQTT: send message');
+    console.log("MQTT: send message");
+    client.publish(
+      topic,
+      JSON.stringify({ ...stats, timestamp: new Date().toISOString() }),
+      { qos: 1, retain: true }
+    );
+  }
 
-      const stats = await badgeHubData.getStats();
+  client.on("connect", async () => {
+    console.log("MQTT: connected to server");
 
-      client.publish(
-        topic,
-        JSON.stringify({ ...stats, timestamp: new Date().toISOString() }),
-        { qos: 1, retain: true }
-      );
-    }, Number(interval) * 1000);
+    sendMqttMessage();
+    setInterval(sendMqttMessage, Number(interval) * 1000);
   });
 }
