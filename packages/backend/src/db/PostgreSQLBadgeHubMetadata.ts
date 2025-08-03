@@ -51,7 +51,6 @@ import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
 import { BadgeStats } from "@shared/contracts/publicRestContracts";
 import { ProjectApiTokenMetadata } from "@shared/domain/readModels/project/ProjectApiToken";
 import { DBProjectApiKey } from "@db/models/project/DBProjectApiKey";
-import { calcSha256 } from "@util/sha256";
 import { subtle } from "node:crypto";
 
 const ONE_KILO = 1024;

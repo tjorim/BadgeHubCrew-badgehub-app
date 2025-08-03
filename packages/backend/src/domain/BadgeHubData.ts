@@ -19,7 +19,7 @@ import { DBProject } from "@db/models/project/DBProject";
 import { BadgeHubFiles } from "@domain/BadgeHubFiles";
 import { UploadedFile } from "@shared/domain/UploadedFile";
 import { DBDatedData } from "@db/models/project/DBDatedData";
-import { calcSha256 } from "@util/sha256";
+import { uint8ToSha256 } from "@util/sha256";
 import { TimestampTZ } from "@db/models/DBTypes";
 import { CreateProjectProps } from "@shared/domain/writeModels/project/WriteProject";
 import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON";
@@ -340,7 +340,7 @@ export class BadgeHubData {
     uploadedFile: UploadedFile,
     mockDates?: DBDatedData
   ) {
-    const sha256 = await calcSha256(uploadedFile);
+    const sha256 = await uint8ToSha256(uploadedFile.fileContent);
     await this.badgeHubFiles.writeFile(uploadedFile, sha256, mockDates);
     await this.badgeHubMetadata.writeDraftFileMetadata(
       slug,
