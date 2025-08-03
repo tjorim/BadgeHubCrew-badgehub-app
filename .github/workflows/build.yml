@@ -28,6 +28,7 @@ jobs:
           npm run build
       - name: Start environment
         run: |
+          cp packages/backend/.env.test packages/backend/.env 
           npm run test-db:up --workspace=packages/backend -- --wait
       - name: Populate the DB with test data
         run: |
