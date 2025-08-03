@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { tsRestClient as defaultTsRestClient } from "../../api/tsRestClient.ts";
+import { getFreshAuthorizedTsRestClient } from "../../api/tsRestClient.ts";
 import Header from "@sharedComponents/Header.tsx";
 import Footer from "@sharedComponents/Footer.tsx";
 import AppEditBreadcrumb from "./AppEditBreadcrumb.tsx";
@@ -16,7 +16,6 @@ import {
   IconSize,
 } from "@shared/domain/readModels/project/AppMetadataJSON.ts";
 import { useNavigate } from "react-router-dom";
-import { getAuthorizationHeader } from "@api/authorization.ts";
 import { VariantJSON } from "@shared/domain/readModels/project/VariantJSON.ts";
 import { assertDefined } from "@shared/util/assertions.ts";
 
@@ -31,9 +30,8 @@ function getAndEnsureApplication(newProjectData: ProjectDetails): VariantJSON {
 
 type PossiblyStaleProject = ProjectDetails & { stale?: true };
 const AppEditPage: React.FC<{
-  tsRestClient?: typeof defaultTsRestClient;
   slug: string;
-}> = ({ tsRestClient = defaultTsRestClient, slug }) => {
+}> = ({ slug }) => {
   const [project, setProject] = useState<PossiblyStaleProject | null>(null);
   const [loading, setLoading] = useState(true);
   const { user, keycloak } = useSession();
@@ -72,9 +70,9 @@ const AppEditPage: React.FC<{
     let mounted = true;
     setLoading(true);
     (async () => {
-      await keycloak.updateToken(30);
-      const res = await tsRestClient.getDraftProject({
-        headers: await getAuthorizationHeader(keycloak),
+      const res = await (
+        await getFreshAuthorizedTsRestClient(keycloak)
+      ).getDraftProject({
         params: { slug },
       });
       if (mounted && res.status === 200) {
@@ -86,7 +84,7 @@ const AppEditPage: React.FC<{
     return () => {
       mounted = false;
     };
-  }, [keycloak, project, slug, tsRestClient]);
+  }, [keycloak, project, slug]);
 
   const handleFormChange = (changes: Partial<ProjectEditFormData>) => {
     setAppMetadata((prev) => ({ ...prev, ...changes }) as ProjectEditFormData);
@@ -103,8 +101,9 @@ const AppEditPage: React.FC<{
       setProject(null);
       return;
     }
-    const updatedDraftProject = await tsRestClient.getDraftProject({
-      headers: await getAuthorizationHeader(keycloak),
+    const updatedDraftProject = await (
+      await getFreshAuthorizedTsRestClient(keycloak)
+    ).getDraftProject({
       params: { slug },
     });
     if (updatedDraftProject.status === 200 && project) {
@@ -134,8 +133,9 @@ const AppEditPage: React.FC<{
 
   const handleDeleteFile = async (filePath: string) => {
     assertDefined(keycloak);
-    await tsRestClient.deleteDraftFile({
-      headers: await getAuthorizationHeader(keycloak),
+    await (
+      await getFreshAuthorizedTsRestClient(keycloak)
+    ).deleteDraftFile({
       params: { slug, filePath },
     });
     setProject((p) => {
@@ -171,9 +171,9 @@ const AppEditPage: React.FC<{
     if (!appMetadata) return;
 
     try {
-      await keycloak.updateToken(30);
-      const changeAppMetdataResult = await tsRestClient.changeDraftAppMetadata({
-        headers: await getAuthorizationHeader(keycloak),
+      const changeAppMetdataResult = await (
+        await getFreshAuthorizedTsRestClient(keycloak)
+      ).changeDraftAppMetadata({
         params: { slug },
         body: appMetadata,
       });
@@ -182,8 +182,9 @@ const AppEditPage: React.FC<{
         window.alert("Save failed");
         return;
       }
-      const publishResult = await tsRestClient.publishVersion({
-        headers: await getAuthorizationHeader(keycloak),
+      const publishResult = await (
+        await getFreshAuthorizedTsRestClient(keycloak)
+      ).publishVersion({
         params: { slug },
         body: undefined,
       });
@@ -207,8 +208,10 @@ const AppEditPage: React.FC<{
 
   const handleDeleteApplication = async () => {
     try {
-      const response = await tsRestClient.deleteProject({
-        headers: await getAuthorizationHeader(keycloak),
+      assertDefined(keycloak);
+      const response = await (
+        await getFreshAuthorizedTsRestClient(keycloak)
+      ).deleteProject({
         params: { slug },
       });
       if (response.status !== 204) {
@@ -269,12 +272,10 @@ const AppEditPage: React.FC<{
               />
               <AppEditFileUpload
                 slug={slug}
-                tsRestClient={tsRestClient}
                 keycloak={keycloak}
                 onUploadSuccess={updateDraftFiles}
               />
               <AppEditFileList
-                tsRestClient={tsRestClient}
                 user={user}
                 project={project as ProjectDetails}
                 onSetIcon={onSetIcon}

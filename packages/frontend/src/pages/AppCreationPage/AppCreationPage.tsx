@@ -6,7 +6,7 @@ import AppCreationBasicInfo from "./AppCreationBasicInfo.tsx";
 import AppCreationActions from "./AppCreationActions.tsx";
 import { VALID_SLUG_REGEX } from "@shared/contracts/slug.ts";
 import { useSession } from "@sharedComponents/keycloakSession/SessionContext.tsx";
-import { tsRestClient as defaultTsRestClient } from "../../api/tsRestClient.ts";
+import { publicTsRestClient as defaultTsRestClient } from "../../api/tsRestClient.ts";
 import { useNavigate } from "react-router-dom";
 import { PleaseLoginMessage } from "@sharedComponents/PleaseLoginMessage.tsx";
 
