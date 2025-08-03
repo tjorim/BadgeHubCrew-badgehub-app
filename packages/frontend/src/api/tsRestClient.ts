@@ -7,6 +7,8 @@ export const publicTsRestClient = initClient(tsRestApiContracts, {
   baseUrl: BADGEHUB_API_BASE_URL + "/api/v3",
 });
 
+export type TsRestClient = typeof publicTsRestClient;
+
 async function getFreshToken(keycloak: Keycloak | undefined) {
   await keycloak?.updateToken(30);
   return keycloak?.token;
