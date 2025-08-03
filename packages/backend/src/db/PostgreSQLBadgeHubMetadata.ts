@@ -51,7 +51,6 @@ import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
 import { BadgeStats } from "@shared/contracts/publicRestContracts";
 import { ProjectApiTokenMetadata } from "@shared/domain/readModels/project/ProjectApiToken";
 import { DBProjectApiKey } from "@db/models/project/DBProjectApiKey";
-import { subtle } from "node:crypto";
 
 const ONE_KILO = 1024;
 
@@ -559,7 +558,9 @@ and v.app_metadata->'badges' @>
 
   async getProjectApiTokenMetadata(
     slug: ProjectSlug
-  ): Promise<ProjectApiTokenMetadata | undefined> {
+  ): Promise<
+    Pick<ProjectApiTokenMetadata, "last_used_at" | "created_at"> | undefined
+  > {
     const { rows } = await this.pool.query<DBProjectApiKey>(
       sql`select created_at, last_used_at from project_api_token where project_slug = ${slug}`
     );
@@ -571,22 +572,21 @@ and v.app_metadata->'badges' @>
     );
   }
 
-  async createProjectApiToken(slug: ProjectSlug): Promise<string> {
-    const key = crypto.randomUUID();
-
-    const keyHash = await subtle.digest("SHA-256", Buffer.from(key));
+  async createProjectApiToken(
+    slug: ProjectSlug,
+    keyHash: string
+  ): Promise<void> {
     await this.pool.query<DBProjectApiKey>(
       sql`insert into project_api_token (project_slug, key_hash)
           values (${slug}, ${keyHash})`
     );
-    return key;
   }
 
   async revokeProjectApiToken(slug: string) {
     await this.pool.query(
       sql`delete
           from project_api_token
-          where slug = ${slug}`
+          where project_slug = ${slug}`
     );
   }
 }

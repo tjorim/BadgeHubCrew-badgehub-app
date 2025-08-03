@@ -186,7 +186,7 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
         req
       );
       if (authorizationFailureResponse) return authorizationFailureResponse;
-      const token = await badgeHubData.createProjectApiToken();
+      const token = await badgeHubData.createProjectApiToken(slug);
       return ok({ token });
     },
 
@@ -198,6 +198,9 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
       );
       if (authorizationFailureResponse) return authorizationFailureResponse;
       const metadata = await badgeHubData.getProjectApiTokenMetadata(slug);
+      if (!metadata) {
+        return nok(404, "No Project API");
+      }
       return ok({
         last_used_at: metadata.last_used_at,
         created_at: metadata.created_at,

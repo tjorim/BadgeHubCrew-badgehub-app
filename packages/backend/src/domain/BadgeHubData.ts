@@ -19,7 +19,7 @@ import { DBProject } from "@db/models/project/DBProject";
 import { BadgeHubFiles } from "@domain/BadgeHubFiles";
 import { UploadedFile } from "@shared/domain/UploadedFile";
 import { DBDatedData } from "@db/models/project/DBDatedData";
-import { uint8ToSha256 } from "@util/sha256";
+import { stringToSha256, uint8ToSha256 } from "@util/sha256";
 import { TimestampTZ } from "@db/models/DBTypes";
 import { CreateProjectProps } from "@shared/domain/writeModels/project/WriteProject";
 import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON";
@@ -29,6 +29,7 @@ import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
 import { getImageProps } from "@util/imageProcessing";
 import { UserError } from "@domain/UserError";
 import { BadgeStats } from "@shared/contracts/publicRestContracts";
+import { randomBytes } from "node:crypto";
 
 type FileContext =
   | { projectSlug: string; revision: number; filePath: string }
@@ -373,6 +374,9 @@ export class BadgeHubData {
   }
 
   async createProjectApiToken(slug: ProjectSlug) {
-    return this.badgeHubMetadata.createProjectApiToken(slug);
+    const apiKey = randomBytes(16).toString("hex");
+    const keyHash = await stringToSha256(apiKey);
+    await this.badgeHubMetadata.createProjectApiToken(slug, keyHash);
+    return apiKey;
   }
 }

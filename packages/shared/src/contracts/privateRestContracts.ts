@@ -171,6 +171,7 @@ This is actually just an alias for a post to /projects/:slug/draft/files/metadat
       path: "/projects/:slug/token",
       responses: {
         200: projectApiTokenMetadataSchema,
+        404: errorResponseSchema,
         403: errorResponseSchema,
       },
       summary:

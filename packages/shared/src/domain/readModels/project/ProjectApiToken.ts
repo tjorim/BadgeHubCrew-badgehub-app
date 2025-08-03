@@ -1,15 +1,17 @@
-import { z } from "zod";
+import { z } from "zod/v3";
 import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
+const isoDateStringSchema = z.string().date();
+type ISODateString = z.infer<typeof isoDateStringSchema>;
 
 export type ProjectApiTokenMetadata = {
-  created_at: Date;
-  last_used_at: Date;
+  created_at: ISODateString;
+  last_used_at: ISODateString;
 };
 
 export const projectApiTokenMetadataSchema = z
   .object({
-    created_at: z.date(),
-    last_used_at: z.date(),
+    created_at: isoDateStringSchema,
+    last_used_at: isoDateStringSchema,
   })
   .describe(`Metadata about the token.`);
 

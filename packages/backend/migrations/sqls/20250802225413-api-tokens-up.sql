@@ -1,4 +1,4 @@
-create table if not exists project_api_key
+create table if not exists project_api_token
 (
     project_slug text primary key,
     key_hash     text                                   not null unique,
