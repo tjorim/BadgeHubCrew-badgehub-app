@@ -1,3 +1,5 @@
+
+[<img src="assets/badgehub-logo.svg" align="center" alt="BadgeHub logo" width="200">](#readme) 
 # BadgeHub API and Frontend
 
 > Node.js REST service for the BadgeHub
