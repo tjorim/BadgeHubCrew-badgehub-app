@@ -115,7 +115,7 @@ export const publicFilesContracts = c.router({
   },
 });
 
-export const pingQuerySchema = z.object({
+export const badgeIdentifiersSchema = z.object({
   mac: z.string().describe("the mac address of the badge").optional(),
   id: z.string().describe("the id of the badge").optional(),
 });
@@ -138,7 +138,7 @@ export const publicOtherContracts = c.router({
   ping: {
     method: "GET",
     path: `/ping`,
-    query: pingQuerySchema,
+    query: badgeIdentifiersSchema,
     responses: {
       200: z.string().describe("Ping the server to check if it's alive"),
     },
@@ -152,8 +152,54 @@ export const publicOtherContracts = c.router({
   },
 });
 
+const crashReportBodySchema = z.object({
+  reason: z
+    .string()
+    .describe("An optional reason for the app crash.")
+    .optional(),
+});
+
+export const publicReportContracts = c.router({
+  reportInstall: {
+    method: "POST",
+    path: "/projects/:slug/rev:revision/report/install",
+    pathParams: z.object({ slug: z.string() }),
+    query: badgeIdentifiersSchema,
+    body: crashReportBodySchema,
+    responses: {
+      204: z.void(),
+      404: errorResponseSchema,
+    },
+    summary: "Report an installation of an app.",
+  },
+  reportLaunch: {
+    method: "POST",
+    path: "/projects/:slug/rev:revision/report/launch",
+    pathParams: z.object({ slug: z.string() }),
+    query: badgeIdentifiersSchema,
+    body: z.object({}),
+    responses: {
+      204: z.void(),
+      404: errorResponseSchema,
+    },
+    summary: "Report a launch of an app.",
+  },
+  reportCrash: {
+    method: "POST",
+    path: "/projects/:slug/rev:revision/report/crash",
+    pathParams: z.object({ slug: z.string() }),
+    body: crashReportBodySchema,
+    responses: {
+      204: z.void(),
+      404: errorResponseSchema,
+    },
+    summary: "Report a crash of an app.",
+  },
+});
+
 export const publicRestContracts = c.router({
   ...publicProjectContracts,
   ...publicFilesContracts,
   ...publicOtherContracts,
+  ...publicReportContracts,
 });

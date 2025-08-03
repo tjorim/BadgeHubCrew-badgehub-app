@@ -222,6 +222,7 @@ export class BadgeHubData {
     versionRevision: RevisionNumberOrAlias
   ): Promise<Uint8Array> {
     // TODO here we should get the file path from the DB in order to fetch the correct file
+    // TODO do not forget download counts
     throw new Error("Method not implemented.");
   }
 
