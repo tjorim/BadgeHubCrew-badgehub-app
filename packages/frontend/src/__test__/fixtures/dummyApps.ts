@@ -167,7 +167,6 @@ const toDetails = (dummyApp: DummyData): ProjectDetails => {
     updated_at: published_at,
     version: {
       revision,
-      download_count: 0,
       files: [],
       project_slug: slug,
       published_at,
