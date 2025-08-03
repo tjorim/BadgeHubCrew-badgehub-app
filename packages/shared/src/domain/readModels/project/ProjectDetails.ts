@@ -29,13 +29,13 @@ export const projectStatusNameSchema = z.enum([
 export interface ProjectCore {
   slug: string;
   idp_user_id: User["idp_user_id"];
-  git?: string; // Git URL of the project, if it exists
-  latest_revision?: number; // Latest revision number of the project
+  git?: null | string; // Git URL of the project, if it exists
+  latest_revision?: null | number; // Latest revision number of the project
 }
 
 export interface ProjectDetails extends ProjectCore, DatedData {
   version: Version;
-  author?: { name: string }; // TODO
+  author?: null | { name: string }; // TODO
   // states?: Array<ProjectStatusOnBadge>;|null
   // votes?: Array<VoteFromUser>;|null
   // warnings?: Array<WarningFromUser>;|null
@@ -47,14 +47,14 @@ export type ProjectSlug = ProjectDetails["slug"];
 export const projectCoreSchema = z.object({
   slug: z.string(),
   idp_user_id: z.string(),
-  git: z.string().optional(),
-  latest_revision: z.number().optional(),
+  git: z.string().optional().nullable(),
+  latest_revision: z.number().optional().nullable(),
 });
 
 export const detailedProjectSchema = projectCoreSchema
   .extend({
     version: versionSchema,
-    author: z.object({ name: z.string() }).optional(),
+    author: z.object({ name: z.string() }).optional().nullable(),
   })
   .extend(datedDataSchema.shape);
 

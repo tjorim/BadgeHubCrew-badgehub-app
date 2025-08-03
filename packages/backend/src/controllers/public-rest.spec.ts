@@ -41,6 +41,7 @@ describe(
               "Games",
             ],
             "description": "With CodeCraft, you can do interesting things with the sensors.",
+            "distinct_installs": 0,
             "icon_map": {
               "64x64": {
                 "full_path": "icon5.png",
@@ -216,7 +217,6 @@ describe(
       expect(restProject).toMatchInlineSnapshot(`
         {
           "created_at": "2024-05-22T14:01:16.975Z",
-          "draft_revision": 1,
           "git": null,
           "idp_user_id": "CyberSherpa",
           "latest_revision": 0,
@@ -256,7 +256,6 @@ describe(
             "dir": "",
             "ext": ".py",
             "full_path": "__init__.py",
-            "id": 3,
             "mimetype": "text/x-python-script",
             "name": "__init__",
             "sha256": "4028201b6ebf876b3ee30462c4d170146a2d3d92c5aca9fefc5e3d1a0508f5df",
@@ -270,7 +269,6 @@ describe(
             "dir": "",
             "ext": ".png",
             "full_path": "icon5.png",
-            "id": 2,
             "image_height": 64,
             "image_width": 64,
             "mimetype": "image/png",
@@ -286,7 +284,6 @@ describe(
             "dir": "",
             "ext": ".json",
             "full_path": "metadata.json",
-            "id": 1,
             "mimetype": "application/json",
             "name": "metadata",
             "sha256": "a41227adaa729b4519feffd5d05ddfbdeee99a7b2784378d1369d8d731fa0e3d",
@@ -300,13 +297,9 @@ describe(
 
       expect(restVersion).toMatchInlineSnapshot(`
         {
-          "download_count": "0",
-          "git_commit_id": null,
           "project_slug": "codecraft",
           "published_at": "2024-05-23T14:01:16.975Z",
           "revision": 0,
-          "size_of_zip": null,
-          "zip": null,
         }
       `);
     });
@@ -320,7 +313,6 @@ describe(
       expect(restProject).toMatchInlineSnapshot(`
         {
           "created_at": "2024-05-22T14:01:16.975Z",
-          "draft_revision": 1,
           "git": null,
           "idp_user_id": "CyberSherpa",
           "latest_revision": 0,
@@ -332,13 +324,9 @@ describe(
       const { app_metadata, files, ...restVersion } = version!;
       expect(restVersion).toMatchInlineSnapshot(`
         {
-          "download_count": "0",
-          "git_commit_id": null,
           "project_slug": "codecraft",
           "published_at": "2024-05-23T14:01:16.975Z",
           "revision": 0,
-          "size_of_zip": null,
-          "zip": null,
         }
       `);
       expect(app_metadata).toMatchInlineSnapshot(`
@@ -372,7 +360,6 @@ describe(
             "dir": "",
             "ext": ".py",
             "full_path": "__init__.py",
-            "id": 3,
             "mimetype": "text/x-python-script",
             "name": "__init__",
             "sha256": "4028201b6ebf876b3ee30462c4d170146a2d3d92c5aca9fefc5e3d1a0508f5df",
@@ -386,7 +373,6 @@ describe(
             "dir": "",
             "ext": ".png",
             "full_path": "icon5.png",
-            "id": 2,
             "image_height": 64,
             "image_width": 64,
             "mimetype": "image/png",
@@ -402,7 +388,6 @@ describe(
             "dir": "",
             "ext": ".json",
             "full_path": "metadata.json",
-            "id": 1,
             "mimetype": "application/json",
             "name": "metadata",
             "sha256": "a41227adaa729b4519feffd5d05ddfbdeee99a7b2784378d1369d8d731fa0e3d",
@@ -589,15 +574,14 @@ describe(
           {
             projectAuthors: expect.any(Number),
             projects: expect.any(Number),
-          },
-          `
+          }, `
           {
-            "badges": 2,
+            "badges": 52,
             "projectAuthors": Any<Number>,
+            "projectInstalls": 40,
             "projects": Any<Number>,
           }
-        `
-        );
+        `);
       });
     });
   },

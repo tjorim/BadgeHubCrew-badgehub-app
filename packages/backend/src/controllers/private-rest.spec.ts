@@ -69,36 +69,30 @@ describe("Authenticated API Routes", () => {
           },
         },
         `
-            {
-              "created_at": Any<String>,
-              "draft_revision": 0,
-              "git": "https://github.com",
-              "idp_user_id": "d8075337-0f10-4cdb-8b48-be1dc18747a3",
-              "latest_revision": null,
-              "slug": Any<String>,
-              "updated_at": Any<String>,
-              "version": {
-                "app_metadata": {
-                  "description": "Test App Description",
-                  "name": "Test App Name",
-                },
-                "download_count": "0",
-                "files": Any<Array>,
-                "git_commit_id": null,
-                "project_slug": Any<String>,
-                "published_at": null,
-                "revision": 0,
-                "size_of_zip": null,
-                "zip": null,
-              },
-            }
-          `
+        {
+          "created_at": Any<String>,
+          "git": "https://github.com",
+          "idp_user_id": "d8075337-0f10-4cdb-8b48-be1dc18747a3",
+          "latest_revision": null,
+          "slug": Any<String>,
+          "updated_at": Any<String>,
+          "version": {
+            "app_metadata": {
+              "description": "Test App Description",
+              "name": "Test App Name",
+            },
+            "files": Any<Array>,
+            "project_slug": Any<String>,
+            "published_at": null,
+            "revision": 0,
+          },
+        }
+      `
       );
 
       expect(versionInResponse.files.length).toEqual(1);
       expect(versionInResponse.files[0]).toMatchObject({
         full_path: "metadata.json",
-        id: expect.any(Number),
         size_of_content: expect.any(Number),
       });
 
