@@ -180,9 +180,14 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
     },
 
     createProjectAPIToken: async ({ params: { slug }, req }) => {
-      const user = getUser(req as unknown as RequestWithUser);
-      // badgeHubData.createProjectAPIToken(userId);
-      return ok({ token: "TODO" });
+      const authorizationFailureResponse = await checkProjectAuthorization(
+        badgeHubData,
+        slug,
+        req
+      );
+      if (authorizationFailureResponse) return authorizationFailureResponse;
+      const token = await badgeHubData.createProjectApiToken();
+      return ok({ token });
     },
 
     getProjectApiTokenMetadata: async ({ params: { slug }, req }) => {
@@ -192,15 +197,21 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
         req
       );
       if (authorizationFailureResponse) return authorizationFailureResponse;
+      const metadata = await badgeHubData.getProjectApiTokenMetadata(slug);
       return ok({
-        lastUseDate: new Date().toDateString(), // TODO get from badgeHubData
-        createdDate: new Date().toDateString(), // TODO get from badgeHubData
+        last_used_at: metadata.last_used_at,
+        created_at: metadata.created_at,
       });
     },
 
     revokeProjectAPIToken: async ({ params: { slug }, req }) => {
-      const user = getUser(req as unknown as RequestWithUser);
-      // badgeHubData.revokeProjectAPIToken(userId);  // TODO
+      const authorizationFailureResponse = await checkProjectAuthorization(
+        badgeHubData,
+        slug,
+        req
+      );
+      if (authorizationFailureResponse) return authorizationFailureResponse;
+      await badgeHubData.revokeProjectAPIToken(slug);
       return noContent();
     },
   };

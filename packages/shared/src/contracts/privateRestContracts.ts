@@ -10,6 +10,7 @@ import {
   createProjectPropsSchema,
 } from "@shared/domain/writeModels/project/WriteProject";
 import { writeAppMetadataJSONSchema } from "@shared/domain/writeModels/AppMetadataJSON";
+import { projectApiTokenMetadataSchema } from "@shared/domain/readModels/project/ProjectApiToken";
 
 const c = initContract();
 
@@ -153,7 +154,6 @@ This is actually just an alias for a post to /projects/:slug/draft/files/metadat
       body: z.unknown().optional().nullable(),
       summary: "Publish the current draft as a new version",
     },
-
     createProjectAPIToken: {
       method: "POST",
       path: "/projects/:slug/token",
@@ -170,21 +170,11 @@ This is actually just an alias for a post to /projects/:slug/draft/files/metadat
       method: "GET",
       path: "/projects/:slug/token",
       responses: {
-        200: z
-          .object({
-            createdDate: z
-              .string()
-              .date()
-              .describe("ISO date of the creation date of the token"),
-            lastUseDate: z
-              .string()
-              .date()
-              .describe("ISO date of last use of the token"),
-          })
-          .describe(`Returns metadata about the token.`),
+        200: projectApiTokenMetadataSchema,
         403: errorResponseSchema,
       },
-      summary: "Create an API token for the project.",
+      summary:
+        "Allow to check if there is an API token for the project and when it was last used and created.",
     },
     revokeProjectAPIToken: {
       method: "DELETE",

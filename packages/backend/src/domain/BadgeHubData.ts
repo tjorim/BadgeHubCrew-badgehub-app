@@ -351,7 +351,7 @@ export class BadgeHubData {
     );
   }
 
-  async deleteDraftFile(slug: string, filePath: string) {
+  async deleteDraftFile(slug: ProjectSlug, filePath: string) {
     if (filePath === "metadata.json") {
       throw new Error(
         `[project: ${slug}] Cannot delete metadata.json because it is required.`
@@ -360,7 +360,19 @@ export class BadgeHubData {
     await this.badgeHubMetadata.deleteDraftFile(slug, filePath);
   }
 
-  async registerBadge(id: string, mac: string | undefined) {
-    await this.badgeHubMetadata.registerBadge(id, mac);
+  async registerBadge(flashId: string, mac: string | undefined) {
+    await this.badgeHubMetadata.registerBadge(flashId, mac);
+  }
+
+  async revokeProjectAPIToken(slug: ProjectSlug) {
+    await this.badgeHubMetadata.revokeProjectApiToken(slug);
+  }
+
+  async getProjectApiTokenMetadata(slug: ProjectSlug) {
+    return this.badgeHubMetadata.getProjectApiTokenMetadata(slug);
+  }
+
+  async createProjectApiToken(slug: ProjectSlug) {
+    return this.badgeHubMetadata.createProjectApiToken(slug);
   }
 }

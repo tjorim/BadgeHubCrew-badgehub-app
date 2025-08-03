@@ -49,6 +49,10 @@ import { BadgeSlug, getBadgeSlugs } from "@shared/domain/readModels/Badge";
 import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON";
 import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
 import { BadgeStats } from "@shared/contracts/publicRestContracts";
+import { ProjectApiTokenMetadata } from "@shared/domain/readModels/project/ProjectApiToken";
+import { DBProjectApiKey } from "@db/models/project/DBProjectApiKey";
+import { calcSha256 } from "@util/sha256";
+import { subtle } from "node:crypto";
 
 const ONE_KILO = 1024;
 
@@ -202,13 +206,17 @@ export class PostgreSQLBadgeHubMetadata {
 
   async getStats(): Promise<BadgeStats> {
     const appsP = this.pool.query(
-      sql`SELECT COUNT(*) FROM badgehub.projects WHERE deleted_at IS NULL`
+      sql`SELECT COUNT(*)
+          FROM badgehub.projects
+          WHERE deleted_at IS NULL`
     );
     const appAuthorsP = this.pool.query(
-      sql`SELECT COUNT(DISTINCT idp_user_id) FROM badgehub.projects`
+      sql`SELECT COUNT(DISTINCT idp_user_id)
+          FROM badgehub.projects`
     );
     const badgesP = this.pool.query(
-      sql`SELECT COUNT(*) FROM  badgehub.registered_badges`
+      sql`SELECT COUNT(*)
+          FROM badgehub.registered_badges`
     );
 
     const [apps, appAuthors, badges] = await Promise.all([
@@ -432,15 +440,55 @@ and v.app_metadata->'badges' @>
         ${filter.slugs[0]}`;
       } else {
         query = sql`${query}
-      and p.slug = any(${filter.slugs})`;
+      and p.slug = any(
+        ${filter.slugs}
+        )`;
       }
     }
 
     if (filter.search) {
       const matcher = `%${filter.search.toLowerCase()}%`;
       query = sql`${query}
-                    and (v.app_metadata->>'name' ilike ${matcher} or v.app_metadata->>'description' ilike ${matcher} or p.slug like ${matcher})
-                    or exists (select 1 from project_latest_categories plc where plc.project_slug = p.slug and plc.category_name ilike ${matcher})`;
+                    and (v.app_metadata->>'name' ilike
+      ${matcher}
+      or
+      v
+      .
+      app_metadata
+      ->>
+      'description'
+      ilike
+      ${matcher}
+      or
+      p
+      .
+      slug
+      like
+      ${matcher}
+      )
+      or
+      exists
+      (
+      select
+      1
+      from
+      project_latest_categories
+      plc
+      where
+      plc
+      .
+      project_slug
+      =
+      p
+      .
+      slug
+      and
+      plc
+      .
+      category_name
+      ilike
+      ${matcher}
+      )`;
     }
 
     if (filter.userId !== undefined) {
@@ -505,9 +553,41 @@ and v.app_metadata->'badges' @>
       sql`insert into registered_badges (id, mac)
           values (${id}, ${mac || null})
           on conflict (id)
-            do update set
-                        mac = coalesce(registered_badges.mac, excluded.mac),
-                        last_seen_at = now();`
+            do update set mac          = coalesce(registered_badges.mac, excluded.mac),
+                          last_seen_at = now();`
+    );
+  }
+
+  async getProjectApiTokenMetadata(
+    slug: ProjectSlug
+  ): Promise<ProjectApiTokenMetadata | undefined> {
+    const { rows } = await this.pool.query<DBProjectApiKey>(
+      sql`select created_at, last_used_at from project_api_token where project_slug = ${slug}`
+    );
+    return (
+      rows[0] && {
+        created_at: timestampTZToDate(rows[0].created_at),
+        last_used_at: timestampTZToDate(rows[0].last_used_at),
+      }
+    );
+  }
+
+  async createProjectApiToken(slug: ProjectSlug): Promise<string> {
+    const key = crypto.randomUUID();
+
+    const keyHash = await subtle.digest("SHA-256", Buffer.from(key));
+    await this.pool.query<DBProjectApiKey>(
+      sql`insert into project_api_token (project_slug, key_hash)
+          values (${slug}, ${keyHash})`
+    );
+    return key;
+  }
+
+  async revokeProjectApiToken(slug: string) {
+    await this.pool.query(
+      sql`delete
+          from project_api_token
+          where slug = ${slug}`
     );
   }
 }
