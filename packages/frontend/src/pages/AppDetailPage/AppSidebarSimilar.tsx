@@ -131,7 +131,7 @@ const AppSidebarSimilar: React.FC<{
   return (
     <section className="w-full max-w-sm rounded-lg bg-gray-800 p-6 shadow-lg">
       <h2 className="mb-4 border-b border-gray-700 pb-2 text-xl font-semibold text-slate-100">
-        Other Projects by {project.author?.name || "this author"}
+        Other Projects by {project.version.app_metadata.author || "this author"}
       </h2>
       <div className="space-y-4">{renderContent()}</div>
     </section>

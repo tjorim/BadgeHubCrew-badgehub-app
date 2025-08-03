@@ -35,7 +35,7 @@ export interface ProjectCore {
 
 export interface ProjectDetails extends ProjectCore, DatedData {
   version: Version;
-  author?: null | { name: string }; // TODO
+  // author?: null | { name: string }; // TODO
   // states?: Array<ProjectStatusOnBadge>;|null
   // votes?: Array<VoteFromUser>;|null
   // warnings?: Array<WarningFromUser>;|null
@@ -54,7 +54,7 @@ export const projectCoreSchema = z.object({
 export const detailedProjectSchema = projectCoreSchema
   .extend({
     version: versionSchema,
-    author: z.object({ name: z.string() }).optional().nullable(),
+    // author: z.object({ name: z.string() }).optional().nullable(),
   })
   .extend(datedDataSchema.shape);
 

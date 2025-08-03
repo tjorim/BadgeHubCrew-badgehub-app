@@ -590,18 +590,6 @@ exports[`createSwaggerDoc > swagger doc should match snapshot 1`] = `
               "application/json": {
                 "schema": {
                   "properties": {
-                    "author": {
-                      "nullable": true,
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "name",
-                      ],
-                      "type": "object",
-                    },
                     "created_at": {
                       "format": "date-time",
                       "type": "string",
@@ -1109,18 +1097,6 @@ Warning: if it is present, then badgehub clients on badges will not update the a
               "application/json": {
                 "schema": {
                   "properties": {
-                    "author": {
-                      "nullable": true,
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "name",
-                      ],
-                      "type": "object",
-                    },
                     "created_at": {
                       "format": "date-time",
                       "type": "string",
@@ -2131,18 +2107,6 @@ This is actually just an alias for a post to /projects/:slug/draft/files/metadat
               "application/json": {
                 "schema": {
                   "properties": {
-                    "author": {
-                      "nullable": true,
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "name",
-                      ],
-                      "type": "object",
-                    },
                     "created_at": {
                       "format": "date-time",
                       "type": "string",
