@@ -1,12 +1,10 @@
 import { config } from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import {
-  getAndAssertEnv,
-  KEYCLOAK_REALM_ISSUER_URL,
-} from "@shared/config/sharedConfig";
+import { getAndAssertEnv, getSharedConfig } from "@shared/config/sharedConfig";
 
 config();
+
 export const EXPRESS_PORT = 8081;
 
 export const POSTGRES_DB = getAndAssertEnv("POSTGRES_DB");
@@ -24,6 +22,15 @@ export const FRONTEND_PUBLIC_DIR = path.resolve(
   __dirname,
   "../../frontend/public"
 );
+const sharedConfig = getSharedConfig();
+export const KEYCLOAK_CLIENT_ID =
+  sharedConfig.keycloakPublic.KEYCLOAK_CLIENT_ID;
+export const BADGEHUB_API_BASE_URL = sharedConfig.BADGEHUB_API_BASE_URL;
+export const KEYCLOAK_BASE_URL = sharedConfig.keycloakPublic.KEYCLOAK_BASE_URL;
+export const KEYCLOAK_REALM = sharedConfig.keycloakPublic.KEYCLOAK_REALM;
+export const KEYCLOAK_REALM_ISSUER_URL =
+  KEYCLOAK_BASE_URL + "/realms/" + KEYCLOAK_REALM;
+export const IS_DEV_ENVIRONMENT = sharedConfig.isDevEnvironment;
 
 export const KEYCLOAK_CERTS_URL =
   KEYCLOAK_REALM_ISSUER_URL + "/protocol/openid-connect/certs";

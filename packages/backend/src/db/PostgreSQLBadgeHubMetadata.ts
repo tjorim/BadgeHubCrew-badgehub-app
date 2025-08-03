@@ -586,7 +586,7 @@ and v.app_metadata->'badges' @>
   ): Promise<void> {
     await this.pool.query<DBProjectApiKey>(
       sql`insert into project_api_token (project_slug, key_hash)
-          values (${slug}, ${keyHash})`
+          values (${slug}, ${keyHash}) on conflict (project_slug) do update set key_hash = ${keyHash}, last_used_at = now(), created_at = now()`
     );
   }
 

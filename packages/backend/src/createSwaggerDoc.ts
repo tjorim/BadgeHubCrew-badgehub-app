@@ -9,6 +9,7 @@ import {
   ReferenceObject,
 } from "openapi3-ts";
 import { initContract } from "@ts-rest/core";
+import { EXPRESS_PORT } from "@config";
 
 const c = initContract();
 export const swaggerJsonContract = c.router({
@@ -86,7 +87,7 @@ export const createSwaggerDoc = () => {
     servers: [
       { url: "/" },
       { url: "https://badgehub-api.p1m.nl/" },
-      { url: "https://localhost:8081/" },
+      { url: `https://localhost:${EXPRESS_PORT}/` },
     ],
     components: {
       ...jsonSwagger.components,

@@ -154,6 +154,25 @@ describe("Project API Tokens", () => {
           .set("badgehub-api-token", "Bearer " + dynamicApp1Token);
         expect(postRes.statusCode).toBe(403);
       });
+
+      test("token overwriting should be possible", async () => {
+        const createTokenRes = await request(app)
+          .post(`/api/v3/projects/${dynamicAppId}/token`)
+          .auth(USER1_TOKEN, { type: "bearer" })
+          .send();
+        expect(createTokenRes.statusCode).toBe(200);
+        const createTokenRes2 = await request(app)
+          .post(`/api/v3/projects/${dynamicAppId}/token`)
+          .auth(USER1_TOKEN, { type: "bearer" })
+          .send();
+        expect(createTokenRes2.statusCode).toBe(200);
+        expect(createTokenRes2.body).toEqual({
+          token: expect.any(String),
+        });
+        expect(createTokenRes2.body.token).not.toEqual(
+          createTokenRes.body.token
+        );
+      });
     },
     { timeout: isInDebugMode() ? 3600_000 : undefined }
   );

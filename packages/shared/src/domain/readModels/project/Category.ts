@@ -2,6 +2,7 @@ import { z } from "zod/v3";
 import { getSharedConfig } from "@shared/config/sharedConfig";
 
 const sharedConfig = getSharedConfig();
+// TODO this could cause issues if imported too early (before dotenv config)
 export const categoryNameSchema = z.enum(getAllCategoryNames());
 export type CategoryName = string;
 

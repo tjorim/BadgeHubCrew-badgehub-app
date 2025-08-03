@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getFreshAuthorizedTsRestClient } from "../../api/tsRestClient.ts";
+import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
 import Header from "@sharedComponents/Header.tsx";
 import Footer from "@sharedComponents/Footer.tsx";
 import AppEditBreadcrumb from "./AppEditBreadcrumb.tsx";
@@ -18,6 +18,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { VariantJSON } from "@shared/domain/readModels/project/VariantJSON.ts";
 import { assertDefined } from "@shared/util/assertions.ts";
+import AppEditTokenManager from "./AppEditTokenManager.tsx";
 
 function getAndEnsureApplication(newProjectData: ProjectDetails): VariantJSON {
   const application: VariantJSON =
@@ -258,35 +259,40 @@ const AppEditPage: React.FC<{
             <h1 className="text-3xl font-bold text-slate-100 mb-6">
               Editing {project!.slug}/rev{project!.version.revision}
             </h1>
-            <form className="space-y-8" onSubmit={handleSubmit}>
-              <AppEditActions
-                onClickDeleteApplication={handleDeleteApplication}
-              />
-              <AppEditBasicInfo
-                form={appMetadata as ProjectEditFormData}
-                onChange={handleFormChange}
-              />
-              <AppEditCategorization
-                form={appMetadata as ProjectEditFormData}
-                onChange={handleFormChange}
-              />
-              <AppEditFileUpload
-                slug={slug}
-                keycloak={keycloak}
-                onUploadSuccess={updateDraftFiles}
-              />
-              <AppEditFileList
-                user={user}
-                project={project as ProjectDetails}
-                onSetIcon={onSetIcon}
-                iconFilePath={appMetadata?.icon_map?.["64x64"]}
-                onDeleteFile={handleDeleteFile}
-                mainExecutable={
-                  mainExecutable /*TODO multi variant support in frontend*/
-                }
-                onSetMainExecutable={onSetMainExecutable}
-              />
-            </form>
+            <div className="space-y-8">
+              <form className="space-y-8" onSubmit={handleSubmit}>
+                <AppEditActions
+                  onClickDeleteApplication={handleDeleteApplication}
+                />
+                <AppEditBasicInfo
+                  form={appMetadata as ProjectEditFormData}
+                  onChange={handleFormChange}
+                />
+                <AppEditCategorization
+                  form={appMetadata as ProjectEditFormData}
+                  onChange={handleFormChange}
+                />
+                <AppEditFileUpload
+                  slug={slug}
+                  keycloak={keycloak}
+                  onUploadSuccess={updateDraftFiles}
+                />
+                <AppEditFileList
+                  user={user}
+                  project={project as ProjectDetails}
+                  onSetIcon={onSetIcon}
+                  iconFilePath={appMetadata?.icon_map?.["64x64"]}
+                  onDeleteFile={handleDeleteFile}
+                  mainExecutable={
+                    mainExecutable /*TODO multi variant support in frontend*/
+                  }
+                  onSetMainExecutable={onSetMainExecutable}
+                />
+              </form>
+              {keycloak && (
+                <AppEditTokenManager slug={slug} keycloak={keycloak} />
+              )}
+            </div>
           </>
         )}
       </main>
