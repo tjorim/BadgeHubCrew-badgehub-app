@@ -138,40 +138,42 @@ describe("Project API Tokens", () => {
         expect(getDraftForOtherProjectWithToken.statusCode).toBe(403);
       });
 
-      test("token should not be usable for project creation", async () => {
-        const createTokenRes = await request(app)
-          .post(`/api/v3/projects/${dynamicAppId}/token`)
-          .auth(USER1_TOKEN, { type: "bearer" })
-          .send();
-        expect(createTokenRes.statusCode).toBe(200);
-        expect(createTokenRes.body).toEqual({
-          token: expect.any(String),
+      describe("With api token for dynamicAppId", async () => {
+        let dynamicApp1Token: string;
+        beforeEach(async () => {
+          const createTokenRes = await request(app)
+            .post(`/api/v3/projects/${dynamicAppId}/token`)
+            .auth(USER1_TOKEN, { type: "bearer" })
+            .send();
+          expect(createTokenRes.statusCode).toBe(200);
+          dynamicApp1Token = createTokenRes.body.token;
         });
-        const dynamicApp1Token = createTokenRes.body.token;
-        const dynamicAppId2 = toSlug(`test_user1_app_${crypto.randomUUID()}`);
-        const postRes = await request(app)
-          .post(`/api/v3/projects/${dynamicAppId2}`)
-          .set("badgehub-api-token", "Bearer " + dynamicApp1Token);
-        expect(postRes.statusCode).toBe(403);
-      });
+        test("token should not be usable for project creation", async () => {
+          const dynamicAppId2 = toSlug(`test_user1_app_${crypto.randomUUID()}`);
+          const postRes = await request(app)
+            .post(`/api/v3/projects/${dynamicAppId2}`)
+            .set("badgehub-api-token", "Bearer " + dynamicApp1Token);
+          expect(postRes.statusCode).toBe(403);
+        });
 
-      test("token overwriting should be possible", async () => {
-        const createTokenRes = await request(app)
-          .post(`/api/v3/projects/${dynamicAppId}/token`)
-          .auth(USER1_TOKEN, { type: "bearer" })
-          .send();
-        expect(createTokenRes.statusCode).toBe(200);
-        const createTokenRes2 = await request(app)
-          .post(`/api/v3/projects/${dynamicAppId}/token`)
-          .auth(USER1_TOKEN, { type: "bearer" })
-          .send();
-        expect(createTokenRes2.statusCode).toBe(200);
-        expect(createTokenRes2.body).toEqual({
-          token: expect.any(String),
+        test("token overwriting should be possible", async () => {
+          const createTokenRes2 = await request(app)
+            .post(`/api/v3/projects/${dynamicAppId}/token`)
+            .auth(USER1_TOKEN, { type: "bearer" })
+            .send();
+          expect(createTokenRes2.statusCode).toBe(200);
+          expect(createTokenRes2.body).toEqual({
+            token: expect.any(String),
+          });
+          expect(createTokenRes2.body.token).not.toEqual(dynamicApp1Token);
         });
-        expect(createTokenRes2.body.token).not.toEqual(
-          createTokenRes.body.token
-        );
+
+        test("GET /users/{userId}/drafts should not be possible with an api-token", async () => {
+          const res = await request(app)
+            .get(`/api/v3/users/${USER1_ID}/drafts`)
+            .set("badgehub-api-token", "Bearer " + dynamicApp1Token);
+          expect(res.statusCode).toBe(403);
+        });
       });
     },
     { timeout: isInDebugMode() ? 3600_000 : undefined }

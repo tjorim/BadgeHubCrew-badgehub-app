@@ -10,8 +10,15 @@ describe("createSwaggerDoc", () => {
       {
         "components": {
           "securitySchemes": {
-            "bearer": {
+            "apiTokenAuth": {
+              "description": "Project-specific API token (for automation)",
+              "in": "header",
+              "name": "badgehub-api-token",
+              "type": "apiKey",
+            },
+            "bearerAuth": {
               "bearerFormat": "JWT",
+              "description": "JWT Bearer token (for user sessions)",
               "scheme": "bearer",
               "type": "http",
             },
@@ -548,9 +555,10 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
               "summary": "Delete an existing project",
@@ -983,9 +991,10 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
               "summary": "Update an existing project",
@@ -1071,9 +1080,10 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
               "summary": "Create a new project",
@@ -1445,9 +1455,10 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
               "summary": "Get project details for the draft version of a project",
@@ -1527,9 +1538,10 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
               "summary": "Delete a file from the latest draft version of a project",
@@ -1610,9 +1622,10 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
               "summary": "Get a file from the draft version of a project",
@@ -1700,9 +1713,10 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
               "summary": "Upload a file to the latest draft version of a project",
@@ -1941,9 +1955,10 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
               "summary": "Overwrite the metadata of the latest draft version of a project. 
@@ -2086,9 +2101,10 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
               "summary": "Publish the current draft as a new version",
@@ -2569,9 +2585,10 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
               "summary": "Delete the API token for the project",
@@ -2656,9 +2673,10 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
               "summary": "Allow to check if there is an API token for the project and when it was last used and created.",
@@ -2731,13 +2749,14 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
-              "summary": "Create an API token for the project. Warning, in case the project already had a token, this will invalidate the old token.
-      This is a bearer token that can be used with the 'badgehub-api-token' header. Eg. set this header: 'badgehub-api-token: Bearer {token}'.",
+              "summary": "Create a new API token for the project (and invalidate the old one if there was one).
+      This is an api key that can be used in the 'badgehub-api-token' header. Eg. set this header: 'badgehub-api-token:{token}'.",
               "tags": [
                 "Private",
               ],
@@ -2989,9 +3008,10 @@ describe("createSwaggerDoc", () => {
               },
               "security": [
                 {
-                  "bearer": [
-                    "private",
-                  ],
+                  "bearerAuth": [],
+                },
+                {
+                  "apiTokenAuth": [],
                 },
               ],
               "summary": "Get all draft projects for a user",
@@ -3009,7 +3029,7 @@ describe("createSwaggerDoc", () => {
             "url": "https://badgehub-api.p1m.nl/",
           },
           {
-            "url": "https://localhost:8081/",
+            "url": "http://localhost:8081/",
           },
         ],
         "tags": [
@@ -3022,7 +3042,7 @@ describe("createSwaggerDoc", () => {
             "name": "Public",
           },
           {
-            "description": "Operations available to authenticated users.",
+            "description": "Operations available to authenticated users via JWT Bearer token OR API token.",
             "name": "Private",
           },
         ],

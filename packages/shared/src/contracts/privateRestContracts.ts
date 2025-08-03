@@ -186,8 +186,8 @@ This is actually just an alias for a post to /projects/:slug/draft/files/metadat
         403: errorResponseSchema,
       },
       summary:
-        "Create an API token for the project. Warning, in case the project already had a token, this will invalidate the old token.\n" +
-        "This is a bearer token that can be used with the 'badgehub-api-token' header. Eg. set this header: 'badgehub-api-token: Bearer {token}'.",
+        "Create a new API token for the project (and invalidate the old one if there was one).\n" +
+        "This is an api key that can be used in the 'badgehub-api-token' header. Eg. set this header: 'badgehub-api-token:{token}'.",
     },
     getProjectApiTokenMetadata: {
       method: "GET",
@@ -234,6 +234,6 @@ export const privateRestContracts = c.router({
       403: errorResponseSchema,
     },
     summary: "Get all draft projects for a user",
-    headers: authorizationOrTokenHeaderSchema,
+    headers: authorizationHeaderSchema,
   },
 });

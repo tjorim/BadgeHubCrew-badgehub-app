@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Keycloak from "keycloak-js";
 import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
 import { ProjectApiTokenMetadata } from "@shared/domain/readModels/project/ProjectApiToken";
 import { assertDefined } from "@shared/util/assertions";
+
 import { DeleteIcon } from "@sharedComponents/icons/DeleteIcon.tsx";
-import { EyeOffIcon } from "@sharedComponents/icons/EyeOffIcon.tsx";
 import { EyeIcon } from "@sharedComponents/icons/EyeIcon.tsx";
 import { ClipboardCopyIcon } from "@sharedComponents/icons/ClipboardCopyIcon.tsx";
+import { EyeOffIcon } from "@sharedComponents/icons/EyeOffIcon.tsx";
 
 interface AppEditTokenManagerProps {
   slug: string;
@@ -177,8 +178,8 @@ const AppEditTokenManager: React.FC<AppEditTokenManagerProps> = ({
           </div>
         )}
 
-        {tokenMetadata && !newToken ? (
-          <div>
+        {tokenMetadata ? (
+          <div className={newToken ? "mt-4" : ""}>
             <p className="text-slate-300">
               An API token exists for this project.
             </p>
@@ -209,7 +210,7 @@ const AppEditTokenManager: React.FC<AppEditTokenManagerProps> = ({
               </button>
             </div>
           </div>
-        ) : !tokenMetadata && !newToken ? (
+        ) : (
           <div>
             <p className="text-slate-300">No active API token.</p>
             <button
@@ -220,7 +221,7 @@ const AppEditTokenManager: React.FC<AppEditTokenManagerProps> = ({
               Generate New Token
             </button>
           </div>
-        ) : null}
+        )}
       </div>
     </section>
   );
