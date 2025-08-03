@@ -1,7 +1,6 @@
 import {
   ProjectDetails,
   ProjectSlug,
-  ProjectSummary,
 } from "@shared/domain/readModels/project/ProjectDetails";
 import {
   LatestOrDraftAlias,
@@ -30,6 +29,7 @@ import { getImageProps } from "@util/imageProcessing";
 import { UserError } from "@domain/UserError";
 import { randomBytes } from "node:crypto";
 import { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
+import { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries";
 
 type FileContext =
   | { projectSlug: string; revision: number; filePath: string }

@@ -2,14 +2,12 @@ import { beforeEach, describe, expect, test } from "vitest";
 import request from "supertest";
 import express from "express";
 import { createExpressServer } from "@createExpressServer";
-import {
-  ProjectDetails,
-  ProjectSummary,
-} from "@shared/domain/readModels/project/ProjectDetails";
+import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails";
 import { isInDebugMode } from "@util/debug";
 import { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON";
 import { ProjectLatestRevisions } from "@shared/domain/readModels/project/ProjectRevision";
 import { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
+import { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries";
 
 describe(
   "Public API Routes",
