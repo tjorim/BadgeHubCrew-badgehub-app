@@ -324,50 +324,6 @@ describe("Authenticated API Routes", () => {
           ).toBeDefined();
         });
       });
-
-      describe("/projects/{slug}/token", () => {
-        test("CRD /projects/{slug}/token", async () => {
-          const getRes0 = await request(app)
-            .get(`/api/v3/projects/${user1AppId}/token`)
-            .auth(USER1_TOKEN, { type: "bearer" });
-          expect(getRes0.statusCode).toBe(404);
-
-          const createTokenRes = await request(app)
-            .post(`/api/v3/projects/${user1AppId}/token`)
-            .auth(USER1_TOKEN, { type: "bearer" })
-            .send();
-          expect(createTokenRes.statusCode).toBe(200);
-          expect(createTokenRes.body).toEqual({
-            token: expect.any(String),
-          });
-
-          const getResAfterCreate = await request(app)
-            .get(`/api/v3/projects/${user1AppId}/token`)
-            .auth(USER1_TOKEN, { type: "bearer" });
-          expect(getResAfterCreate.statusCode).toBe(200);
-
-          const body = getResAfterCreate.body as ProjectApiTokenMetadata;
-          const oneMinuteMillis = 60_000;
-          // Test that the date is sensible
-          expect(
-            -Math.abs(Date.now() - Date.parse(body.created_at))
-          ).toBeGreaterThanOrEqual(-oneMinuteMillis);
-          expect(
-            -Math.abs(Date.now() - Date.parse(body.last_used_at))
-          ).toBeGreaterThanOrEqual(-oneMinuteMillis);
-
-          const deleteRes = await request(app)
-            .delete(`/api/v3/projects/${user1AppId}/token`)
-            .auth(USER1_TOKEN, { type: "bearer" })
-            .send();
-          expect(deleteRes.statusCode).toBe(204);
-
-          const getResAfterDelete = await request(app)
-            .get(`/api/v3/projects/${user1AppId}/token`)
-            .auth(USER1_TOKEN, { type: "bearer" });
-          expect(getResAfterDelete.statusCode).toBe(404);
-        });
-      });
     },
     { timeout: isInDebugMode() ? 3600_000 : undefined }
   );

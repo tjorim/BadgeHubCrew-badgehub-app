@@ -379,4 +379,9 @@ export class BadgeHubData {
     await this.badgeHubMetadata.createProjectApiToken(slug, keyHash);
     return apiKey;
   }
+
+  async checkApiToken(slug: ProjectSlug, apiToken: string) {
+    const tokenHash = await this.badgeHubMetadata.getProjectApiTokenHash(slug);
+    return Boolean(apiToken && (await stringToSha256(apiToken)) === tokenHash);
+  }
 }

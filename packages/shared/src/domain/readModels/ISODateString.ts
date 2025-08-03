@@ -1,9 +1,5 @@
-import { z } from "zod/v4";
+import { z } from "zod/v3";
 
-export const isoDateStringSchema = z.templateLiteral([
-  z.string(),
-  ".",
-  z.int(),
-  "Z",
-]);
-export type ISODateString = `${string}.${number}Z`;
+export const isoDateStringSchema = z.string().date().endsWith("Z");
+
+export type ISODateString = string; // TODO change to `${string}.${number}Z`; Requires zod/v4

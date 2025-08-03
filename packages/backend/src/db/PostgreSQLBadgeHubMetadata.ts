@@ -573,6 +573,13 @@ and v.app_metadata->'badges' @>
     );
   }
 
+  async getProjectApiTokenHash(slug: ProjectSlug): Promise<string | undefined> {
+    const { rows } = await this.pool.query<{ key_hash: string }>(
+      sql`select key_hash from project_api_token where project_slug = ${slug}`
+    );
+    return rows[0]?.key_hash;
+  }
+
   async createProjectApiToken(
     slug: ProjectSlug,
     keyHash: string

@@ -9,14 +9,22 @@ import { NextFunction, Response } from "express";
 const JWKS = createRemoteJWKSet(new URL(KEYCLOAK_CERTS_URL!));
 
 async function jwtVerifyTokenMiddleware(
-  req: { headers: { authorization?: string } },
+  req: { headers: { authorization?: string; "badgehub-api-token"?: string } },
   res: Response,
   next: NextFunction
 ) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({ error: "Authorization header is missing" });
+    if (req.headers["badgehub-api-token"]) {
+      next();
+      return;
+    }
+    return res
+      .status(401)
+      .json({
+        error: "Authorization as well as badgehub-api-token header is missing",
+      });
   }
 
   const [bearer, token] = authHeader.split(" ");

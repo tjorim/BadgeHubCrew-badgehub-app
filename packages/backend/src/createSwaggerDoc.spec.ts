@@ -2524,6 +2524,225 @@ describe("createSwaggerDoc", () => {
               ],
             },
           },
+          "/api/v3/projects/{slug}/token": {
+            "delete": {
+              "deprecated": undefined,
+              "description": undefined,
+              "operationId": "revokeProjectAPIToken",
+              "parameters": [
+                {
+                  "in": "path",
+                  "name": "slug",
+                  "required": true,
+                  "schema": {
+                    "type": "string",
+                  },
+                },
+              ],
+              "responses": {
+                "204": {
+                  "content": {
+                    "application/json": {
+                      "schema": {},
+                    },
+                  },
+                  "description": "204",
+                },
+                "403": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "properties": {
+                          "reason": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "reason",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "description": "403",
+                },
+              },
+              "security": [
+                {
+                  "bearer": [
+                    "private",
+                  ],
+                },
+              ],
+              "summary": "Delete the API token for the project",
+              "tags": [
+                "Private",
+              ],
+            },
+            "get": {
+              "deprecated": undefined,
+              "description": undefined,
+              "operationId": "getProjectApiTokenMetadata",
+              "parameters": [
+                {
+                  "in": "path",
+                  "name": "slug",
+                  "required": true,
+                  "schema": {
+                    "type": "string",
+                  },
+                },
+              ],
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "description": "Metadata about the token.",
+                        "properties": {
+                          "created_at": {
+                            "type": "string",
+                          },
+                          "last_used_at": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "created_at",
+                          "last_used_at",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "description": "Metadata about the token.",
+                },
+                "403": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "properties": {
+                          "reason": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "reason",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "description": "403",
+                },
+                "404": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "properties": {
+                          "reason": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "reason",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "description": "404",
+                },
+              },
+              "security": [
+                {
+                  "bearer": [
+                    "private",
+                  ],
+                },
+              ],
+              "summary": "Allow to check if there is an API token for the project and when it was last used and created.",
+              "tags": [
+                "Private",
+              ],
+            },
+            "post": {
+              "deprecated": undefined,
+              "description": undefined,
+              "operationId": "createProjectAPIToken",
+              "parameters": [
+                {
+                  "in": "path",
+                  "name": "slug",
+                  "required": true,
+                  "schema": {
+                    "type": "string",
+                  },
+                },
+              ],
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "nullable": true,
+                    },
+                  },
+                },
+                "description": "Body",
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "description": "An object containing the API token for the project.",
+                        "properties": {
+                          "token": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "token",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "description": "An object containing the API token for the project.",
+                },
+                "403": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "properties": {
+                          "reason": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "reason",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "description": "403",
+                },
+              },
+              "security": [
+                {
+                  "bearer": [
+                    "private",
+                  ],
+                },
+              ],
+              "summary": "Create an API token for the project. Warning, in case the project already had a token, this will invalidate the old token.
+      This is a bearer token that can be used with the 'badgehub-api-token' header. Eg. set this header: 'badgehub-api-token: Bearer {token}'.",
+              "tags": [
+                "Private",
+              ],
+            },
+          },
           "/api/v3/stats": {
             "get": {
               "deprecated": undefined,
@@ -2536,19 +2755,24 @@ describe("createSwaggerDoc", () => {
                     "application/json": {
                       "schema": {
                         "properties": {
-                          "appAuthors": {
-                            "description": "number of app authors",
-                            "type": "number",
-                          },
-                          "apps": {
-                            "description": "number of apps",
-                            "type": "number",
-                          },
                           "badges": {
-                            "description": "number of registered badges",
+                            "description": "Number of registered badges",
+                            "type": "number",
+                          },
+                          "projectAuthors": {
+                            "description": "number of project authors",
+                            "type": "number",
+                          },
+                          "projects": {
+                            "description": "number of projects",
                             "type": "number",
                           },
                         },
+                        "required": [
+                          "projects",
+                          "projectAuthors",
+                          "badges",
+                        ],
                         "type": "object",
                       },
                     },
