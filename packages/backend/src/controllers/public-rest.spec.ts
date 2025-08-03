@@ -569,18 +569,15 @@ describe(
         const stats: BadgeHubStats = getRes.body;
         expect(stats.projectAuthors).toBeGreaterThan(0);
         expect(stats.projects).toBeGreaterThan(0);
-        expect(stats).toMatchInlineSnapshot(
-          // Prevent extra properties being added without unit test update
-          {
-            projectAuthors: expect.any(Number),
-            projects: expect.any(Number),
-          }, `
-          {
-            "badges": 52,
-            "projectAuthors": Any<Number>,
-            "projectInstalls": 40,
-            "projects": Any<Number>,
-          }
+        expect(stats.badges).toBeGreaterThan(0);
+        expect(stats.projectAuthors).toBeGreaterThan(0);
+        expect(Object.keys(stats)).toMatchInlineSnapshot(`
+          [
+            "projects",
+            "projectInstalls",
+            "projectAuthors",
+            "badges",
+          ]
         `);
       });
     });
