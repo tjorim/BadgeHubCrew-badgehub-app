@@ -26,6 +26,7 @@ import {
   convertDatedData,
   stripDatedData,
   timestampTZToDate,
+  timestampTZToISODateString,
 } from "@db/sqlHelpers/dbDates";
 import { DBVersion } from "@db/models/project/DBVersion";
 
@@ -48,9 +49,9 @@ import {
 import { BadgeSlug, getBadgeSlugs } from "@shared/domain/readModels/Badge";
 import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON";
 import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
-import { BadgeStats } from "@shared/contracts/publicRestContracts";
 import { ProjectApiTokenMetadata } from "@shared/domain/readModels/project/ProjectApiToken";
 import { DBProjectApiKey } from "@db/models/project/DBProjectApiKey";
+import { BadgeHubStats } from "@shared/domain/readModels/project/BadgeHubStats";
 
 const ONE_KILO = 1024;
 
@@ -202,30 +203,30 @@ export class PostgreSQLBadgeHubMetadata {
     return getAllCategoryNames();
   }
 
-  async getStats(): Promise<BadgeStats> {
-    const appsP = this.pool.query(
+  async getStats(): Promise<BadgeHubStats> {
+    const projectsP = this.pool.query(
       sql`SELECT COUNT(*)
-          FROM badgehub.projects
+          FROM projects
           WHERE deleted_at IS NULL`
     );
-    const appAuthorsP = this.pool.query(
+    const projectAuthorsP = this.pool.query(
       sql`SELECT COUNT(DISTINCT idp_user_id)
-          FROM badgehub.projects`
+          FROM projects WHERE deleted_at IS NULL`
     );
     const badgesP = this.pool.query(
       sql`SELECT COUNT(*)
-          FROM badgehub.registered_badges`
+          FROM registered_badges`
     );
 
-    const [apps, appAuthors, badges] = await Promise.all([
-      appsP,
-      appAuthorsP,
+    const [projects, projectAuthors, badges] = await Promise.all([
+      projectsP,
+      projectAuthorsP,
       badgesP,
     ]);
 
     return {
-      apps: Number(apps.rows[0].count),
-      appAuthors: Number(appAuthors.rows[0].count),
+      projects: Number(projects.rows[0].count),
+      projectAuthors: Number(projectAuthors.rows[0].count),
       badges: Number(badges.rows[0].count),
     };
   }

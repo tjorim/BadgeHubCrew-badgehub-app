@@ -9,6 +9,7 @@ import {
 import { isInDebugMode } from "@util/debug";
 import { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON";
 import { ProjectLatestRevisions } from "@shared/domain/readModels/project/ProjectRevision";
+import { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
 
 describe(
   "Public API Routes",
@@ -556,7 +557,29 @@ describe(
         );
         expect(getRes.statusCode).toBe(200);
         const projectRevisionMap = getRes.body as number;
-        expect(getRes.body).toBe(0);
+        expect(projectRevisionMap).toBe(0);
+      });
+
+      test("GET /api/v3/stats", async () => {
+        const getRes = await request(app).get(`/api/v3/stats`);
+        expect(getRes.statusCode).toBe(200);
+        const stats: BadgeHubStats = getRes.body;
+        expect(stats.projectAuthors).toBeGreaterThan(0);
+        expect(stats.projects).toBeGreaterThan(0);
+        expect(stats).toMatchInlineSnapshot(
+          // Prevent extra properties being added without unit test update
+          {
+            projectAuthors: expect.any(Number),
+            projects: expect.any(Number),
+          },
+          `
+          {
+            "badges": 2,
+            "projectAuthors": Any<Number>,
+            "projects": Any<Number>,
+          }
+        `
+        );
       });
     });
   },
