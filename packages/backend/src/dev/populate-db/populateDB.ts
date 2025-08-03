@@ -12,12 +12,36 @@ import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
 import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
 import { stringToSemiRandomNumber } from "@dev/populate-db/stringToSemiRandomNumber";
 
-import { PROJECT_NAMES, USERS } from "@dev/populate-db/fixtures";
+import { BADGE_IDS, PROJECT_NAMES, USERS } from "@dev/populate-db/fixtures";
 import {
   createSemiRandomAppdata,
   get1DayAfterSemiRandomUpdatedAt,
   getSemiRandomDates,
 } from "@dev/populate-db/createSemiRandomAppdata";
+
+async function reportSomeDownloads(
+  badgeHubData: BadgeHubData,
+  projectNames: string[]
+) {
+  const projectsWithDownloads = projectNames
+    .slice(0, -3)
+    .map((projectName) => projectName.toLowerCase());
+  const nbDownloads = 500;
+  for (let i = 0; i < nbDownloads; i++) {
+    const semiRandomIndex = await stringToSemiRandomNumber("download" + i);
+    await badgeHubData.reportInstall(
+      projectsWithDownloads[semiRandomIndex % projectsWithDownloads.length]!,
+      0,
+      { id: BADGE_IDS[i % BADGE_IDS.length >> 2] }
+    );
+  }
+}
+
+async function registerMostBadges(badgeHubData: BadgeHubData) {
+  for (const badge_id of BADGE_IDS.slice(3)) {
+    await badgeHubData.registerBadge(badge_id, undefined);
+  }
+}
 
 export async function repopulateDB() {
   const pool = new pg.Pool({
@@ -34,7 +58,13 @@ export async function repopulateDB() {
   );
   try {
     await cleanTables(client);
-    await populateDatabases(badgeHubData);
+    const projectSlugs = await insertProjects(badgeHubData);
+    const publishedProjectSlugs = await publishSomeProjects(
+      badgeHubData,
+      projectSlugs
+    );
+    await registerMostBadges(badgeHubData);
+    await reportSomeDownloads(badgeHubData, publishedProjectSlugs);
   } finally {
     client.release();
   }
@@ -78,11 +108,7 @@ async function publishSomeProjects(
       await writeDraftAppFiles(badgeHubData, projectName, "0.0.1");
     })
   );
-}
-
-async function populateDatabases(badgeHubData: BadgeHubData) {
-  const projectNames = await insertProjects(badgeHubData);
-  await publishSomeProjects(badgeHubData, projectNames);
+  return halfOfProjectNames;
 }
 
 const writeDraftAppFiles = async (

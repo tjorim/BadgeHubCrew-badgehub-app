@@ -10,7 +10,7 @@
     "build": "node --experimental-strip-types esbuild/esbuild.config.ts",
     "check:ts": "tsc --noEmit -p tsconfig.json",
     "dev": "node --watch --import tsx src/index.ts",
-    "repopulate-db": "node --import tsx src/dev/runPopulateDB.ts",
+    "repopulate-db": "node --import tsx src/dev/populate-db/runPopulateDB.ts",
     "test-db:up": "docker compose -f docker-compose.test-db.yml up -d",
     "test-db:down": "docker compose -f docker-compose.test-db.yml down",
     "backup": "docker exec -it badgehub-db /usr/bin/pg_dump --username badgehub badgehub -f /var/backup/data-backup-`date +\"%Y-%m-%dT%H:%m\"`.sql",

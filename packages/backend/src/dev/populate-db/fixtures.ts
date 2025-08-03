@@ -181,3 +181,7 @@ export const ICON_FILENAMES = Array.from(
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 export const ICONS_ASSETS_PATH = path.resolve(__dirname, "./dummy-icons");
+
+export const BADGE_IDS = Array(50)
+  .fill(0)
+  .map((_, i) => "badgeid" + i);
