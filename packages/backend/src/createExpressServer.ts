@@ -78,9 +78,9 @@ export const createExpressServer = () => {
     apiV3Router,
     {
       globalMiddleware: [
+        rateLimiter,
         jwtVerifyTokenMiddleware,
         addAuthenticationMiddleware,
-        rateLimiter,
       ],
     }
   );
