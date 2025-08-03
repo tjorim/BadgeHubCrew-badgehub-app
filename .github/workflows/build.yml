@@ -29,6 +29,9 @@ jobs:
       - name: Start environment
         run: |
           npm run test-db:up --workspace=packages/backend -- --wait
+      - name: Populate the DB with test data
+        run: |
+          npm run repopulate-db --workspace=packages/backend
       - name: Run test
         run: |
           npm run test
