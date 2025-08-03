@@ -347,8 +347,14 @@ describe("Authenticated API Routes", () => {
           expect(getResAfterCreate.statusCode).toBe(200);
 
           const body = getResAfterCreate.body as ProjectApiTokenMetadata;
-          expect(() => Date.parse(body.created_at)).not.toThrow();
-          expect(() => Date.parse(body.last_used_at)).not.toThrow();
+          const oneMinuteMillis = 60_000;
+          // Test that the date is sensible
+          expect(
+            -Math.abs(Date.now() - Date.parse(body.created_at))
+          ).toBeGreaterThanOrEqual(-oneMinuteMillis);
+          expect(
+            -Math.abs(Date.now() - Date.parse(body.last_used_at))
+          ).toBeGreaterThanOrEqual(-oneMinuteMillis);
 
           const deleteRes = await request(app)
             .delete(`/api/v3/projects/${user1AppId}/token`)
