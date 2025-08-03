@@ -1,7 +1,9 @@
-import { z } from "zod/v3";
+import { z } from "zod/v4";
 import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
-const isoDateStringSchema = z.string().date();
-type ISODateString = z.infer<typeof isoDateStringSchema>;
+import {
+  ISODateString,
+  isoDateStringSchema,
+} from "@shared/domain/readModels/ISODateString";
 
 export type ProjectApiTokenMetadata = {
   created_at: ISODateString;

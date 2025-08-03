@@ -51,7 +51,7 @@ import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON
 import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
 import { ProjectApiTokenMetadata } from "@shared/domain/readModels/project/ProjectApiToken";
 import { DBProjectApiKey } from "@db/models/project/DBProjectApiKey";
-import { BadgeHubStats } from "@shared/domain/readModels/project/BadgeHubStats";
+import { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
 
 const ONE_KILO = 1024;
 
@@ -567,8 +567,8 @@ and v.app_metadata->'badges' @>
     );
     return (
       rows[0] && {
-        created_at: timestampTZToDate(rows[0].created_at),
-        last_used_at: timestampTZToDate(rows[0].last_used_at),
+        created_at: timestampTZToISODateString(rows[0].created_at),
+        last_used_at: timestampTZToISODateString(rows[0].last_used_at),
       }
     );
   }
