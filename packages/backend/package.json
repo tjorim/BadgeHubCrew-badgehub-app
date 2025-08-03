@@ -19,7 +19,7 @@
     "db-migrate:up": "db-migrate up",
     "db-migrate:down": "db-migrate down",
     "db-migrate:create": "db-migrate create --sql-file true",
-    "mqtt-monitor": "node --env-file=.env src/util/mqtt-monitor.js "
+    "mqtt-monitor": "node --env-file=.env src/dev/mqtt-monitor.js "
   },
   "license": "MIT",
   "engines": {
