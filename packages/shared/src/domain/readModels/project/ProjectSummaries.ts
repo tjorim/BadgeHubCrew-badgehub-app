@@ -16,7 +16,7 @@ export interface ProjectSummary extends ProjectCore {
   name: string;
   published_at?: Date; // Can be undefined if not published yet
   icon_map?: IconMapWithUrls; // Relative path to the icon of the project
-  // download_counter?: number; // Sum of all version download count|null
+  distinct_installs: number;
   // ratings: { average: number; count: number } | null; // Average rating and count of ratings
   license_type?: string; // Eg. MIT
   categories?: CategoryName[];
@@ -44,6 +44,11 @@ export const projectSummarySchema = projectCoreSchema.extend({
   name: z.string(),
   hidden: z.boolean().optional(),
   published_at: z.date().optional(),
+  distinct_installs: z
+    .number()
+    .describe(
+      "The number of badges that have reported to have installed this app at least once."
+    ),
   icon_map: iconMapWithUrlsSchema.optional(),
   license_type: z.string().optional(),
   categories: z.array(categoryNameSchema).optional(),

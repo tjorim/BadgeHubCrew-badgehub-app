@@ -45,6 +45,24 @@ GROUP BY
 -- Create a unique index for fast lookups and refreshing.
 CREATE UNIQUE INDEX idx_version_install_reports_version_id ON version_install_reports (version_id);
 
+
+-- Step 3: Create MATERIALIZED VIEW for install reports distict for a project for a distinct badge.
+CREATE MATERIALIZED VIEW project_install_reports AS
+SELECT
+    v.project_slug,
+    COUNT(DISTINCT r.registered_badge_id) AS distinct_installs
+FROM
+    versions v
+        JOIN
+    registered_badges_version_reports r ON v.id = r.version_id
+WHERE
+    r.install_count > 0
+GROUP BY
+    v.project_slug;
+
+-- Create a unique index for fast lookups and refreshing.
+CREATE UNIQUE INDEX idx_project_install_reports_version_id ON project_install_reports (project_slug);
+
 ---
 
 -- Step 4: Create MATERIALIZED VIEW for launch reports.

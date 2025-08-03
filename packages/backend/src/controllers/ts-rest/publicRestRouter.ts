@@ -3,12 +3,13 @@ import {
   publicFilesContracts,
   publicOtherContracts,
   publicProjectContracts,
+  publicReportContracts,
   publicRestContracts,
 } from "@shared/contracts/publicRestContracts";
 import { BadgeHubData } from "@domain/BadgeHubData";
 import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
 import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
-import { nok, ok } from "@controllers/ts-rest/httpResponses";
+import { noContent, nok, ok } from "@controllers/ts-rest/httpResponses";
 import { Readable } from "node:stream";
 import { RouterImplementation } from "@ts-rest/express/src/lib/types";
 import { ProjectLatestRevisions } from "@shared/domain/readModels/project/ProjectRevision";
@@ -142,9 +143,27 @@ const createPublicOtherRouter = (badgeHubData: BadgeHubData) => {
     getStats: async () => {
       const data = await badgeHubData.getStats();
       return ok(data);
-    }
+    },
   };
   return otherRouter;
+};
+
+const createReportRouter = (badgeHubData: BadgeHubData) => {
+  const reportRouter: RouterImplementation<typeof publicReportContracts> = {
+    reportInstall: async ({ params, query }) => {
+      await badgeHubData.reportInstall(params.slug, params.revision, query);
+      return noContent();
+    },
+    reportLaunch: async ({ params, query }) => {
+      await badgeHubData.reportLaunch(params.slug, params.revision, query);
+      return noContent();
+    },
+    reportCrash: async ({ params, query, body }) => {
+      await badgeHubData.reportCrash(params.slug, params.revision, query, body);
+      return noContent();
+    },
+  };
+  return reportRouter;
 };
 
 export const createPublicRestRouter = (
@@ -157,5 +176,6 @@ export const createPublicRestRouter = (
     ...createProjectRouter(badgeHubData),
     ...createFilesRouter(badgeHubData),
     ...createPublicOtherRouter(badgeHubData),
+    ...createReportRouter(badgeHubData),
   } as any);
 };

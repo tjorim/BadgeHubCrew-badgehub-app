@@ -23,6 +23,12 @@ export interface DBVersionInstallReport {
   distinct_installs: number;
 }
 
+// Corresponds to the 'project_install_reports' materialized view
+export interface DBProjectInstallReport {
+  project_slug?: string;
+  distinct_installs?: number;
+}
+
 // Corresponds to the 'version_launch_reports' materialized view
 export interface DBVersionLaunchReport {
   version_id: number;

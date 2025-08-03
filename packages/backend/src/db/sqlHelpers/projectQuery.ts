@@ -1,13 +1,14 @@
-import {
-  IconMapWithUrls,
-  ProjectSummary,
-} from "@shared/domain/readModels/project/ProjectDetails";
 import moment from "moment";
 import { DBProject } from "@db/models/project/DBProject";
 import { DBVersion } from "@db/models/project/DBVersion";
 import sql, { raw } from "sql-template-tag";
 import { LatestOrDraftAlias } from "@shared/domain/readModels/project/Version";
 import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
+import {
+  IconMapWithUrls,
+  ProjectSummary,
+} from "@shared/domain/readModels/project/ProjectSummaries";
+import { DBProjectInstallReport } from "@db/models/DBReporting";
 
 export function getBaseSelectProjectQuery(
   revision: LatestOrDraftAlias = "latest"
@@ -25,7 +26,8 @@ export function getBaseSelectProjectQuery(
                     v.size_of_zip,
                     v.app_metadata
              from projects p
-                    left join versions v on ${revision_column} = v.revision and p.slug = v.project_slug`;
+                    left join versions v on ${revision_column} = v.revision and p.slug = v.project_slug
+                    left join project_install_reports pir on p.slug = pir.project_slug`;
 }
 
 export const projectQueryResponseToReadModel = (
@@ -36,7 +38,7 @@ export const projectQueryResponseToReadModel = (
     idp_user_id: enrichedDBProject.idp_user_id,
     categories: appMetadata.categories,
     description: appMetadata.description,
-    // download_counter: undefined, // TODO
+    distinct_installs: enrichedDBProject.distinct_installs ?? 0,
     license_type: appMetadata.license_type,
     name: appMetadata.name ?? enrichedDBProject.slug,
     published_at:
@@ -78,4 +80,6 @@ export const projectQueryResponseToReadModel = (
   return projectSummary;
 };
 
-export type ProjectQueryResponse = DBProject & DBVersion;
+export type ProjectQueryResponse = DBProject &
+  DBVersion &
+  DBProjectInstallReport;

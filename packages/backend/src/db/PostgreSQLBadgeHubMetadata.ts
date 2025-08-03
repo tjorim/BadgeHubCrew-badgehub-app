@@ -1,6 +1,7 @@
 // noinspection SqlResolve
 
 import {
+  detailedProjectSchema,
   ProjectCore,
   ProjectDetails,
   ProjectSlug,
@@ -129,6 +130,8 @@ const getVersionQuery = (
   }
 };
 
+type ReportType = "install_count" | "launch_count" | "crash_count";
+
 export class PostgreSQLBadgeHubMetadata {
   private readonly pool: Pool = getPool();
 
@@ -203,7 +206,16 @@ export class PostgreSQLBadgeHubMetadata {
     return getAllCategoryNames();
   }
 
+  async refreshReports(): Promise<void> {
+    await this.pool.query(
+      sql`refresh materialized view version_install_reports`
+    );
+  }
+
   async getStats(): Promise<BadgeHubStats> {
+    const projectInstallsP = this.pool.query(
+      sql`select COUNT(*) from project_install_reports`
+    );
     const projectsP = this.pool.query(
       sql`SELECT COUNT(*)
           FROM projects
@@ -219,14 +231,17 @@ export class PostgreSQLBadgeHubMetadata {
           FROM registered_badges`
     );
 
-    const [projects, projectAuthors, badges] = await Promise.all([
-      projectsP,
-      projectAuthorsP,
-      badgesP,
-    ]);
+    const [projectInstalls, projects, projectAuthors, badges] =
+      await Promise.all([
+        projectInstallsP,
+        projectsP,
+        projectAuthorsP,
+        badgesP,
+      ]);
 
     return {
       projects: Number(projects.rows[0].count),
+      projectInstalls: Number(projectInstalls.rows[0].count),
       projectAuthors: Number(projectAuthors.rows[0].count),
       badges: Number(badges.rows[0].count),
     };
@@ -365,10 +380,10 @@ export class PostgreSQLBadgeHubMetadata {
       return undefined;
     }
 
-    return {
+    return detailedProjectSchema.parse({
       ...convertDatedData(dbProject),
       version,
-    };
+    });
   }
 
   async getVersion(
@@ -454,7 +469,7 @@ and v.app_metadata->'badges' @>
       //@formatter:off
       query = sql`${query}
                     and (v.app_metadata->>'name' ilike ${matcher} or v.app_metadata->>'description' ilike ${matcher} or p.slug like ${matcher})
-                    or exists (select 1 from project_latest_categories plc where plc.project_slug = p.slug and plc.category_name ilike ${matcher})`;
+      or exists (select 1 from project_latest_categories plc where plc.project_slug = p.slug and plc.category_name ilike ${matcher})`;
       //@formatter:on
     }
 
@@ -523,6 +538,23 @@ and v.app_metadata->'badges' @>
             do update set mac          = coalesce(registered_badges.mac, excluded.mac),
                           last_seen_at = now();`
     );
+  }
+
+  async reportEvent(
+    slug: ProjectSlug,
+    revision: number,
+    badgeId: string,
+    reportType: ReportType
+  ): Promise<void> {
+    const versionIdQuery = sql`(select id from versions where project_slug = ${slug} and revision = ${revision} and published_at is not null)`;
+    const reportColumn = raw(reportType);
+
+    await this.pool.query(sql`
+      insert into registered_badges_version_reports (version_id, registered_badge_id, ${reportColumn})
+      values ((${versionIdQuery}), ${badgeId}, 1)
+      on conflict (registered_badge_id, version_id) do update set ${reportColumn} = registered_badges_version_reports.${reportColumn} + 1,
+                                                                   updated_at    = now()
+    `);
   }
 
   async getProjectApiTokenMetadata(

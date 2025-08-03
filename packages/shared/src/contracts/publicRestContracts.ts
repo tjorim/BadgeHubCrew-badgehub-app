@@ -27,6 +27,10 @@ export const getProjectsQuerySchema = z.object({
     .describe("allow a text search over the apps' slug, name and descriptions"),
 });
 
+const projectRevisionParams = z.object({
+  slug: z.string(),
+  revision: z.coerce.number(),
+});
 export const publicProjectContracts = c.router({
   getProject: {
     method: "GET",
@@ -70,10 +74,7 @@ export const publicProjectContracts = c.router({
   getProjectForRevision: {
     method: "GET",
     path: `/projects/:slug/rev:revision`,
-    pathParams: z.object({
-      slug: z.string(),
-      revision: z.coerce.number(),
-    }),
+    pathParams: projectRevisionParams,
     responses: {
       200: detailedProjectSchema,
       404: errorResponseSchema,
@@ -100,9 +101,7 @@ export const publicFilesContracts = c.router({
   getFileForRevision: {
     method: "GET",
     path: `/projects/:slug/rev:revision/files/:filePath`,
-    pathParams: z.object({
-      slug: z.string(),
-      revision: z.coerce.number(),
+    pathParams: projectRevisionParams.extend({
       filePath: z.string(),
     }),
     responses: {
@@ -161,9 +160,9 @@ export const publicReportContracts = c.router({
   reportInstall: {
     method: "POST",
     path: "/projects/:slug/rev:revision/report/install",
-    pathParams: z.object({ slug: z.string() }),
+    pathParams: projectRevisionParams,
     query: badgeIdentifiersSchema,
-    body: crashReportBodySchema,
+    body: z.undefined().optional(),
     responses: {
       204: z.void(),
       404: errorResponseSchema,
@@ -173,7 +172,7 @@ export const publicReportContracts = c.router({
   reportLaunch: {
     method: "POST",
     path: "/projects/:slug/rev:revision/report/launch",
-    pathParams: z.object({ slug: z.string() }),
+    pathParams: projectRevisionParams,
     query: badgeIdentifiersSchema,
     body: z.object({}),
     responses: {
@@ -185,7 +184,8 @@ export const publicReportContracts = c.router({
   reportCrash: {
     method: "POST",
     path: "/projects/:slug/rev:revision/report/crash",
-    pathParams: z.object({ slug: z.string() }),
+    pathParams: projectRevisionParams,
+    query: badgeIdentifiersSchema,
     body: crashReportBodySchema,
     responses: {
       204: z.void(),

@@ -1,4 +1,5 @@
 DROP MATERIALIZED VIEW IF EXISTS version_install_reports;
+DROP MATERIALIZED VIEW IF EXISTS project_install_reports;
 DROP MATERIALIZED VIEW IF EXISTS version_launch_reports;
 DROP MATERIALIZED VIEW IF EXISTS version_crash_reports;
 

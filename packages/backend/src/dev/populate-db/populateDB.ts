@@ -35,6 +35,7 @@ async function reportSomeDownloads(
       { id: BADGE_IDS[i % BADGE_IDS.length >> 2] }
     );
   }
+  await badgeHubData.refreshReports();
 }
 
 async function registerMostBadges(badgeHubData: BadgeHubData) {
