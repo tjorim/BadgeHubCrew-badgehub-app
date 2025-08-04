@@ -18,7 +18,7 @@ const AppCreationBasicInfo: React.FC<{
           </label>
           <input
             type="text"
-            className="w-full form-input p-2 font-roboto-mono"
+            className="w-full form-input p-2 font-mono"
             placeholder="e.g., my_weather_station"
             value={slug}
             onChange={(e) => {
@@ -41,7 +41,7 @@ const AppCreationBasicInfo: React.FC<{
             URL Preview
           </label>
           <div
-            className="slug-preview font-roboto-mono text-sm"
+            className="slug-preview font-mono text-sm"
             data-testid="app-creation-slug-preview"
           >
             <span className="text-slate-500">
