@@ -8,9 +8,7 @@ import { VALID_SLUG_REGEX } from "@shared/contracts/slug.ts";
 import { useSession } from "@sharedComponents/keycloakSession/SessionContext.tsx";
 import {
   getFreshAuthorizedTsRestClient,
-  publicTsRestClient as defaultTsRestClient,
-  TsRestClient,
-} from "../../api/tsRestClient.ts";
+} from "@api/tsRestClient.ts";
 import { useNavigate } from "react-router-dom";
 import { PleaseLoginMessage } from "@sharedComponents/PleaseLoginMessage.tsx";
 import { assertDefined } from "@shared/util/assertions.ts";
