@@ -152,7 +152,7 @@ const dummyData: DummyData[] = [
 const toSummary = (dummyApp: DummyData): ProjectSummary => {
   return {
     ...dummyApp,
-    distinct_installs: 1,
+    installs: 1,
     license_type: "MIT",
     idp_user_id: "dummy-user-id",
   };

@@ -7,6 +7,7 @@ import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
 import {
   IconMapWithUrls,
   ProjectSummary,
+  projectSummarySchema,
 } from "@shared/domain/readModels/project/ProjectSummaries";
 import { DBProjectInstallReport } from "@db/models/DBReporting";
 
@@ -24,7 +25,8 @@ export function getBaseSelectProjectQuery(
                     v.published_at,
                     v.revision,
                     v.size_of_zip,
-                    v.app_metadata
+                    v.app_metadata,
+                    pir.distinct_installs
              from projects p
                     left join versions v on ${revision_column} = v.revision and p.slug = v.project_slug
                     left join project_install_reports pir on p.slug = pir.project_slug`;
@@ -38,7 +40,10 @@ export const projectQueryResponseToReadModel = (
     idp_user_id: enrichedDBProject.idp_user_id,
     categories: appMetadata.categories,
     description: appMetadata.description,
-    distinct_installs: enrichedDBProject.distinct_installs ?? 0,
+    installs:
+      (enrichedDBProject.distinct_installs &&
+        parseInt(enrichedDBProject.distinct_installs)) ||
+      0,
     license_type: appMetadata.license_type,
     name: appMetadata.name ?? enrichedDBProject.slug,
     published_at:
@@ -77,7 +82,7 @@ export const projectQueryResponseToReadModel = (
   if (enrichedDBProject.git) {
     projectSummary.git = enrichedDBProject.git;
   }
-  return projectSummary;
+  return projectSummarySchema.parse(projectSummary);
 };
 
 export type ProjectQueryResponse = DBProject &

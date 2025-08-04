@@ -41,7 +41,6 @@ describe(
               "Games",
             ],
             "description": "With CodeCraft, you can do interesting things with the sensors.",
-            "distinct_installs": 0,
             "icon_map": {
               "64x64": {
                 "full_path": "icon5.png",
@@ -49,6 +48,7 @@ describe(
               },
             },
             "idp_user_id": "CyberSherpa",
+            "installs": 9,
             "license_type": "MIT",
             "name": "CodeCraft",
             "published_at": "2024-05-23T14:01:16.975Z",
@@ -64,6 +64,14 @@ describe(
       expect(
         res.body.find((app: ProjectSummary) => !app.published_at)
       ).toBeUndefined();
+    });
+
+    test("GET /api/v3/project-summaries should contain apps with non-0 number of installs", async () => {
+      const res = await request(app).get("/api/v3/project-summaries");
+      expect(res.statusCode).toBe(200);
+      expect(
+        res.body.filter((app: ProjectSummary) => app.installs).length
+      ).toBeGreaterThan(0);
     });
 
     test("GET /api/v3/project-summaries should not contain hidden apps unless the slug is given", async () => {
