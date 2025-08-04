@@ -42,8 +42,9 @@ const AppCard: React.FC<AppCardProps> = ({
             to={
               editable ? `/page/project/${slug}/edit` : `/page/project/${slug}`
             }
+            className="min-w-0"
           >
-            <h3 className="text-xl font-semibold text-emerald-400 hover:text-emerald-300 transition-colors line-clamp-2">
+            <h3 className="text-xl font-semibold text-emerald-400 hover:text-emerald-300 transition-colors text-ellipsis overflow-hidden">
               {name}
             </h3>
           </MLink>
