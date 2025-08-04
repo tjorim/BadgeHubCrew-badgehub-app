@@ -10,7 +10,7 @@ export const BadgeHubIcon = () => (
     y="0px"
     width="40px"
     viewBox="0 0 1024 976"
-    enable-background="new 0 0 1024 976"
+    enableBackground="new 0 0 1024 976"
     xmlSpace="preserve"
   >
     <path
