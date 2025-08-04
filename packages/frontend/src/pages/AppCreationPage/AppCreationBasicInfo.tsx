@@ -36,6 +36,7 @@ const AppCreationBasicInfo: React.FC<{
             a letter and contain at least 3 characters.
           </p>
         </div>
+        {/*
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-1">
             URL Preview
@@ -53,6 +54,7 @@ const AppCreationBasicInfo: React.FC<{
             This will be the unique URL for your app.
           </p>
         </div>
+        */}
       </div>
     </section>
   );
