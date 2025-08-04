@@ -209,7 +209,7 @@ export class PostgreSQLBadgeHubMetadata {
 
   async refreshReports(): Promise<void> {
     await this.pool.query(
-      sql`refresh materialized view version_install_reports`
+      sql`refresh materialized view project_install_reports`
     );
   }
 

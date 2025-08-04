@@ -244,8 +244,8 @@ export class BadgeHubData {
     return this.badgeHubMetadata.getCategories();
   }
 
-  async refreshReports(): Promise<BadgeHubStats> {
-    return (await this.badgeHubMetadata.refreshReports())!;
+  async refreshReports(): Promise<void> {
+    return await this.badgeHubMetadata.refreshReports();
   }
 
   async getStats(): Promise<BadgeHubStats> {
