@@ -6,6 +6,14 @@ interface GitLinkProps {
   url?: string;
 }
 
+function urlHasHost(url: string, GITHUB_HOSTNAME: string) {
+  try {
+    return new URL(url).hostname === GITHUB_HOSTNAME;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Renders a GitHub or GitLab icon linking to the provided source code URL.
  * It returns null if the URL is not provided or not from a supported provider.
@@ -15,9 +23,10 @@ const GitLink: React.FC<GitLinkProps> = ({ url }) => {
     return null;
   }
 
-  const GitIcon = url.includes("github.com")
+  const GITHUB_HOSTNAME = "github.com";
+  const GitIcon = urlHasHost(url, GITHUB_HOSTNAME)
     ? GitHubIcon
-    : url.includes("gitlab.com")
+    : urlHasHost(url, "gitlab.com")
       ? GitLabIcon
       : null;
 
