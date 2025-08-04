@@ -67,8 +67,7 @@ describe("Authenticated API Routes", () => {
             files: expect.any(Array),
             project_slug: expect.any(String),
           },
-        },
-        `
+        }, `
         {
           "created_at": Any<String>,
           "git": "https://github.com",
@@ -83,12 +82,10 @@ describe("Authenticated API Routes", () => {
             },
             "files": Any<Array>,
             "project_slug": Any<String>,
-            "published_at": null,
             "revision": 0,
           },
         }
-      `
-      );
+      `);
 
       expect(versionInResponse.files.length).toEqual(1);
       expect(versionInResponse.files[0]).toMatchObject({

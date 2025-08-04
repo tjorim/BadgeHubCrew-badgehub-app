@@ -74,6 +74,33 @@ describe(
       ).toBeGreaterThan(0);
     });
 
+    test("GET /api/v3/project-summaries should allow sorting by installs", async () => {
+      const res = await request(app).get(
+        "/api/v3/project-summaries?orderBy=installs"
+      );
+      expect(res.statusCode).toBe(200);
+      const summaries = res.body as ProjectSummary[];
+      const sortedExpected = summaries
+        .map((p) => p.installs)
+        .sort((a, b) => b - a);
+      expect(
+        summaries.map((app: ProjectSummary) => app.installs)
+      ).toStrictEqual(sortedExpected);
+    });
+
+    test("GET /api/v3/project-summaries should sort by default using published_at", async () => {
+      const res = await request(app).get("/api/v3/project-summaries");
+      expect(res.statusCode).toBe(200);
+      const summaries = res.body as ProjectSummary[];
+
+      const sortedExpected = summaries
+        .map((p) => p.published_at)
+        .sort((a, b) => Date.parse(b!) - Date.parse(a!));
+      expect(
+        summaries.map((app: ProjectSummary) => app.published_at)
+      ).toStrictEqual(sortedExpected);
+    });
+
     test("GET /api/v3/project-summaries should not contain hidden apps unless the slug is given", async () => {
       const res = await request(app).get("/api/v3/project-summaries");
       expect(res.statusCode).toBe(200);

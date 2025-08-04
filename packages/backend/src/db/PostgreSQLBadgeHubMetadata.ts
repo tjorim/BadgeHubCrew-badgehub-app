@@ -53,6 +53,7 @@ import { ProjectApiTokenMetadata } from "@shared/domain/readModels/project/Proje
 import { DBProjectApiKey } from "@db/models/project/DBProjectApiKey";
 import { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
 import { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries";
+import { OrderByOption } from "@shared/domain/readModels/project/ordering";
 
 const ONE_KILO = 1024;
 
@@ -405,7 +406,7 @@ export class PostgreSQLBadgeHubMetadata {
     return {
       ...stripDatedData(dbVersionWithoutId),
       files: await this._getFilesMetadataForVersion(dbVersion),
-      published_at: timestampTZToDate(dbVersion.published_at),
+      published_at: timestampTZToISODateString(dbVersion.published_at),
     };
   }
 
@@ -422,6 +423,7 @@ export class PostgreSQLBadgeHubMetadata {
       category?: CategoryName;
       search?: string;
       userId?: User["idp_user_id"];
+      orderBy: OrderByOption;
     },
     revision?: LatestOrDraftAlias
   ): Promise<ProjectSummary[]> {
@@ -478,7 +480,17 @@ and v.app_metadata->'badges' @>
       and p.idp_user_id =
       ${filter.userId}`;
     }
-    query = sql`${query} order by v.updated_at desc`;
+    switch (filter.orderBy) {
+      case "published_at":
+        query = sql`${query} order by v.published_at desc`;
+        break;
+      case "updated_at":
+        query = sql`${query} order by v.updated_at desc`;
+        break;
+      case "installs":
+        query = sql`${query} order by distinct_installs desc`;
+        break;
+    }
 
     if (filter.pageLength) {
       query = sql`${query}

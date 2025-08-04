@@ -327,6 +327,17 @@ exports[`createSwaggerDoc > swagger doc should match snapshot 1`] = `
               "type": "string",
             },
           },
+          {
+            "in": "query",
+            "name": "orderBy",
+            "schema": {
+              "enum": [
+                "published_at",
+                "installs",
+              ],
+              "type": "string",
+            },
+          },
         ],
         "responses": {
           "200": {
@@ -464,7 +475,6 @@ exports[`createSwaggerDoc > swagger doc should match snapshot 1`] = `
                         "type": "string",
                       },
                       "published_at": {
-                        "format": "date-time",
                         "type": "string",
                       },
                       "revision": {
@@ -591,7 +601,6 @@ exports[`createSwaggerDoc > swagger doc should match snapshot 1`] = `
                 "schema": {
                   "properties": {
                     "created_at": {
-                      "format": "date-time",
                       "type": "string",
                     },
                     "git": {
@@ -609,7 +618,6 @@ exports[`createSwaggerDoc > swagger doc should match snapshot 1`] = `
                       "type": "string",
                     },
                     "updated_at": {
-                      "format": "date-time",
                       "type": "string",
                     },
                     "version": {
@@ -778,7 +786,6 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                           "items": {
                             "properties": {
                               "created_at": {
-                                "format": "date-time",
                                 "type": "string",
                               },
                               "dir": {
@@ -813,7 +820,6 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                                 "type": "number",
                               },
                               "updated_at": {
-                                "format": "date-time",
                                 "type": "string",
                               },
                               "url": {
@@ -844,7 +850,6 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                           "type": "string",
                         },
                         "published_at": {
-                          "format": "date-time",
                           "nullable": true,
                           "type": "string",
                         },
@@ -1098,7 +1103,6 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                 "schema": {
                   "properties": {
                     "created_at": {
-                      "format": "date-time",
                       "type": "string",
                     },
                     "git": {
@@ -1116,7 +1120,6 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                       "type": "string",
                     },
                     "updated_at": {
-                      "format": "date-time",
                       "type": "string",
                     },
                     "version": {
@@ -1285,7 +1288,6 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                           "items": {
                             "properties": {
                               "created_at": {
-                                "format": "date-time",
                                 "type": "string",
                               },
                               "dir": {
@@ -1320,7 +1322,6 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                                 "type": "number",
                               },
                               "updated_at": {
-                                "format": "date-time",
                                 "type": "string",
                               },
                               "url": {
@@ -1351,7 +1352,6 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                           "type": "string",
                         },
                         "published_at": {
-                          "format": "date-time",
                           "nullable": true,
                           "type": "string",
                         },
@@ -2108,7 +2108,6 @@ This is actually just an alias for a post to /projects/:slug/draft/files/metadat
                 "schema": {
                   "properties": {
                     "created_at": {
-                      "format": "date-time",
                       "type": "string",
                     },
                     "git": {
@@ -2126,7 +2125,6 @@ This is actually just an alias for a post to /projects/:slug/draft/files/metadat
                       "type": "string",
                     },
                     "updated_at": {
-                      "format": "date-time",
                       "type": "string",
                     },
                     "version": {
@@ -2295,7 +2293,6 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                           "items": {
                             "properties": {
                               "created_at": {
-                                "format": "date-time",
                                 "type": "string",
                               },
                               "dir": {
@@ -2330,7 +2327,6 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                                 "type": "number",
                               },
                               "updated_at": {
-                                "format": "date-time",
                                 "type": "string",
                               },
                               "url": {
@@ -2361,7 +2357,6 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                           "type": "string",
                         },
                         "published_at": {
-                          "format": "date-time",
                           "nullable": true,
                           "type": "string",
                         },
@@ -3178,7 +3173,6 @@ This is an api key that can be used in the 'badgehub-api-token' header. Eg. set 
                         "type": "string",
                       },
                       "published_at": {
-                        "format": "date-time",
                         "type": "string",
                       },
                       "revision": {

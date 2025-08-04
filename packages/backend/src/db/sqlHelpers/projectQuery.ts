@@ -10,6 +10,7 @@ import {
   projectSummarySchema,
 } from "@shared/domain/readModels/project/ProjectSummaries";
 import { DBProjectInstallReport } from "@db/models/DBReporting";
+import { timestampTZToISODateString } from "@db/sqlHelpers/dbDates";
 
 export function getBaseSelectProjectQuery(
   revision: LatestOrDraftAlias = "latest"
@@ -26,7 +27,7 @@ export function getBaseSelectProjectQuery(
                     v.revision,
                     v.size_of_zip,
                     v.app_metadata,
-                    pir.distinct_installs
+                    coalesce(pir.distinct_installs, 0) as distinct_installs
              from projects p
                     left join versions v on ${revision_column} = v.revision and p.slug = v.project_slug
                     left join project_install_reports pir on p.slug = pir.project_slug`;
@@ -46,10 +47,7 @@ export const projectQueryResponseToReadModel = (
       0,
     license_type: appMetadata.license_type,
     name: appMetadata.name ?? enrichedDBProject.slug,
-    published_at:
-      (enrichedDBProject.published_at &&
-        moment(enrichedDBProject.published_at).toDate()) ||
-      undefined,
+    published_at: timestampTZToISODateString(enrichedDBProject.published_at),
     revision: enrichedDBProject.revision,
     slug: enrichedDBProject.slug,
     // states: undefined,

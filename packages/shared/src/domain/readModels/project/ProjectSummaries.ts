@@ -9,12 +9,16 @@ import {
   projectCoreSchema,
 } from "@shared/domain/readModels/project/ProjectDetails";
 import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
+import {
+  ISODateString,
+  isoDateStringSchema,
+} from "@shared/domain/readModels/ISODateString";
 
 export interface ProjectSummary extends ProjectCore {
   // Computed
   hidden?: boolean;
   name: string;
-  published_at?: Date; // Can be undefined if not published yet
+  published_at?: ISODateString; // Can be undefined if not published yet
   icon_map?: IconMapWithUrls; // Relative path to the icon of the project
   installs: number;
   // ratings: { average: number; count: number } | null; // Average rating and count of ratings
@@ -43,7 +47,7 @@ export const iconMapWithUrlsSchema = z
 export const projectSummarySchema = projectCoreSchema.extend({
   name: z.string(),
   hidden: z.boolean().optional(),
-  published_at: z.date().optional(),
+  published_at: isoDateStringSchema.optional(),
   installs: z
     .number()
     .describe(

@@ -29,6 +29,7 @@ import { UserError } from "@domain/UserError";
 import { randomBytes } from "node:crypto";
 import { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
 import { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries";
+import { OrderByOption } from "@shared/domain/readModels/project/ordering";
 
 type FileContext =
   | { projectSlug: string; revision: number; filePath: string }
@@ -252,7 +253,7 @@ export class BadgeHubData {
   }
 
   getProjectSummaries(
-    filter: {
+    query: {
       pageStart?: number;
       pageLength?: number;
       badge?: BadgeSlug;
@@ -260,10 +261,11 @@ export class BadgeHubData {
       search?: string;
       slugs?: ProjectSlug[];
       userId?: User["idp_user_id"];
+      orderBy: OrderByOption;
     },
     revision: LatestOrDraftAlias
   ): Promise<ProjectSummary[]> {
-    return this.badgeHubMetadata.getProjectSummaries(filter, revision);
+    return this.badgeHubMetadata.getProjectSummaries(query, revision);
   }
 
   async writeDraftFile(

@@ -25,6 +25,7 @@ export const getProjectsQuerySchema = z.object({
     .max(50, "the search string should not be longer than 50 characters long")
     .optional()
     .describe("allow a text search over the apps' slug, name and descriptions"),
+  orderBy: z.enum(["published_at", "installs"]).optional(),
 });
 
 const projectRevisionParams = z.object({

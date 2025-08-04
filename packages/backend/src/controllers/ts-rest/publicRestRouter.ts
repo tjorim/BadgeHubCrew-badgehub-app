@@ -70,6 +70,7 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
         search,
         slugs: projectSlugsString,
         userId,
+        orderBy,
       },
     }) => {
       const projectSlugs = projectSlugsString?.split(",") || [];
@@ -82,6 +83,7 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
           category,
           search,
           userId,
+          orderBy: orderBy ?? "published_at",
         },
         "latest"
       );
@@ -90,7 +92,7 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
     getProjectLatestRevisions: async ({ query }) => {
       const slugs = (query.slugs && query.slugs?.split(",")) || undefined;
       const data = await badgeHubData.getProjectSummaries(
-        { slugs: slugs },
+        { slugs: slugs, orderBy: "published_at" },
         "latest"
       );
       // TODO optimize this

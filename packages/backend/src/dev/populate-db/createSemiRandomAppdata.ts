@@ -12,11 +12,13 @@ import {
 import sharp from "sharp";
 import { getBadgeSlugs } from "@shared/domain/readModels/Badge";
 import { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON";
+import { TimestampTZ } from "@db/models/DBTypes";
+import { ISODateString } from "@shared/domain/readModels/ISODateString";
 
 export const getSemiRandomDates = async (stringToDigest: string) => {
   const semiRandomNumber = await stringToSemiRandomNumber(stringToDigest);
   const createMillisBack = semiRandomNumber % SIX_HUNDRED_DAYS_IN_MS;
-  const created_at = date(createMillisBack);
+  const created_at = date(createMillisBack) as TimestampTZ;
 
   const updated_at = date(
     createMillisBack -
@@ -24,14 +26,14 @@ export const getSemiRandomDates = async (stringToDigest: string) => {
         0,
         createMillisBack - (semiRandomNumber % (1234 * TWENTY_FOUR_HOURS_IN_MS))
       )
-  );
+  ) as TimestampTZ;
   return { created_at, updated_at };
 };
 export const get1DayAfterSemiRandomUpdatedAt = async (projectSlug: string) => {
   return new Date(
     Date.parse((await getSemiRandomDates(projectSlug)).updated_at) +
       TWENTY_FOUR_HOURS_IN_MS
-  ).toISOString();
+  ).toISOString() as ISODateString;
 };
 
 function date(millisBackFrom2025: number) {
