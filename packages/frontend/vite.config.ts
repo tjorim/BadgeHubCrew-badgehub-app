@@ -13,6 +13,16 @@ export default defineConfig({
       "@shared": path.resolve(__dirname, "../shared/src"),
     },
   },
+  define: {
+    'process.env.KEYCLOAK_BASE_URL': '"https://keycloak.p1m.nl"',
+    'process.env.KEYCLOAK_REALM': '"master"', 
+    'process.env.KEYCLOAK_CLIENT_ID': '"badgehub-api-frontend"',
+    'process.env.BADGEHUB_API_BASE_URL': '"http://localhost:8081"',
+    'process.env.NODE_ENV': '"development"',
+    'process.env.BADGE_SLUGS': '"why2025,troopers23,mch2022"',
+    'process.env.CATEGORY_NAMES': '"Uncategorised,Event related,Games,Graphics,Hardware,Utility,Wearable,Data,Silly,Hacking,Troll,Unusable,Adult,Virus,SAO,Interpreter"',
+    'process.env.ADMIN_CATEGORY_NAMES': '"Default"',
+  },
   build: {
     rollupOptions: {
       output: {
