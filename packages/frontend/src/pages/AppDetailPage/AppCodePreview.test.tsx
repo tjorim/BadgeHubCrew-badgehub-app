@@ -1,28 +1,45 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import AppCodePreview from "./AppCodePreview";
 import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails";
 
 // Mock the API client
 vi.mock("@api/tsRestClient.ts", () => ({
   publicTsRestClient: {
-    getLatestPublishedFile: vi.fn()
+    getLatestPublishedFile: vi.fn().mockImplementation(({ params }) => {
+      // Mock different responses based on file path
+      if (params.filePath === "test.json") {
+        return Promise.resolve({
+          status: 200,
+          body: '{"name": "test", "version": "1.0.0", "description": "A test JSON file"}'
+        });
+      }
+      if (params.filePath === "example.py") {
+        return Promise.resolve({
+          status: 200,
+          body: 'def hello_world():\n    print("Hello, BadgeHub!")\n    return "success"'
+        });
+      }
+      if (params.filePath === "readme.txt") {
+        return Promise.resolve({
+          status: 200,
+          body: 'This is a simple text file.\nIt contains multiple lines.\nEach line is plain text.'
+        });
+      }
+      return Promise.resolve({
+        status: 404,
+        body: "File not found"
+      });
+    })
   }
 }));
 
 const mockProject: ProjectDetails = {
-  project_id: "test-id",
   slug: "test-project",
-  name: "Test Project",
-  author_name: "Test Author",
-  author_id: "author-id",
-  description: "Test description",
+  idp_user_id: "author-id",
+  latest_revision: 1,
   version: {
-    version_id: "v1",
-    version_number: "1.0.0",
-    created_at: "2023-01-01T00:00:00Z",
-    updated_at: "2023-01-01T00:00:00Z",
-    status: "published",
+    revision: 1,
     files: [
       {
         dir: "",
@@ -67,20 +84,39 @@ const mockProject: ProjectDetails = {
       },
       {
         dir: "",
+        name: "readme",
+        ext: "txt",
+        mimetype: "text/plain",
+        size_of_content: 500,
+        sha256: "d".repeat(64),
+        size_formatted: "500 B",
+        full_path: "readme.txt",
+        url: "http://example.com/readme.txt",
+        created_at: "2023-01-01T00:00:00Z",
+        updated_at: "2023-01-01T00:00:00Z"
+      },
+      {
+        dir: "",
         name: "document",
         ext: "pdf",
         mimetype: "application/pdf",
         size_of_content: 5000,
-        sha256: "d".repeat(64),
+        sha256: "e".repeat(64),
         size_formatted: "5 KB",
         full_path: "document.pdf",
         url: "http://example.com/document.pdf",
         created_at: "2023-01-01T00:00:00Z",
         updated_at: "2023-01-01T00:00:00Z"
       }
-    ]
+    ],
+    app_metadata: {
+      name: "Test Project",
+      version: "1.0.0",
+      description: "Test description",
+      author: "Test Author"
+    },
+    published_at: "2023-01-01T00:00:00Z"
   },
-  tags: [],
   created_at: "2023-01-01T00:00:00Z",
   updated_at: "2023-01-01T00:00:00Z"
 };
@@ -94,6 +130,7 @@ describe("AppCodePreview", () => {
     expect(screen.getByText("test.json")).toBeInTheDocument();
     expect(screen.getByText("example.py")).toBeInTheDocument();
     expect(screen.getByText("image.png")).toBeInTheDocument();
+    expect(screen.getByText("readme.txt")).toBeInTheDocument();
     expect(screen.getByText("document.pdf")).toBeInTheDocument();
   });
 
@@ -102,7 +139,7 @@ describe("AppCodePreview", () => {
     
     // Click on PDF file
     const pdfButton = screen.getByText("document.pdf");
-    pdfButton.click();
+    fireEvent.click(pdfButton);
     
     // Should show unsupported message
     expect(await screen.findByText("Preview not available for this file type.")).toBeInTheDocument();
@@ -114,12 +151,57 @@ describe("AppCodePreview", () => {
     
     // Click on image file
     const imageButton = screen.getByText("image.png");
-    imageButton.click();
+    fireEvent.click(imageButton);
     
     // Should show image preview
     expect(await screen.findByText("Image file (100×50)")).toBeInTheDocument();
     const img = screen.getByAltText("image.png");
     expect(img).toBeInTheDocument();
     expect(img).toHaveAttribute("src", "http://example.com/image.png");
+  });
+
+  it("shows JSON preview with pretty print functionality", async () => {
+    render(<AppCodePreview project={mockProject} />);
+    
+    // Click on JSON file
+    const jsonButton = screen.getByText("test.json");
+    fireEvent.click(jsonButton);
+    
+    // Should show JSON preview
+    expect(await screen.findByText("JSON file")).toBeInTheDocument();
+    expect(screen.getByText("Pretty Print")).toBeInTheDocument();
+    
+    // Check that JSON content is displayed
+    expect(screen.getByText(/test.*version.*1\.0\.0/)).toBeInTheDocument();
+    
+    // Test pretty print toggle
+    const prettyPrintButton = screen.getByText("Pretty Print");
+    fireEvent.click(prettyPrintButton);
+    expect(screen.getByText("Show Raw")).toBeInTheDocument();
+  });
+
+  it("shows Python preview with syntax highlighting", async () => {
+    render(<AppCodePreview project={mockProject} />);
+    
+    // Click on Python file
+    const pythonButton = screen.getByText("example.py");
+    fireEvent.click(pythonButton);
+    
+    // Should show Python preview
+    expect(await screen.findByText("Python file")).toBeInTheDocument();
+    expect(screen.getByText(/def hello_world/)).toBeInTheDocument();
+    expect(screen.getByText(/print.*Hello, BadgeHub/)).toBeInTheDocument();
+  });
+
+  it("shows text preview for plain text files", async () => {
+    render(<AppCodePreview project={mockProject} />);
+    
+    // Click on text file
+    const textButton = screen.getByText("readme.txt");
+    fireEvent.click(textButton);
+    
+    // Should show text content
+    expect(await screen.findByText(/This is a simple text file/)).toBeInTheDocument();
+    expect(screen.getByText(/It contains multiple lines/)).toBeInTheDocument();
   });
 });
