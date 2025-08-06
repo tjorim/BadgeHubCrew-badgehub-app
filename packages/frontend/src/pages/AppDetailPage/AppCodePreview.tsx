@@ -23,27 +23,29 @@ const DownloadIcon = () => (
 
 // Helper function to determine preview type based on mimetype
 const getPreviewType = (mimetype: string): string => {
-  if (mimetype.startsWith('image/')) {
-    return 'image';
+  if (mimetype.startsWith("image/")) {
+    return "image";
   }
-  if (mimetype === 'application/json') {
-    return 'json';
+  if (mimetype === "application/json") {
+    return "json";
   }
-  if (mimetype === 'text/x-python' || 
-      mimetype === 'application/x-python-code' ||
-      mimetype === 'text/x-python-script') {
-    return 'python';
+  if (
+    mimetype === "text/x-python" ||
+    mimetype === "application/x-python-code" ||
+    mimetype === "text/x-python-script"
+  ) {
+    return "python";
   }
-  if (mimetype === 'text/plain' || mimetype.startsWith('text/')) {
-    return 'text';
+  if (mimetype === "text/plain" || mimetype.startsWith("text/")) {
+    return "text";
   }
-  return 'unsupported';
+  return "unsupported";
 };
 
 // JSON Preview Component with pretty print option
 const JsonPreview: React.FC<{ content: string }> = ({ content }) => {
   const [isPretty, setIsPretty] = useState(false);
-  
+
   const formatJson = (jsonStr: string) => {
     try {
       return JSON.stringify(JSON.parse(jsonStr), null, 2);
@@ -62,7 +64,7 @@ const JsonPreview: React.FC<{ content: string }> = ({ content }) => {
           onClick={() => setIsPretty(!isPretty)}
           className="px-2 py-1 bg-slate-700 text-slate-200 rounded text-xs hover:bg-slate-600"
         >
-          {isPretty ? 'Show Raw' : 'Pretty Print'}
+          {isPretty ? "Show Raw" : "Pretty Print"}
         </button>
       </div>
       <pre className="text-green-400">
@@ -72,15 +74,70 @@ const JsonPreview: React.FC<{ content: string }> = ({ content }) => {
   );
 };
 
-// Python Preview Component with basic highlighting
+// Python Preview Component with basic highlighting and formatting
 const PythonPreview: React.FC<{ content: string }> = ({ content }) => {
+  const [isFormatted, setIsFormatted] = useState(false);
+
+  const formatPython = (code: string) => {
+    try {
+      // Basic Python formatting - ensure proper indentation and line spacing
+      const lines = code.split("\n");
+      let indentLevel = 0;
+      const formatted = lines.map((line) => {
+        const trimmed = line.trim();
+        if (!trimmed) return "";
+
+        // Decrease indent for lines that end blocks
+        if (trimmed.match(/^(return|break|continue|pass)\s*$/)) {
+          // Keep current indent level for these statements
+        } else if (line.match(/^\s*(elif|else|except|finally)/)) {
+          indentLevel = Math.max(0, indentLevel - 1);
+        }
+
+        const result = "    ".repeat(indentLevel) + trimmed;
+
+        // Increase indent after lines that start new blocks
+        if (
+          trimmed.endsWith(":") &&
+          (trimmed.startsWith("def ") ||
+            trimmed.startsWith("class ") ||
+            trimmed.startsWith("if ") ||
+            trimmed.startsWith("elif ") ||
+            trimmed.startsWith("else:") ||
+            trimmed.startsWith("for ") ||
+            trimmed.startsWith("while ") ||
+            trimmed.startsWith("try:") ||
+            trimmed.startsWith("except") ||
+            trimmed.startsWith("finally:") ||
+            trimmed.startsWith("with "))
+        ) {
+          indentLevel += 1;
+        }
+
+        return result;
+      });
+
+      return formatted.join("\n");
+    } catch {
+      return code; // Return original if formatting fails
+    }
+  };
+
+  const displayContent = isFormatted ? formatPython(content) : content;
+
   return (
     <div>
-      <div className="mb-2">
+      <div className="mb-2 flex items-center gap-2">
         <span className="text-slate-300 text-sm">Python file</span>
+        <button
+          onClick={() => setIsFormatted(!isFormatted)}
+          className="px-2 py-1 bg-slate-700 text-slate-200 rounded text-xs hover:bg-slate-600"
+        >
+          {isFormatted ? "Show Original" : "Format Code"}
+        </button>
       </div>
       <pre className="text-blue-400">
-        <code>{content}</code>
+        <code>{displayContent}</code>
       </pre>
     </div>
   );
@@ -101,16 +158,18 @@ const ImagePreview: React.FC<{ file: FileMetadata }> = ({ file }) => {
     <div>
       <div className="mb-2">
         <span className="text-slate-300 text-sm">
-          Image file {file.image_width && file.image_height && 
+          Image file{" "}
+          {file.image_width &&
+            file.image_height &&
             `(${file.image_width}×${file.image_height})`}
         </span>
       </div>
       <div className="flex justify-center">
-        <img 
-          src={file.url} 
+        <img
+          src={file.url}
           alt={file.full_path}
           className="max-w-full max-h-96 rounded border border-slate-600"
-          style={{ maxHeight: '400px' }}
+          style={{ maxHeight: "400px" }}
         />
       </div>
     </div>
@@ -135,7 +194,7 @@ const AppCodePreview: React.FC<{ project: ProjectDetails }> = ({ project }) => {
   const [loading, setLoading] = useState(false);
 
   // Get the currently previewed file metadata
-  const currentFile = files.find(f => f.full_path === previewedFile) || null;
+  const currentFile = files.find((f) => f.full_path === previewedFile) || null;
 
   // Find __init__.py by default
   useEffect(() => {
@@ -165,14 +224,14 @@ const AppCodePreview: React.FC<{ project: ProjectDetails }> = ({ project }) => {
     }
 
     // For images, we don't need to fetch content - we'll display them directly
-    if (getPreviewType(currentFile.mimetype) === 'image') {
+    if (getPreviewType(currentFile.mimetype) === "image") {
       setFileContent(null);
       setLoading(false);
       return;
     }
 
     // For unsupported types, don't fetch content
-    if (getPreviewType(currentFile.mimetype) === 'unsupported') {
+    if (getPreviewType(currentFile.mimetype) === "unsupported") {
       setFileContent(null);
       setLoading(false);
       return;
@@ -273,27 +332,40 @@ const AppCodePreview: React.FC<{ project: ProjectDetails }> = ({ project }) => {
             <div className="text-slate-400">No file selected</div>
           ) : !currentFile ? (
             <div className="text-slate-400">File not found</div>
-          ) : (() => {
-            const previewType = getPreviewType(currentFile.mimetype);
-            
-            switch (previewType) {
-              case 'image':
-                return <ImagePreview file={currentFile} />;
-              case 'json':
-                return fileContent ? <JsonPreview content={fileContent} /> : 
-                  <div className="text-slate-400">Loading JSON...</div>;
-              case 'python':
-                return fileContent ? <PythonPreview content={fileContent} /> : 
-                  <div className="text-slate-400">Loading Python file...</div>;
-              case 'text':
-                return fileContent ? <TextPreview content={fileContent} /> : 
-                  <div className="text-slate-400">Loading text file...</div>;
-              case 'unsupported':
-                return <NoPreview mimetype={currentFile.mimetype} />;
-              default:
-                return <div className="text-slate-400">Unknown file type</div>;
-            }
-          })()}
+          ) : (
+            (() => {
+              const previewType = getPreviewType(currentFile.mimetype);
+
+              switch (previewType) {
+                case "image":
+                  return <ImagePreview file={currentFile} />;
+                case "json":
+                  return fileContent ? (
+                    <JsonPreview content={fileContent} />
+                  ) : (
+                    <div className="text-slate-400">Loading JSON...</div>
+                  );
+                case "python":
+                  return fileContent ? (
+                    <PythonPreview content={fileContent} />
+                  ) : (
+                    <div className="text-slate-400">Loading Python file...</div>
+                  );
+                case "text":
+                  return fileContent ? (
+                    <TextPreview content={fileContent} />
+                  ) : (
+                    <div className="text-slate-400">Loading text file...</div>
+                  );
+                case "unsupported":
+                  return <NoPreview mimetype={currentFile.mimetype} />;
+                default:
+                  return (
+                    <div className="text-slate-400">Unknown file type</div>
+                  );
+              }
+            })()
+          )}
         </div>
       </div>
     </section>
