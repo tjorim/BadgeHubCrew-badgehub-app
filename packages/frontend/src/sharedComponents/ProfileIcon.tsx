@@ -16,6 +16,14 @@ const ProfileIcon: React.FC = () => {
     await keycloak?.logout();
   }
 
+  function forgotPassword() {
+    if (!keycloak) return;
+
+    // Redirect to Keycloak's password reset page
+    const resetPasswordUrl = `${keycloak.authServerUrl}/realms/${keycloak.realm}/login-actions/reset-credentials?client_id=${keycloak.clientId}`;
+    window.location.href = resetPasswordUrl;
+  }
+
   // Close menu on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -76,14 +84,24 @@ const ProfileIcon: React.FC = () => {
               </button>
             </div>
           ) : (
-            <button
-              className="bg-gray-700 text-left px-4 py-2 text-gray-200 hover:bg-gray-600 rounded-md text-sm transition-colors mx-2"
-              style={{ width: "calc(100% - 1rem)" }}
-              onClick={login}
-              data-testid="login-button"
-            >
-              Login / Register
-            </button>
+            <div>
+              <button
+                className="bg-gray-700 text-left px-4 py-2 text-gray-200 hover:bg-gray-600 rounded-md text-sm transition-colors mx-2 mb-2"
+                style={{ width: "calc(100% - 1rem)" }}
+                onClick={login}
+                data-testid="login-button"
+              >
+                Login / Register
+              </button>
+              <button
+                className="bg-gray-600 text-left px-4 py-2 text-gray-300 hover:bg-gray-500 rounded-md text-sm transition-colors mx-2"
+                style={{ width: "calc(100% - 1rem)" }}
+                onClick={forgotPassword}
+                data-testid="forgot-password-button"
+              >
+                Forgot Password?
+              </button>
+            </div>
           )}
         </div>
       )}
