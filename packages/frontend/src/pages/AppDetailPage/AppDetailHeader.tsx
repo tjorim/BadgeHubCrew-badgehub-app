@@ -30,7 +30,7 @@ const AppDetailHeader: React.FC<{ project: ProjectDetails }> = ({
           </p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-4 flex-shrink-0 flex items-center">
-          <GitLink url={appMetadata.git_url} />
+          <GitLink url={appMetadata.git_url} showText={true} />
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-gray-700">
