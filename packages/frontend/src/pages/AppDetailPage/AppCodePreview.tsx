@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { publicTsRestClient } from "@api/tsRestClient.ts";
 import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
 import { FileMetadata } from "@shared/domain/readModels/project/FileMetadata.ts";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 const DownloadIcon = () => (
   <svg
@@ -106,9 +106,9 @@ const JsonPreview: React.FC<{ content: string }> = ({ content }) => {
       <div className="rounded overflow-hidden">
         <SyntaxHighlighter
           language="json"
-          style={oneDark}
+          style={atomOneDark}
           customStyle={{
-            background: "#1a1b26", // Dark background matching the app theme
+            background: "#1e293b", // Slate-800 to match app theme
             padding: "1rem",
             margin: 0,
             fontSize: "0.875rem",
@@ -190,9 +190,9 @@ const PythonPreview: React.FC<{ content: string }> = ({ content }) => {
       <div className="rounded overflow-hidden">
         <SyntaxHighlighter
           language="python"
-          style={oneDark}
+          style={atomOneDark}
           customStyle={{
-            background: "#1a1b26", // Dark background matching the app theme
+            background: "#1e293b", // Slate-800 to match app theme
             padding: "1rem",
             margin: 0,
             fontSize: "0.875rem",
@@ -239,9 +239,9 @@ const TextPreview: React.FC<{ content: string; filename: string }> = ({
       <div className="rounded overflow-hidden">
         <SyntaxHighlighter
           language={language}
-          style={oneDark}
+          style={atomOneDark}
           customStyle={{
-            background: "#1a1b26", // Dark background matching the app theme
+            background: "#1e293b", // Slate-800 to match app theme
             padding: "1rem",
             margin: 0,
             fontSize: "0.875rem",
