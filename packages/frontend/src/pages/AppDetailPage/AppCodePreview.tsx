@@ -87,7 +87,7 @@ const JsonPreview: React.FC<{ content: string }> = ({ content }) => {
       const parsed = JSON.parse(jsonStr);
       return JSON.stringify(parsed, null, 2);
     } catch (error) {
-      console.warn('Invalid JSON, showing original:', error);
+      console.warn('Failed to parse JSON, displaying raw content:', error);
       return jsonStr;
     }
   };
@@ -356,8 +356,8 @@ const AppCodePreview: React.FC<{ project: ProjectDetails }> = ({ project }) => {
             setFileContent(res.body);
           } else if (res.body instanceof Blob) {
             res.body.text().then(setFileContent).catch((error) => {
-              console.error('Error reading blob content:', error);
-              setFileContent("// Error reading file content");
+              console.error('Failed to read file content from server response:', error);
+              setFileContent("// Unable to read file content - please try downloading the file directly");
             });
           } else {
             setFileContent("// Unable to display file content");
@@ -368,8 +368,8 @@ const AppCodePreview: React.FC<{ project: ProjectDetails }> = ({ project }) => {
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching file:', error);
-        setFileContent("// Network error loading file");
+        console.error('Failed to fetch file content from server:', error);
+        setFileContent("// Network error - please check your connection and try again");
         setLoading(false);
       });
   }, [previewedFile, project.slug, currentFile]);
