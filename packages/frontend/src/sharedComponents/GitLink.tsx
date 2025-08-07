@@ -24,28 +24,35 @@ const GitLink: React.FC<GitLinkProps> = ({ url, showText = false }) => {
     return null;
   }
 
-  const GITHUB_HOSTNAME = "github.com";
-  const isGitHub = urlHasHost(url, GITHUB_HOSTNAME);
-  const isGitLab = urlHasHost(url, "gitlab.com");
+  // Git provider configuration - easy to extend for more providers
+  const gitProviders = {
+    "github.com": { icon: GitHubIcon, name: "GitHub" },
+    "gitlab.com": { icon: GitLabIcon, name: "GitLab" },
+  };
 
-  const GitIcon = isGitHub ? GitHubIcon : isGitLab ? GitLabIcon : null;
+  const provider = Object.entries(gitProviders).find(([hostname]) =>
+    urlHasHost(url, hostname)
+  )?.[1];
 
-  if (!GitIcon) {
+  if (!provider) {
     return null; // Only render for supported Git providers
   }
 
-  const providerName = isGitHub ? "GitHub" : "GitLab";
+  const { icon: GitIcon, name: providerName } = provider;
+
+  // Style configurations for better maintainability
+  const styles = {
+    button:
+      "btn-secondary px-4 py-2 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex items-center",
+    icon: "text-slate-400 hover:text-white transition-colors ml-2 flex-shrink-0",
+  };
 
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className={
-        showText
-          ? "btn-secondary px-4 py-2 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex items-center"
-          : "text-slate-400 hover:text-white transition-colors ml-2 flex-shrink-0"
-      }
+      className={showText ? styles.button : styles.icon}
       aria-label={`Source code repository on ${providerName}`}
       title={`View source code on ${providerName}`}
     >
