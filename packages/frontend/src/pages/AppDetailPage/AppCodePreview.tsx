@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { publicTsRestClient } from "@api/tsRestClient.ts";
 import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
 import { FileMetadata } from "@shared/domain/readModels/project/FileMetadata.ts";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const DownloadIcon = () => (
   <svg
@@ -42,7 +44,41 @@ const getPreviewType = (mimetype: string): string => {
   return "unsupported";
 };
 
-// JSON Preview Component with pretty print option
+// Helper function to detect programming language from file extension
+const getLanguageFromFile = (filename: string): string => {
+  const extension = filename.toLowerCase().split(".").pop() || "";
+  const languageMap: { [key: string]: string } = {
+    js: "javascript",
+    jsx: "jsx",
+    ts: "typescript",
+    tsx: "tsx",
+    py: "python",
+    json: "json",
+    html: "html",
+    css: "css",
+    scss: "scss",
+    sass: "sass",
+    less: "less",
+    xml: "xml",
+    yaml: "yaml",
+    yml: "yaml",
+    md: "markdown",
+    sh: "bash",
+    bash: "bash",
+    c: "c",
+    cpp: "cpp",
+    java: "java",
+    php: "php",
+    rb: "ruby",
+    go: "go",
+    rs: "rust",
+    sql: "sql",
+  };
+
+  return languageMap[extension] || "text";
+};
+
+// JSON Preview Component with pretty print option and syntax highlighting
 const JsonPreview: React.FC<{ content: string }> = ({ content }) => {
   const [isPretty, setIsPretty] = useState(false);
 
@@ -67,14 +103,29 @@ const JsonPreview: React.FC<{ content: string }> = ({ content }) => {
           {isPretty ? "Show Raw" : "Pretty Print"}
         </button>
       </div>
-      <pre className="text-green-400">
-        <code>{displayContent}</code>
-      </pre>
+      <div className="rounded overflow-hidden">
+        <SyntaxHighlighter
+          language="json"
+          style={oneDark}
+          customStyle={{
+            background: "#1a1b26", // Dark background matching the app theme
+            padding: "1rem",
+            margin: 0,
+            fontSize: "0.875rem",
+            lineHeight: "1.25rem",
+          }}
+          showLineNumbers={false}
+          wrapLines={true}
+          wrapLongLines={true}
+        >
+          {displayContent}
+        </SyntaxHighlighter>
+      </div>
     </div>
   );
 };
 
-// Python Preview Component with basic highlighting and formatting
+// Python Preview Component with syntax highlighting and formatting
 const PythonPreview: React.FC<{ content: string }> = ({ content }) => {
   const [isFormatted, setIsFormatted] = useState(false);
 
@@ -136,19 +187,74 @@ const PythonPreview: React.FC<{ content: string }> = ({ content }) => {
           {isFormatted ? "Show Original" : "Format Code"}
         </button>
       </div>
-      <pre className="text-blue-400">
-        <code>{displayContent}</code>
-      </pre>
+      <div className="rounded overflow-hidden">
+        <SyntaxHighlighter
+          language="python"
+          style={oneDark}
+          customStyle={{
+            background: "#1a1b26", // Dark background matching the app theme
+            padding: "1rem",
+            margin: 0,
+            fontSize: "0.875rem",
+            lineHeight: "1.25rem",
+          }}
+          showLineNumbers={false}
+          wrapLines={true}
+          wrapLongLines={true}
+        >
+          {displayContent}
+        </SyntaxHighlighter>
+      </div>
     </div>
   );
 };
 
-// Text Preview Component (existing behavior)
-const TextPreview: React.FC<{ content: string }> = ({ content }) => {
+// Text Preview Component with syntax highlighting for recognized file types
+const TextPreview: React.FC<{ content: string; filename: string }> = ({
+  content,
+  filename,
+}) => {
+  const language = getLanguageFromFile(filename);
+
+  if (language === "text") {
+    // Plain text - use basic pre/code styling
+    return (
+      <div>
+        <div className="mb-2">
+          <span className="text-slate-300 text-sm">Text file</span>
+        </div>
+        <pre className="text-slate-300 whitespace-pre-wrap break-words">
+          <code>{content}</code>
+        </pre>
+      </div>
+    );
+  }
+
+  // Use syntax highlighting for recognized programming languages
   return (
-    <pre>
-      <code>{content}</code>
-    </pre>
+    <div>
+      <div className="mb-2">
+        <span className="text-slate-300 text-sm">{language} file</span>
+      </div>
+      <div className="rounded overflow-hidden">
+        <SyntaxHighlighter
+          language={language}
+          style={oneDark}
+          customStyle={{
+            background: "#1a1b26", // Dark background matching the app theme
+            padding: "1rem",
+            margin: 0,
+            fontSize: "0.875rem",
+            lineHeight: "1.25rem",
+          }}
+          showLineNumbers={false}
+          wrapLines={true}
+          wrapLongLines={true}
+        >
+          {content}
+        </SyntaxHighlighter>
+      </div>
+    </div>
   );
 };
 
@@ -353,7 +459,10 @@ const AppCodePreview: React.FC<{ project: ProjectDetails }> = ({ project }) => {
                   );
                 case "text":
                   return fileContent ? (
-                    <TextPreview content={fileContent} />
+                    <TextPreview
+                      content={fileContent}
+                      filename={currentFile.full_path}
+                    />
                   ) : (
                     <div className="text-slate-400">Loading text file...</div>
                   );
