@@ -1,6 +1,6 @@
 import React from "react";
 import { ProjectEditFormData } from "@pages/AppEditPage/ProjectEditFormData.ts";
-import { CategorySelector } from "@sharedComponents/OptionSelector/CategorySelector.tsx";
+import { MultiSelectCategorySelector } from "@sharedComponents/OptionSelector/MultiSelectCategorySelector.tsx";
 import { MultiSelectBadgeSelector } from "@sharedComponents/OptionSelector/MultiSelectBadgeSelector.tsx";
 
 const AppEditCategorization: React.FC<{
@@ -21,12 +21,12 @@ const AppEditCategorization: React.FC<{
           })
         }
       />
-      <CategorySelector
-        noValueSetName="Please select"
-        category={form.categories?.[0]}
-        onCategoryChange={(newValue) =>
+      <MultiSelectCategorySelector
+        noValueSetName="No categories available"
+        categories={form.categories}
+        onCategoriesChange={(newCategories) =>
           onChange({
-            categories: newValue === undefined ? undefined : [newValue],
+            categories: newCategories,
           })
         }
       />

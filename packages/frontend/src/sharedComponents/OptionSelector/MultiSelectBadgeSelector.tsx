@@ -62,7 +62,7 @@ export const MultiSelectBadgeSelector: React.FC<{
             Clear All
           </button>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-48 overflow-y-auto">
           {availableBadges.length === 0 ? (
             <div className="text-slate-500 text-sm italic">{noValueSetName}</div>
           ) : (

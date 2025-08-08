@@ -20,6 +20,7 @@ import { VariantJSON } from "@shared/domain/readModels/project/VariantJSON.ts";
 import { assertDefined } from "@shared/util/assertions.ts";
 import AppEditTokenManager from "./AppEditTokenManager.tsx";
 import { BADGE_SLUGS } from "@config.ts";
+import { getAllCategoryNames } from "@shared/domain/readModels/project/Category.ts";
 
 function getAndEnsureApplication(newProjectData: ProjectDetails): VariantJSON {
   const application: VariantJSON =
@@ -66,6 +67,13 @@ const AppEditPage: React.FC<{
     if (!appMetadata.badges || appMetadata.badges.length === 0) {
       if (BADGE_SLUGS && BADGE_SLUGS.length > 0) {
         appMetadata.badges = [BADGE_SLUGS[0]];
+      }
+    }
+    // Set first available category as default if no categories are selected
+    if (!appMetadata.categories || appMetadata.categories.length === 0) {
+      const availableCategories = getAllCategoryNames();
+      if (availableCategories.length > 0) {
+        appMetadata.categories = [availableCategories[0]];
       }
     }
   }
