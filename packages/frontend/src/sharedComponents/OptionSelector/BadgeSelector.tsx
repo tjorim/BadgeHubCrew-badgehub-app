@@ -62,10 +62,6 @@ const MultiSelectBadges: React.FC<MultiSelectProps & { availableBadges: BadgeSlu
     }
   };
 
-  const selectAllBadges = () => {
-    onBadgesChange([...availableBadges]);
-  };
-
   const clearAllBadges = () => {
     onBadgesChange([]);
   };
@@ -118,20 +114,13 @@ const MultiSelectBadges: React.FC<MultiSelectProps & { availableBadges: BadgeSlu
         
         {isOpen && (
           <div className="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-600 rounded-md shadow-lg">
-            <div className="p-2 border-b border-gray-600 flex gap-1">
-              <button
-                type="button"
-                onClick={selectAllBadges}
-                className="text-xs px-2 py-1 bg-emerald-600 text-white rounded hover:bg-emerald-700"
-              >
-                All
-              </button>
+            <div className="p-2 border-b border-gray-600">
               <button
                 type="button"
                 onClick={clearAllBadges}
                 className="text-xs px-2 py-1 bg-gray-600 text-white rounded hover:bg-gray-700"
               >
-                None
+                Clear
               </button>
             </div>
             <div className="max-h-48 overflow-y-auto">
@@ -168,20 +157,13 @@ const MultiSelectBadges: React.FC<MultiSelectProps & { availableBadges: BadgeSlu
     <div>
       <div className="text-sm font-medium text-slate-300 mb-2">Badge</div>
       <div className="border border-gray-600 rounded-md p-3 bg-gray-800">
-        <div className="mb-2 flex gap-2">
-          <button
-            type="button"
-            onClick={selectAllBadges}
-            className="text-xs px-2 py-1 bg-emerald-600 text-white rounded hover:bg-emerald-700"
-          >
-            Select All
-          </button>
+        <div className="mb-2">
           <button
             type="button"
             onClick={clearAllBadges}
             className="text-xs px-2 py-1 bg-gray-600 text-white rounded hover:bg-gray-700"
           >
-            Clear All
+            Clear
           </button>
         </div>
         <div className="space-y-2 max-h-48 overflow-y-auto">
