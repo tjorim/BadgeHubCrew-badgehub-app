@@ -69,21 +69,27 @@ const AppCard: React.FC<
         {/* Tags section pushed to bottom */}
         <div className="mt-auto mb-3">
           {(() => {
+            const MAX_VISIBLE_TAGS = 3;
             const allTags = [
-              ...(categories?.map((cat) => ({ text: cat, type: "category" })) ??
-                []),
-              ...(badges?.map((badge) => ({ text: badge, type: "badge" })) ??
-                []),
+              ...(categories?.map((cat, index) => ({
+                text: cat,
+                type: "category",
+                id: `category-${index}`,
+              })) ?? []),
+              ...(badges?.map((badge, index) => ({
+                text: badge,
+                type: "badge",
+                id: `badge-${index}`,
+              })) ?? []),
             ];
-            const maxVisibleTags = 3;
-            const visibleTags = allTags.slice(0, maxVisibleTags);
-            const hiddenCount = allTags.length - maxVisibleTags;
+            const visibleTags = allTags.slice(0, MAX_VISIBLE_TAGS);
+            const hiddenCount = allTags.length - MAX_VISIBLE_TAGS;
 
             return (
               <>
                 {visibleTags.map((tag) => (
                   <span
-                    key={`${tag.type}-${tag.text}`}
+                    key={tag.id}
                     className={`${
                       tag.type === "category" ? "tag" : "tag-mcu"
                     } text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full`}
@@ -95,7 +101,7 @@ const AppCard: React.FC<
                   <span
                     className="text-xs text-slate-500 font-medium cursor-help"
                     title={allTags
-                      .slice(maxVisibleTags)
+                      .slice(MAX_VISIBLE_TAGS)
                       .map((tag) => tag.text)
                       .join(", ")}
                   >
