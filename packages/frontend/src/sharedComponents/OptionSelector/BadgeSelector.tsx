@@ -103,7 +103,7 @@ const MultiSelectBadges: React.FC<MultiSelectProps & { availableBadges: BadgeSlu
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full p-2 bg-white border border-gray-300 rounded-md text-left text-sm focus:ring-emerald-500 focus:border-emerald-500 flex justify-between items-center"
+          className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-left text-sm focus:ring-emerald-500 focus:border-emerald-500 flex justify-between items-center text-slate-200 hover:bg-gray-600"
         >
           <span className="truncate">{getDisplayText()}</span>
           <svg 
@@ -117,8 +117,8 @@ const MultiSelectBadges: React.FC<MultiSelectProps & { availableBadges: BadgeSlu
         </button>
         
         {isOpen && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
-            <div className="p-2 border-b border-gray-200 flex gap-1">
+          <div className="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-600 rounded-md shadow-lg">
+            <div className="p-2 border-b border-gray-600 flex gap-1">
               <button
                 type="button"
                 onClick={selectAllBadges}
@@ -138,15 +138,15 @@ const MultiSelectBadges: React.FC<MultiSelectProps & { availableBadges: BadgeSlu
               {availableBadges.map((badgeSlug) => (
                 <label
                   key={badgeSlug}
-                  className="flex items-center space-x-2 p-2 hover:bg-gray-50 cursor-pointer"
+                  className="flex items-center space-x-2 p-2 hover:bg-gray-700 cursor-pointer"
                 >
                   <input
                     type="checkbox"
                     checked={badges.includes(badgeSlug)}
                     onChange={() => handleToggleBadge(badgeSlug)}
-                    className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                    className="rounded border-gray-500 bg-gray-700 text-emerald-600 focus:ring-emerald-500"
                   />
-                  <span className="text-sm text-gray-700">{badgeSlug}</span>
+                  <span className="text-sm text-slate-200">{badgeSlug}</span>
                 </label>
               ))}
             </div>
@@ -167,7 +167,7 @@ const MultiSelectBadges: React.FC<MultiSelectProps & { availableBadges: BadgeSlu
   return (
     <div>
       <div className="text-sm font-medium text-slate-300 mb-2">Badge</div>
-      <div className="border border-gray-600 rounded-md p-3 bg-white">
+      <div className="border border-gray-600 rounded-md p-3 bg-gray-800">
         <div className="mb-2 flex gap-2">
           <button
             type="button"
@@ -191,22 +191,22 @@ const MultiSelectBadges: React.FC<MultiSelectProps & { availableBadges: BadgeSlu
             availableBadges.map((badgeSlug) => (
               <label
                 key={badgeSlug}
-                className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                className="flex items-center space-x-2 cursor-pointer hover:bg-gray-700 p-1 rounded"
               >
                 <input
                   type="checkbox"
                   checked={badges.includes(badgeSlug)}
                   onChange={() => handleToggleBadge(badgeSlug)}
-                  className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                  className="rounded border-gray-500 bg-gray-700 text-emerald-600 focus:ring-emerald-500"
                 />
-                <span className="text-sm text-gray-700">{badgeSlug}</span>
+                <span className="text-sm text-slate-200">{badgeSlug}</span>
               </label>
             ))
           )}
         </div>
         {badges.length > 0 && (
-          <div className="mt-2 pt-2 border-t border-gray-200">
-            <div className="text-xs text-gray-600">
+          <div className="mt-2 pt-2 border-t border-gray-600">
+            <div className="text-xs text-slate-400">
               Selected: {badges.join(", ")}
             </div>
           </div>
