@@ -31,11 +31,11 @@ function readBFFEnv() {
         process.env.KEYCLOAK_CLIENT_ID ?? "badgehub-api-frontend",
     },
     BADGEHUB_API_BASE_URL: getAndAssertEnv("BADGEHUB_API_BASE_URL"),
-    BADGE_SLUGS: getAndAssertEnv("BADGE_SLUGS")?.split(","),
-    CATEGORY_NAMES: [...getAndAssertEnv("CATEGORY_NAMES")?.split(",")],
-    ADMIN_CATEGORY_NAMES: process.env["ADMIN_CATEGORY_NAMES"]?.split(",") ?? [
+    BADGE_SLUGS: getAndAssertEnv("BADGE_SLUGS")?.split(",").sort(),
+    CATEGORY_NAMES: [...getAndAssertEnv("CATEGORY_NAMES")?.split(",")].sort(),
+    ADMIN_CATEGORY_NAMES: (process.env["ADMIN_CATEGORY_NAMES"]?.split(",") ?? [
       "Default",
-    ],
+    ]).sort(),
     isDevEnvironment: process.env.NODE_ENV === "development",
   };
 }
