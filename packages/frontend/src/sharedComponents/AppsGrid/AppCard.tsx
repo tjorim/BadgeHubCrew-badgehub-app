@@ -136,45 +136,55 @@ const AppCard: React.FC<
         {/* Tags section pushed to bottom */}
         <div className="mt-auto mb-3">
           {(() => {
-            const MAX_VISIBLE_TAGS = 3;
-            const allTags = [
-              ...(categories?.map((cat, index) => ({
-                text: cat,
-                type: "category",
-                id: `category-${index}`,
-              })) ?? []),
-              ...(badges?.map((badge, index) => ({
-                text: badge,
-                type: "badge",
-                id: `badge-${index}`,
-              })) ?? []),
-            ];
-            const visibleTags = allTags.slice(0, MAX_VISIBLE_TAGS);
-            const hiddenCount = allTags.length - MAX_VISIBLE_TAGS;
+            const MAX_VISIBLE_CATEGORIES = 1;
+            const MAX_VISIBLE_BADGES = 1;
+            const categoryTags = categories ?? [];
+            const badgeTags = badges ?? [];
+            const hiddenCategoryCount = Math.max(
+              0,
+              categoryTags.length - MAX_VISIBLE_CATEGORIES
+            );
+            const hiddenBadgeCount = Math.max(
+              0,
+              badgeTags.length - MAX_VISIBLE_BADGES
+            );
 
             return (
               <>
-                {visibleTags.map((tag) => (
+                {categoryTags
+                  .slice(0, MAX_VISIBLE_CATEGORIES)
+                  .map((category) => (
+                    <span
+                      key={category}
+                      className="badge badge-neutral text-xs font-semibold mr-2"
+                    >
+                      {category}
+                    </span>
+                  ))}
+                {hiddenCategoryCount > 0 && (
                   <span
-                    key={tag.id}
-                    className={`${
-                      tag.type === "category"
-                        ? "badge badge-neutral"
-                        : "badge badge-success"
-                    } text-xs font-semibold mr-2`}
-                  >
-                    {tag.text}
-                  </span>
-                ))}
-                {hiddenCount > 0 && (
-                  <span
-                    className="text-xs opacity-50 font-medium cursor-help"
-                    title={allTags
-                      .slice(MAX_VISIBLE_TAGS)
-                      .map((tag) => tag.text)
+                    className="text-xs opacity-50 font-medium cursor-help mr-2"
+                    title={categoryTags
+                      .slice(MAX_VISIBLE_CATEGORIES)
                       .join(", ")}
                   >
-                    +{hiddenCount} more
+                    +{hiddenCategoryCount}
+                  </span>
+                )}
+                {badgeTags.slice(0, MAX_VISIBLE_BADGES).map((badge) => (
+                  <span
+                    key={badge}
+                    className="badge badge-success text-xs font-semibold mr-2"
+                  >
+                    {badge}
+                  </span>
+                ))}
+                {hiddenBadgeCount > 0 && (
+                  <span
+                    className="text-xs opacity-50 font-medium cursor-help"
+                    title={badgeTags.slice(MAX_VISIBLE_BADGES).join(", ")}
+                  >
+                    +{hiddenBadgeCount}
                   </span>
                 )}
               </>
