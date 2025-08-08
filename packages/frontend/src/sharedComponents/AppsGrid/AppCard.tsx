@@ -68,22 +68,43 @@ const AppCard: React.FC<
 
         {/* Tags section pushed to bottom */}
         <div className="mt-auto mb-3">
-          {categories?.map((category) => (
-            <span
-              key={category}
-              className="tag text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full"
-            >
-              {category}
-            </span>
-          )) ?? false}
-          {badges?.map((badge) => (
-            <span
-              key={badge}
-              className="tag-mcu text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full"
-            >
-              {badge}
-            </span>
-          )) ?? false}
+          {(() => {
+            const allTags = [
+              ...(categories?.map((cat) => ({ text: cat, type: "category" })) ??
+                []),
+              ...(badges?.map((badge) => ({ text: badge, type: "badge" })) ??
+                []),
+            ];
+            const maxVisibleTags = 3;
+            const visibleTags = allTags.slice(0, maxVisibleTags);
+            const hiddenCount = allTags.length - maxVisibleTags;
+
+            return (
+              <>
+                {visibleTags.map((tag) => (
+                  <span
+                    key={`${tag.type}-${tag.text}`}
+                    className={`${
+                      tag.type === "category" ? "tag" : "tag-mcu"
+                    } text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full`}
+                  >
+                    {tag.text}
+                  </span>
+                ))}
+                {hiddenCount > 0 && (
+                  <span
+                    className="text-xs text-slate-500 font-medium cursor-help"
+                    title={allTags
+                      .slice(maxVisibleTags)
+                      .map((tag) => tag.text)
+                      .join(", ")}
+                  >
+                    +{hiddenCount} more
+                  </span>
+                )}
+              </>
+            );
+          })()}
         </div>
       </div>
 
