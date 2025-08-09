@@ -28,6 +28,7 @@ import {
 import { Readable } from "node:stream";
 import { MAX_UPLOAD_FILE_SIZE_BYTES } from "@config";
 import { ProjectAlreadyExistsError, UserError } from "@domain/UserError";
+import { detectMimeType } from "@util/mimeTypeDetection";
 
 const upload = multer({
   limits: { fileSize: MAX_UPLOAD_FILE_SIZE_BYTES },
@@ -140,8 +141,10 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
             "No file provided with multipart/form-data under field file"
           );
         }
+        const detectedMimeType = detectMimeType(typedFile.mimetype, filePath);
+        
         await badgeHubData.writeDraftFile(slug, filePath, {
-          mimetype: typedFile.mimetype,
+          mimetype: detectedMimeType,
           fileContent: typedFile.buffer,
           directory: typedFile.destination,
           fileName: typedFile.filename,
