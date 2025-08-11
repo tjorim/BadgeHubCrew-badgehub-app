@@ -1,5 +1,6 @@
 import React from "react";
 import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import MarkdownText from "@sharedComponents/MarkdownText.tsx";
 
 const AppDescription: React.FC<{ project: ProjectDetails }> = ({
   project: {
@@ -16,7 +17,7 @@ const AppDescription: React.FC<{ project: ProjectDetails }> = ({
         <h2 className="card-title text-2xl mb-4">Description</h2>
         <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none text-base-content/80 space-y-4">
           {primaryDescription ? (
-            <p className="whitespace-pre-wrap">{primaryDescription}</p>
+            <MarkdownText>{primaryDescription}</MarkdownText>
           ) : (
             <p>No description provided.</p>
           )}
