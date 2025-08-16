@@ -73,19 +73,28 @@ const AppEditBasicInfo: React.FC<{
 
         {/* Description with Markdown Editor */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
-            Description
-          </label>
+          <div className="flex justify-between items-center mb-2">
+            <label className="block text-sm font-medium text-slate-300">
+              Description
+            </label>
+            <span className={`text-xs ${
+              (form.description?.length || 0) > 2000 
+                ? 'text-red-400' 
+                : 'text-slate-500'
+            }`}>
+              {form.description?.length || 0}/2000
+            </span>
+          </div>
           <div data-color-mode="dark">
             <MDEditor
               value={form.description || ""}
               onChange={(value) => onChange({ description: value || "" })}
-              preview="edit"
               visibleDragbar={false}
               textareaProps={{
-                placeholder: "Enter your app description here. You can use markdown formatting like **bold**, *italic*, [links](url), `code`, and more..."
+                placeholder: "Enter your app description here. You can use markdown formatting like **bold**, *italic*, [links](url), `code`, and more...",
+                maxLength: 2000
               }}
-              height={300}
+              height={window.innerWidth < 768 ? 200 : 300}
             />
           </div>
         </div>
