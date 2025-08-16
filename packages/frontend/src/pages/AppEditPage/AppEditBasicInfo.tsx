@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { ProjectEditFormData } from "@pages/AppEditPage/ProjectEditFormData.ts";
 import GitLink from "@sharedComponents/GitLink.tsx";
+import MarkdownText from "@sharedComponents/MarkdownText.tsx";
 
 /**
  * A component for editing the basic information of an application.
@@ -11,6 +12,7 @@ const AppEditBasicInfo: React.FC<{
   form: ProjectEditFormData;
   onChange: (changes: Partial<ProjectEditFormData>) => void;
 }> = ({ form, onChange }) => {
+  const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
   return (
     <section className="bg-gray-800 p-6 rounded-lg shadow-lg">
       <h2 className="text-2xl font-semibold text-slate-100 mb-4">
@@ -70,21 +72,67 @@ const AppEditBasicInfo: React.FC<{
           />
         </div>
 
-        {/* Description */}
+        {/* Description with Markdown Preview */}
         <div>
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-slate-300 mb-1"
-          >
-            Description
-          </label>
-          <textarea
-            id="description"
-            rows={4}
-            className="w-full form-input p-2 bg-gray-700 border-gray-600 rounded-md text-slate-200 focus:ring-emerald-500 focus:border-emerald-500"
-            value={form.description || ""}
-            onChange={(e) => onChange({ description: e.target.value })}
-          />
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-sm font-medium text-slate-300">
+              Description
+            </label>
+            <span className="text-xs text-slate-500">Markdown supported</span>
+          </div>
+          
+          {/* Tabs */}
+          <div className="flex border-b border-gray-600 mb-2">
+            <button
+              type="button"
+              onClick={() => setActiveTab('write')}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'write'
+                  ? 'text-emerald-400 border-emerald-400'
+                  : 'text-slate-400 border-transparent hover:text-slate-200'
+              }`}
+            >
+              Write
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('preview')}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'preview'
+                  ? 'text-emerald-400 border-emerald-400'
+                  : 'text-slate-400 border-transparent hover:text-slate-200'
+              }`}
+            >
+              Preview
+            </button>
+          </div>
+
+          {/* Content */}
+          {activeTab === 'write' ? (
+            <textarea
+              id="description"
+              rows={6}
+              className="w-full form-input p-3 bg-gray-700 border-gray-600 rounded-md text-slate-200 focus:ring-emerald-500 focus:border-emerald-500 font-mono text-sm"
+              placeholder="Enter your app description here. You can use markdown formatting:
+
+**Bold text** or *italic text*
+- Bullet points
+- Links: [text](url)
+- Code: `inline code`"
+              value={form.description || ""}
+              onChange={(e) => onChange({ description: e.target.value })}
+            />
+          ) : (
+            <div className="min-h-[144px] p-3 bg-gray-700 border border-gray-600 rounded-md">
+              {form.description ? (
+                <MarkdownText className="prose prose-sm prose-invert max-w-none text-slate-300">
+                  {form.description}
+                </MarkdownText>
+              ) : (
+                <p className="text-slate-500 italic">No description provided. Switch to the Write tab to add one.</p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Hidden Toggle */}
