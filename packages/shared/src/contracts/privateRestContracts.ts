@@ -50,22 +50,8 @@ const setDraftIconResponseSchema = z.object({
   iconPaths: z.record(iconSizeSchema, z.string()),
 });
 
-export const privateProjectContracts = c.router(
+export const scriptablePrivateProjectContracts = c.router(
   {
-    createProject: {
-      method: "POST",
-      path: "/projects/:slug",
-      pathParams: z.object({ slug: z.string() }),
-      body: createProjectBodySchema,
-      responses: {
-        204: z.void(),
-        409: errorResponseSchema,
-        403: errorResponseSchema,
-      },
-      summary: "Create a new project",
-      headers: authorizationHeaderSchema,
-    },
-
     updateProject: {
       method: "PATCH",
       path: "/projects/:slug",
@@ -237,6 +223,30 @@ This is actually just an alias for a post to /projects/:slug/draft/files/metadat
       },
       summary: "Delete the API token for the project",
     },
+  },
+  {
+    baseHeaders: {
+      authorization: z.string(),
+    },
+  }
+);
+
+export const privateProjectContracts = c.router(
+  {
+    createProject: {
+      method: "POST",
+      path: "/projects/:slug",
+      pathParams: z.object({ slug: z.string() }),
+      body: createProjectBodySchema,
+      responses: {
+        204: z.void(),
+        409: errorResponseSchema,
+        403: errorResponseSchema,
+      },
+      summary: "Create a new project",
+      headers: authorizationHeaderSchema,
+    },
+    ...scriptablePrivateProjectContracts,
   },
   {
     baseHeaders: {

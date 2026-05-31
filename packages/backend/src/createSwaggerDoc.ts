@@ -1,6 +1,6 @@
 import { generateOpenApi } from "@ts-rest/open-api";
 import { publicRestContracts } from "@shared/contracts/publicRestContracts";
-import { privateRestContracts } from "@shared/contracts/privateRestContracts";
+import { scriptablePrivateProjectContracts } from "@shared/contracts/privateRestContracts";
 import _ from "lodash";
 import {
   OpenAPIObject,
@@ -98,10 +98,14 @@ export const createSwaggerDoc = () => {
     setOperationId: true,
     operationMapper: (op) => withTag(op, "Public"),
   });
-  const privateSwagger = generateOpenApi(privateRestContracts, apiDoc, {
-    setOperationId: true,
-    operationMapper: (op) => withSecurity(withTag(op, "Private")),
-  });
+  const privateSwagger = generateOpenApi(
+    scriptablePrivateProjectContracts,
+    apiDoc,
+    {
+      setOperationId: true,
+      operationMapper: (op) => withSecurity(withTag(op, "Private")),
+    }
+  );
 
   return {
     ...jsonSwagger,
