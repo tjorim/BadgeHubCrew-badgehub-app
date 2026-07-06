@@ -433,6 +433,7 @@ describe("Authenticated API Routes", () => {
             .send({
               name: "Test App Name",
               description: "Test App Description",
+              version: "1.2.3",
               hidden: true,
             });
           expect(patchMetadataRes.statusCode).toBe(204);
@@ -447,6 +448,7 @@ describe("Authenticated API Routes", () => {
           );
           expect(project).toBeDefined();
           expect(project?.hidden).toBe(true);
+          expect(project?.version).toBe("1.2.3");
         });
       });
     },

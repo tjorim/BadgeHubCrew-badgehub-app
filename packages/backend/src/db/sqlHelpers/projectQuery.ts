@@ -73,6 +73,7 @@ export const projectQueryResponseToReadModel = (
         ])
       ) as IconMapWithUrls),
     badges: appMetadata.badges,
+    version: appMetadata.version,
   };
   if (appMetadata.hidden) {
     projectSummary.hidden = appMetadata.hidden;

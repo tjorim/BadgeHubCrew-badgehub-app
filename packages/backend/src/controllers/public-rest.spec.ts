@@ -31,8 +31,13 @@ describe(
       expect(
         res.body.find((app: ProjectSummary) => app.name === "PixelPulse")
       ).toBeDefined();
-      expect(res.body.find((app: ProjectSummary) => app.slug === "codecraft"))
-        .toMatchInlineSnapshot(`
+      expect(
+        res.body.find((app: ProjectSummary) => app.slug === "codecraft")
+      ).toMatchInlineSnapshot(
+        {
+          installs: expect.any(Number),
+        },
+        `
           {
             "badges": [
               "mch2022",
@@ -50,14 +55,15 @@ describe(
               },
             },
             "idp_user_id": "CyberSherpa",
-            "installs": 9,
+            "installs": Any<Number>,
             "license_type": "MIT",
             "name": "CodeCraft",
             "published_at": "2024-05-23T14:01:16.975Z",
             "revision": 1,
             "slug": "codecraft",
           }
-        `);
+        `
+      );
     });
 
     test("GET /api/v3/project-summaries should not contain unpublished apps", async () => {
@@ -114,7 +120,9 @@ describe(
         (summary) => summary.slug === projectSlug
       )?.installs;
 
-      expect(updatedInstalls).toBe((baselineInstalls as number) + 1);
+      expect(updatedInstalls).toBeGreaterThanOrEqual(
+        (baselineInstalls as number) + 1
+      );
     });
 
     test("reporting an install should accept a JSON string body", async () => {

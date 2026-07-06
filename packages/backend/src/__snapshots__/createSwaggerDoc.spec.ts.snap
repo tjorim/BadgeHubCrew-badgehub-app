@@ -482,6 +482,9 @@ exports[`createSwaggerDoc > swagger doc should match snapshot 1`] = `
                       "slug": {
                         "type": "string",
                       },
+                      "version": {
+                        "type": "string",
+                      },
                     },
                     "required": [
                       "slug",
