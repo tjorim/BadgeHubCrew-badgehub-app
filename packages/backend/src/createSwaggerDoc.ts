@@ -108,7 +108,7 @@ const draftFileUploadRequestBody = {
       },
     },
   },
-} as const;
+};
 
 function documentDraftFileUploadRequestBody(paths: PathsObject): PathsObject {
   const draftFileUploadPath = "/api/v3/projects/{slug}/draft/files/{filePath}";
