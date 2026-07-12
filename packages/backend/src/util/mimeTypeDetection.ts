@@ -26,14 +26,21 @@ const genericMimeTypes = new Set([
  * @returns The best-guess MIME type
  */
 export function detectMimeType(
-  browserMimeType: string,
+  browserMimeType: string | undefined | null,
   filename: string
 ): string {
+  const normalizedBrowserMimeType = (
+    (browserMimeType || "").split(";")[0] ?? ""
+  )
+    .trim()
+    .toLowerCase();
+
   // If browser provided a specific, reliable MIME type, use it
   if (
     browserMimeType &&
-    !genericMimeTypes.has(browserMimeType) &&
-    !browserMimeType.startsWith("application/x-")
+    normalizedBrowserMimeType &&
+    !genericMimeTypes.has(normalizedBrowserMimeType) &&
+    !normalizedBrowserMimeType.startsWith("application/x-")
   ) {
     return browserMimeType;
   }
@@ -75,8 +82,14 @@ export function isSafeToRenderInline(mimetype: string | undefined): boolean {
   if (!mimetype) {
     return false;
   }
-  if (inlineUnsafeMimeTypes.has(mimetype)) {
+  const normalizedMimeType = (mimetype.split(";")[0] ?? "")
+    .trim()
+    .toLowerCase();
+  if (inlineUnsafeMimeTypes.has(normalizedMimeType)) {
     return false;
   }
-  return mimetype.startsWith("image/") || mimetype.startsWith("audio/");
+  return (
+    normalizedMimeType.startsWith("image/") ||
+    normalizedMimeType.startsWith("audio/")
+  );
 }

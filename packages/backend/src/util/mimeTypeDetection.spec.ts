@@ -48,6 +48,10 @@ describe("MIME Type Detection", () => {
 
   it("should handle empty or missing browser MIME type", () => {
     expect(detectMimeType("", "test.py")).toBe("text/x-python");
+    expect(detectMimeType(undefined, "test.py")).toBe("text/x-python");
+    expect(detectMimeType(null, "file.unknown")).toBe(
+      "application/octet-stream"
+    );
     expect(detectMimeType("", "file.unknown")).toBe("application/octet-stream");
   });
 
@@ -64,6 +68,15 @@ describe("MIME Type Detection", () => {
       "audio/wave"
     );
   });
+
+  it("should treat generic browser MIME types case-insensitively and ignore parameters", () => {
+    expect(detectMimeType("Text/Plain; charset=utf-8", "icon.png")).toBe(
+      "image/png"
+    );
+    expect(detectMimeType("Application/X-Unknown", "style.css")).toBe(
+      "text/css"
+    );
+  });
 });
 
 describe("isSafeToRenderInline", () => {
@@ -72,6 +85,7 @@ describe("isSafeToRenderInline", () => {
     expect(isSafeToRenderInline("image/jpeg")).toBe(true);
     expect(isSafeToRenderInline("audio/wave")).toBe(true);
     expect(isSafeToRenderInline("audio/x-wav")).toBe(true);
+    expect(isSafeToRenderInline("Image/PNG; charset=binary")).toBe(true);
   });
 
   it("rejects SVG despite being an image type, since it can contain script", () => {
