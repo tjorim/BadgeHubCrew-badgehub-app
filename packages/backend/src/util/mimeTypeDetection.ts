@@ -29,8 +29,9 @@ export function detectMimeType(
   browserMimeType: string | undefined | null,
   filename: string
 ): string {
-  const normalizedBrowserMimeType = (browserMimeType || "")
-    .split(";")[0]
+  const normalizedBrowserMimeType = (
+    (browserMimeType || "").split(";")[0] ?? ""
+  )
     .trim()
     .toLowerCase();
 
@@ -81,7 +82,9 @@ export function isSafeToRenderInline(mimetype: string | undefined): boolean {
   if (!mimetype) {
     return false;
   }
-  const normalizedMimeType = mimetype.split(";")[0].trim().toLowerCase();
+  const normalizedMimeType = (mimetype.split(";")[0] ?? "")
+    .trim()
+    .toLowerCase();
   if (inlineUnsafeMimeTypes.has(normalizedMimeType)) {
     return false;
   }
