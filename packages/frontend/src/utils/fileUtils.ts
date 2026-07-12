@@ -11,16 +11,61 @@ export const extractFilename = (filePath: string): string => {
  * File extensions that should be treated as text files for preview purposes
  */
 export const TEXT_FILE_EXTENSIONS = [
-  "js", "jsx", "ts", "tsx", "html", "css", "scss", "sass", "less", 
-  "xml", "yaml", "yml", "md", "sh", "bash", "c", "cpp", "java", 
-  "php", "rb", "go", "rs", "sql", "txt"
+  "js",
+  "jsx",
+  "ts",
+  "tsx",
+  "html",
+  "css",
+  "scss",
+  "sass",
+  "less",
+  "xml",
+  "yaml",
+  "yml",
+  "md",
+  "sh",
+  "bash",
+  "c",
+  "cpp",
+  "java",
+  "php",
+  "rb",
+  "go",
+  "rs",
+  "sql",
+  "txt",
 ] as const;
 
 /**
  * File extensions that should be treated as image files for preview purposes
  */
 export const IMAGE_FILE_EXTENSIONS = [
-  "png", "jpg", "jpeg", "gif", "svg", "webp", "bmp", "tiff", "tif", "avif"
+  "png",
+  "jpg",
+  "jpeg",
+  "gif",
+  "svg",
+  "webp",
+  "bmp",
+  "tiff",
+  "tif",
+  "avif",
+] as const;
+
+/**
+ * File extensions that should be treated as audio files for preview purposes
+ */
+export const AUDIO_FILE_EXTENSIONS = [
+  "aac",
+  "flac",
+  "m4a",
+  "mp3",
+  "oga",
+  "ogg",
+  "opus",
+  "wav",
+  "webm",
 ] as const;
 
 export const NON_EXECUTABLE_EXTENSIONS = [
