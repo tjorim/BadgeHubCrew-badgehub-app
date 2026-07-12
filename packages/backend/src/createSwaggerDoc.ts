@@ -88,6 +88,48 @@ function removeEmptyBodiesFromPaths(paths: PathsObject) {
   );
 }
 
+const draftFileUploadRequestBody = {
+  description:
+    'Multipart form data containing the draft file under the "file" field.',
+  required: true,
+  content: {
+    "multipart/form-data": {
+      schema: {
+        type: "object",
+        required: ["file"],
+        properties: {
+          file: {
+            type: "string",
+            format: "binary",
+            description:
+              'Draft file to upload. The multipart field name must be "file".',
+          },
+        },
+      },
+    },
+  },
+} as const;
+
+function documentDraftFileUploadRequestBody(paths: PathsObject): PathsObject {
+  const draftFileUploadPath = "/api/v3/projects/{slug}/draft/files/{filePath}";
+  const draftFileUploadPost = paths[draftFileUploadPath]?.post;
+
+  if (!draftFileUploadPost) {
+    return paths;
+  }
+
+  return {
+    ...paths,
+    [draftFileUploadPath]: {
+      ...paths[draftFileUploadPath],
+      post: {
+        ...draftFileUploadPost,
+        requestBody: draftFileUploadRequestBody,
+      },
+    },
+  };
+}
+
 export const createSwaggerDoc = () => {
   const apiDoc = { info: { title: "BadgeHub API", version: "1.0.0" } };
   const jsonSwagger = generateOpenApi(swaggerJsonContract, apiDoc, {
@@ -109,11 +151,13 @@ export const createSwaggerDoc = () => {
 
   return {
     ...jsonSwagger,
-    paths: removeEmptyBodiesFromPaths(
-      _.merge(
-        jsonSwagger.paths,
-        withPrefix("/api/v3", publicSwagger.paths),
-        withPrefix("/api/v3", privateSwagger.paths)
+    paths: documentDraftFileUploadRequestBody(
+      removeEmptyBodiesFromPaths(
+        _.merge(
+          jsonSwagger.paths,
+          withPrefix("/api/v3", publicSwagger.paths),
+          withPrefix("/api/v3", privateSwagger.paths)
+        )
       )
     ),
     tags: [
