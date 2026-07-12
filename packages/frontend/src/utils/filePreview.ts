@@ -3,7 +3,25 @@ import {
   TEXT_FILE_EXTENSIONS,
 } from "@utils/fileUtils.ts";
 
-export type PreviewType = "image" | "json" | "python" | "text" | "unsupported";
+export type PreviewType =
+  | "audio"
+  | "image"
+  | "json"
+  | "python"
+  | "text"
+  | "unsupported";
+
+const AUDIO_FILE_EXTENSIONS = [
+  "aac",
+  "flac",
+  "m4a",
+  "mp3",
+  "oga",
+  "ogg",
+  "opus",
+  "wav",
+  "webm",
+];
 
 export const getPreviewType = (
   mimetype: string,
@@ -11,6 +29,9 @@ export const getPreviewType = (
 ): PreviewType => {
   if (mimetype.startsWith("image/")) {
     return "image";
+  }
+  if (mimetype.startsWith("audio/")) {
+    return "audio";
   }
   if (mimetype === "application/json") {
     return "json";
@@ -44,6 +65,9 @@ export const getPreviewType = (
     }
     if (IMAGE_FILE_EXTENSIONS.includes(extension as (typeof IMAGE_FILE_EXTENSIONS)[number])) {
       return "image";
+    }
+    if (AUDIO_FILE_EXTENSIONS.includes(extension)) {
+      return "audio";
     }
   }
 

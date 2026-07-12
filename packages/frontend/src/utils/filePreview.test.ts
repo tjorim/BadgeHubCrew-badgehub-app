@@ -6,6 +6,11 @@ describe("getPreviewType", () => {
     expect(getPreviewType("image/png", "icon.png")).toBe("image");
   });
 
+  it("detects audio types by mimetype", () => {
+    expect(getPreviewType("audio/x-wav", "sounds/Warning.wav")).toBe("audio");
+    expect(getPreviewType("audio/mpeg", "sounds/music.mp3")).toBe("audio");
+  });
+
   it("detects json types by mimetype", () => {
     expect(getPreviewType("application/json", "data.json")).toBe("json");
   });
@@ -22,6 +27,7 @@ describe("getPreviewType", () => {
     expect(getPreviewType("application/octet-stream", "script.py")).toBe("python");
     expect(getPreviewType("application/octet-stream", "notes.md")).toBe("text");
     expect(getPreviewType("application/octet-stream", "photo.jpg")).toBe("image");
+    expect(getPreviewType("application/octet-stream", "sounds/Warning.wav")).toBe("audio");
   });
 
   it("returns unsupported when no match is found", () => {

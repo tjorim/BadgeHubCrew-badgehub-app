@@ -97,6 +97,19 @@ const mockProject: ProjectDetails = {
       },
       {
         dir: "",
+        name: "Warning",
+        ext: "wav",
+        mimetype: "audio/x-wav",
+        size_of_content: 8264,
+        sha256: "f".repeat(64),
+        size_formatted: "8.07 KB",
+        full_path: "sounds/Warning.wav",
+        url: "http://example.com/sounds/Warning.wav",
+        created_at: "2023-01-01T00:00:00Z",
+        updated_at: "2023-01-01T00:00:00Z",
+      },
+      {
+        dir: "",
         name: "document",
         ext: "pdf",
         mimetype: "application/pdf",
@@ -163,6 +176,23 @@ describe("AppCodePreview", () => {
     await waitFor(() => {
       expect(img).toHaveAttribute("src", "http://example.com/image.png");
     });
+  });
+
+  it("shows an audio player for WAV files", async () => {
+    render(<AppCodePreview project={mockProject} />);
+
+    fireEvent.click(screen.getByText("sounds/Warning.wav"));
+
+    expect(await screen.findByText("Audio file")).toBeInTheDocument();
+    const audio = document.querySelector("audio");
+    expect(audio).toHaveAttribute("controls");
+    expect(audio).toHaveAttribute(
+      "src",
+      "http://example.com/sounds/Warning.wav"
+    );
+    expect(
+      screen.queryByText("Preview not available for this file type.")
+    ).not.toBeInTheDocument();
   });
 
   it("shows JSON preview with pretty print functionality", async () => {
