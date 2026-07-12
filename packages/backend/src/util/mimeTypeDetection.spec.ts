@@ -48,6 +48,10 @@ describe("MIME Type Detection", () => {
 
   it("should handle empty or missing browser MIME type", () => {
     expect(detectMimeType("", "test.py")).toBe("text/x-python");
+    expect(detectMimeType(undefined, "test.py")).toBe("text/x-python");
+    expect(detectMimeType(null, "file.unknown")).toBe(
+      "application/octet-stream"
+    );
     expect(detectMimeType("", "file.unknown")).toBe("application/octet-stream");
   });
 

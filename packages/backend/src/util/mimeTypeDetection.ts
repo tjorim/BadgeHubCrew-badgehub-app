@@ -26,10 +26,10 @@ const genericMimeTypes = new Set([
  * @returns The best-guess MIME type
  */
 export function detectMimeType(
-  browserMimeType: string,
+  browserMimeType: string | undefined | null,
   filename: string
 ): string {
-  const normalizedBrowserMimeType = browserMimeType
+  const normalizedBrowserMimeType = (browserMimeType || "")
     .split(";")[0]
     .trim()
     .toLowerCase();
