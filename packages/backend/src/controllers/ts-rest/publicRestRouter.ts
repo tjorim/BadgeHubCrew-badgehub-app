@@ -13,36 +13,52 @@ import { noContent, nok, ok } from "@controllers/ts-rest/httpResponses";
 import { Readable } from "node:stream";
 import { RouterImplementation } from "@ts-rest/express/src/lib/types";
 import { ProjectLatestRevisions } from "@shared/domain/readModels/project/ProjectRevision";
+import { isSafeToRenderInline } from "@util/mimeTypeDetection";
+
+const setFileResponseHeaders = (
+  res: { setHeader: (name: string, value: string) => void },
+  filePath: string,
+  mimetype: string | undefined
+) => {
+  if (mimetype) {
+    res.setHeader("Content-Type", mimetype);
+  }
+  const disposition = isSafeToRenderInline(mimetype) ? "inline" : "attachment";
+  res.setHeader(
+    "Content-Disposition",
+    `${disposition}; filename="${filePath}"`
+  );
+};
 
 const createFilesRouter = (badgeHubData: BadgeHubData) => {
   const filesRouter: RouterImplementation<typeof publicFilesContracts> = {
     getLatestPublishedFile: async ({ params: { slug, filePath }, res }) => {
-      const file = await badgeHubData.getFileContents(slug, "latest", filePath);
+      const [file, fileMetadata] = await Promise.all([
+        badgeHubData.getFileContents(slug, "latest", filePath),
+        badgeHubData.getFileMetadata(slug, "latest", filePath),
+      ]);
       if (!file) {
         return nok(404, `No app with slug '${slug}' found`);
       }
+      setFileResponseHeaders(res, filePath, fileMetadata?.mimetype);
       const data = Readable.from(file);
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${filePath}"`
-      );
       return ok(data);
     },
     getFileForRevision: async ({
       params: { slug, revision, filePath },
       res,
     }) => {
-      const file = await badgeHubData.getFileContents(slug, revision, filePath);
+      const [file, fileMetadata] = await Promise.all([
+        badgeHubData.getFileContents(slug, revision, filePath),
+        badgeHubData.getFileMetadata(slug, revision, filePath),
+      ]);
       if (!file) {
         return nok(
           404,
           `No app with slug '${slug}' and revision '${revision}' found`
         );
       }
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${filePath}"`
-      );
+      setFileResponseHeaders(res, filePath, fileMetadata?.mimetype);
       // Enable public caching for immutable revisioned files (1 year)
       res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
       const data = Readable.from(file);
