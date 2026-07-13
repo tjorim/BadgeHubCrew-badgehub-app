@@ -24,6 +24,7 @@ export function getBaseSelectProjectQuery(
                     p.deleted_at,
                     v.published_at,
                     v.revision,
+                    v.blur_hash,
                     v.size_of_zip,
                     v.app_metadata,
                     coalesce(pir.distinct_installs, 0) as distinct_installs
@@ -47,6 +48,7 @@ export const projectQueryResponseToReadModel = (
     license_type: appMetadata.license_type,
     name: appMetadata.name ?? enrichedDBProject.slug,
     published_at: timestampTZToISODateString(enrichedDBProject.published_at),
+    blur_hash: enrichedDBProject.blur_hash ?? undefined,
     revision: enrichedDBProject.revision,
     slug: enrichedDBProject.slug,
     git_url: appMetadata.git_url,

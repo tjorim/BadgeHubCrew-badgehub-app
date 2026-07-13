@@ -56,6 +56,7 @@ create table versions
             on delete cascade,
     app_metadata     jsonb                              not null,
     revision         integer                  default 0 not null,
+    blur_hash        text,
     zip              text,
     size_of_zip      bigint,
     git_commit_id    text,

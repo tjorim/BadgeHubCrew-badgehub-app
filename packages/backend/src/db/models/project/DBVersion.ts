@@ -11,6 +11,7 @@ export type VersionRelation<
 export interface DBInsertVersion extends ProjectSlugRelation {
   id: number;
   revision: number;
+  blur_hash?: string;
   app_metadata: AppMetadataJSON; // JSON string of the app metadata
   zip?: string;
   size_of_zip?: number;

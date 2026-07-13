@@ -24,10 +24,15 @@ import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON
 import { LRUCache } from "lru-cache";
 import {
   appMetadataJSONSchema,
+  IconMap,
   IconSize,
 } from "@shared/domain/readModels/project/AppMetadataJSON";
 import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
-import { createIconBuffer, getImageProps } from "@util/imageProcessing";
+import {
+  createBlurHash,
+  createIconBuffer,
+  getImageProps,
+} from "@util/imageProcessing";
 import { UserError } from "@domain/UserError";
 import { randomBytes } from "node:crypto";
 import { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
@@ -38,6 +43,13 @@ import { parseIconSize } from "@domain/ImageDimensions";
 type FileContext =
   | { projectSlug: string; revision: number; filePath: string }
   | { sha256: string };
+
+const BLUR_HASH_ICON_SIZE_PREFERENCE: IconSize[] = [
+  "64x64",
+  "32x32",
+  "16x16",
+  "8x8",
+];
 
 export class BadgeHubData {
   private immutableFileCache: LRUCache<
@@ -321,9 +333,11 @@ export class BadgeHubData {
         `Change of admin category [${[...newAdminCategories, removedAdminCategories].join(",")}] detected, this is only allowed for admins.`
       );
     }
+    const blurHash = await this.getDraftIconBlurHash(slug, newAppMetadata);
     await this.badgeHubMetadata.updateDraftMetadata(
       slug,
       newAppMetadata,
+      blurHash,
       mockDates
     );
     const fileContent = new TextEncoder().encode(
@@ -443,6 +457,21 @@ export class BadgeHubData {
     );
   }
 
+  private async getDraftIconBlurHash(
+    slug: ProjectSlug,
+    metadata: Pick<WriteAppMetadataJSON, "icon_map">
+  ): Promise<string | null> {
+    const iconPath = getPreferredIconPath(metadata.icon_map);
+    if (!iconPath) {
+      return null;
+    }
+    const fileContents = await this.getFileContents(slug, "draft", iconPath);
+    if (!fileContents) {
+      return null;
+    }
+    return (await createBlurHash(fileContents)) ?? null;
+  }
+
   async deleteDraftFile(slug: ProjectSlug, filePath: string) {
     if (filePath === "metadata.json") {
       throw new Error(
@@ -524,4 +553,10 @@ export class BadgeHubData {
     const tokenHash = await this.badgeHubMetadata.getProjectApiTokenHash(slug);
     return Boolean(apiToken && (await stringToSha256(apiToken)) === tokenHash);
   }
+}
+
+function getPreferredIconPath(iconMap: IconMap | undefined): string | undefined {
+  return BLUR_HASH_ICON_SIZE_PREFERENCE.map((size) => iconMap?.[size]).find(
+    Boolean
+  );
 }

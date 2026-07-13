@@ -19,6 +19,7 @@ export interface ProjectSummary extends ProjectCore {
   hidden?: boolean;
   name: string;
   published_at?: ISODateString; // Can be undefined if not published yet
+  blur_hash?: string; // see https://github.com/woltapp/blurhash
   icon_map?: IconMapWithUrls; // Relative path to the icon of the project
   installs: number;
   // ratings: { average: number; count: number } | null; // Average rating and count of ratings
@@ -50,6 +51,12 @@ export const projectSummarySchema = projectCoreSchema.extend({
   name: z.string(),
   hidden: z.boolean().optional(),
   published_at: isoDateStringSchema.optional(),
+  blur_hash: z
+    .string()
+    .optional()
+    .describe(
+      "A BlurHash of the icon, allowing for quickly showing something while icons are downloading. See https://github.com/woltapp/blurhash for more info."
+    ),
   installs: z
     .number()
     .describe(

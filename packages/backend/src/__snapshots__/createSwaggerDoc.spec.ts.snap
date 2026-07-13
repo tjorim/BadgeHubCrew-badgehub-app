@@ -352,6 +352,10 @@ exports[`createSwaggerDoc > swagger doc should match snapshot 1`] = `
                         },
                         "type": "array",
                       },
+                      "blur_hash": {
+                        "description": "A BlurHash of the icon, allowing for quickly showing something while icons are downloading. See https://github.com/woltapp/blurhash for more info.",
+                        "type": "string",
+                      },
                       "categories": {
                         "items": {
                           "enum": [
@@ -793,6 +797,10 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                           },
                           "type": "object",
                         },
+                        "blur_hash": {
+                          "nullable": true,
+                          "type": "string",
+                        },
                         "files": {
                           "items": {
                             "properties": {
@@ -1214,6 +1222,10 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                             },
                           },
                           "type": "object",
+                        },
+                        "blur_hash": {
+                          "nullable": true,
+                          "type": "string",
                         },
                         "files": {
                           "items": {
@@ -2370,6 +2382,10 @@ Warning: if it is present, then badgehub clients on badges will not update the a
                             },
                           },
                           "type": "object",
+                        },
+                        "blur_hash": {
+                          "nullable": true,
+                          "type": "string",
                         },
                         "files": {
                           "items": {

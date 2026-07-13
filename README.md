@@ -114,3 +114,4 @@ The docker compose files used for running BadgeHub in production are maintained 
 - [tsx](https://tsx.is/) for running TypeScript files in Node.js
 - [db-migrate](https://db-migrate.readthedocs.io/en/latest/) for database migrations
 - [PM2](https://pm2.keymetrics.io/) for managing Node.js processes
+- [BlurHash](https://blurha.sh/) for creating BlurHash strings
