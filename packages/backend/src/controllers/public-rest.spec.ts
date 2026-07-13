@@ -538,6 +538,20 @@ describe(
       }
     );
 
+    test.each(["latest", "rev1"])(
+      "GET /projects/{slug}/%s/files/icon5.png sets Content-Type and renders inline",
+      async (revision) => {
+        const getRes = await request(app).get(
+          `/api/v3/projects/codecraft/${revision}/files/icon5.png`
+        );
+        expect(getRes.statusCode).toBe(200);
+        expect(getRes.headers["content-type"]).toEqual("image/png");
+        expect(getRes.headers["content-disposition"]).toEqual(
+          'inline; filename="icon5.png"'
+        );
+      }
+    );
+
     describe("ping should return pong", () => {
       test.each([
         { id: "testid", mac: "testmac" },
