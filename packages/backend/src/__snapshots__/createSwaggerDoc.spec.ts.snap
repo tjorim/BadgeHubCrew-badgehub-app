@@ -1566,11 +1566,22 @@ Warning: if it is present, then badgehub clients on badges will not update the a
           "content": {
             "multipart/form-data": {
               "schema": {
-                "nullable": true,
+                "properties": {
+                  "file": {
+                    "description": "Draft file to upload. The multipart field name must be "file".",
+                    "format": "binary",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "file",
+                ],
+                "type": "object",
               },
             },
           },
-          "description": "Body",
+          "description": "Multipart form data containing the draft file under the "file" field.",
+          "required": true,
         },
         "responses": {
           "204": {

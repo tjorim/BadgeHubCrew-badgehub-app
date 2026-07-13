@@ -12,6 +12,7 @@ import {
 import { initContract } from "@ts-rest/core";
 import { EXPRESS_PORT } from "@config";
 import { NO_BODY_DESCRIPTION } from "@shared/contracts/tsRestNoBodyPatch";
+import { monkeyPatchDraftFileUploadSwagger } from "@monkeyPatchDraftFileUploadSwagger";
 
 const c = initContract();
 export const swaggerJsonContract = c.router({
@@ -109,11 +110,13 @@ export const createSwaggerDoc = () => {
 
   return {
     ...jsonSwagger,
-    paths: removeEmptyBodiesFromPaths(
-      _.merge(
-        jsonSwagger.paths,
-        withPrefix("/api/v3", publicSwagger.paths),
-        withPrefix("/api/v3", privateSwagger.paths)
+    paths: monkeyPatchDraftFileUploadSwagger(
+      removeEmptyBodiesFromPaths(
+        _.merge(
+          jsonSwagger.paths,
+          withPrefix("/api/v3", publicSwagger.paths),
+          withPrefix("/api/v3", privateSwagger.paths)
+        )
       )
     ),
     tags: [
