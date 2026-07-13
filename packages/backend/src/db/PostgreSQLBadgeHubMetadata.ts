@@ -516,7 +516,7 @@ and v.app_metadata->'badges' @>
     mockDates?: DBDatedData
   ): Promise<void> {
     const setters = getUpdateAssignmentsSql({
-      ...newAppMetadata,
+      app_metadata: newAppMetadata,
       ...mockDates,
     });
     if (!setters) {
@@ -524,7 +524,7 @@ and v.app_metadata->'badges' @>
     }
 
     const appMetadataUpdateQuery = sql`update versions
-                                       set app_metadata = (${newAppMetadata})
+                                       set ${setters}
                                        where id = ${getVersionQuery(projectSlug, "draft")}`;
     const queryResult = await this.pool.query(appMetadataUpdateQuery);
     return queryResult as any;
