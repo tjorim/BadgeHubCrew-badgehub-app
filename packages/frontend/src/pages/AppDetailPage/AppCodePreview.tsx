@@ -212,6 +212,35 @@ const ImagePreview: React.FC<{ file: FileMetadata; imageBlob?: Blob }> = ({
   );
 };
 
+const AudioPreview: React.FC<{ file: FileMetadata; audioBlob?: Blob }> = ({
+  file,
+  audioBlob,
+}) => {
+  const [audioUrl, setAudioUrl] = useState(file.url || "");
+
+  useEffect(() => {
+    if (audioBlob) {
+      const url = URL.createObjectURL(audioBlob);
+      setAudioUrl(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setAudioUrl(file.url || "");
+  }, [audioBlob, file.url]);
+
+  return (
+    <div>
+      <div className="mb-2">
+        <span className="text-base-content/80 text-sm">Audio file</span>
+      </div>
+      {audioUrl && (
+        <audio className="w-full" controls preload="metadata" src={audioUrl}>
+          Your browser does not support audio playback.
+        </audio>
+      )}
+    </div>
+  );
+};
+
 // No Preview Component for unsupported types
 const NoPreview: React.FC<{ mimetype: string }> = ({ mimetype }) => {
   return (
@@ -230,7 +259,7 @@ const renderFilePreview = (
   currentFile: FileMetadata | null,
   fileContent: string | null,
   isDark: boolean,
-  imageBlob?: Blob
+  previewBlob?: Blob
 ): React.ReactElement => {
   if (loading) {
     return <div className="opacity-60">Loading file...</div>;
@@ -251,7 +280,9 @@ const renderFilePreview = (
 
   switch (previewType) {
     case "image":
-      return <ImagePreview file={currentFile} imageBlob={imageBlob} />;
+      return <ImagePreview file={currentFile} imageBlob={previewBlob} />;
+    case "audio":
+      return <AudioPreview file={currentFile} audioBlob={previewBlob} />;
     case "json":
       return fileContent ? (
         <JsonPreview content={fileContent} isDark={isDark} />
@@ -299,7 +330,7 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
   const isDark = useIsDarkTheme();
   const [previewedFile, setPreviewedFile] = useState<string | null>(null);
   const [fileContent, setFileContent] = useState<string | null>(null);
-  const [imageBlob, setImageBlob] = useState<Blob | null>(null);
+  const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Get the currently previewed file metadata
@@ -315,7 +346,7 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
     if (!files?.length) {
       setPreviewedFile(null);
       setFileContent(null);
-      setImageBlob(null);
+      setPreviewBlob(null);
       return;
     }
     const initFile = files.find(
@@ -328,7 +359,7 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
     } else {
       setPreviewedFile(null);
       setFileContent(null);
-      setImageBlob(null);
+      setPreviewBlob(null);
     }
   }, [files, externalPreviewedFile]);
 
@@ -336,7 +367,7 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
   useEffect(() => {
     if (!previewedFile || !currentFile) {
       setFileContent(null);
-      setImageBlob(null);
+      setPreviewBlob(null);
       return;
     }
 
@@ -346,7 +377,7 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
       "unsupported"
     ) {
       setFileContent(null);
-      setImageBlob(null);
+      setPreviewBlob(null);
       setLoading(false);
       return;
     }
@@ -366,22 +397,23 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
           if (response.status === 200 && response.body) {
             const blob = response.body as Blob;
 
-            // For images, store the blob for display
-            if (
-              getPreviewType(currentFile.mimetype, currentFile.full_path) ===
-              "image"
-            ) {
-              setImageBlob(blob);
+            // Binary previews need an object URL for authenticated draft blobs.
+            const previewType = getPreviewType(
+              currentFile.mimetype,
+              currentFile.full_path
+            );
+            if (previewType === "image" || previewType === "audio") {
+              setPreviewBlob(blob);
               setFileContent(null);
             } else {
               // For text files, convert blob to text
               const text = await blob.text();
               setFileContent(text);
-              setImageBlob(null);
+              setPreviewBlob(null);
             }
           } else {
             setFileContent("// Unable to load file");
-            setImageBlob(null);
+            setPreviewBlob(null);
           }
         } else {
           // Published mode - use public API
@@ -394,26 +426,27 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
 
           if (res.status === 200) {
             if (
-              getPreviewType(currentFile.mimetype, currentFile.full_path) ===
-              "image"
+              ["image", "audio"].includes(
+                getPreviewType(currentFile.mimetype, currentFile.full_path)
+              )
             ) {
-              // For published images, we use the file.url directly (no blob needed)
-              setImageBlob(null);
+              // Published binary previews can use the file URL directly.
+              setPreviewBlob(null);
               setFileContent(null);
             } else if (typeof res.body === "string") {
               setFileContent(res.body);
-              setImageBlob(null);
+              setPreviewBlob(null);
             } else if (res.body instanceof Blob) {
               const text = await res.body.text();
               setFileContent(text);
-              setImageBlob(null);
+              setPreviewBlob(null);
             } else {
               setFileContent("// Unable to display file content");
-              setImageBlob(null);
+              setPreviewBlob(null);
             }
           } else {
             setFileContent("// Unable to load file");
-            setImageBlob(null);
+            setPreviewBlob(null);
           }
         }
       } catch (error) {
@@ -421,7 +454,7 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
         setFileContent(
           "// Network error - please check your connection and try again"
         );
-        setImageBlob(null);
+        setPreviewBlob(null);
       } finally {
         setLoading(false);
       }
@@ -522,7 +555,7 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
             currentFile,
             fileContent,
             isDark,
-            imageBlob || undefined
+            previewBlob || undefined
           )}
         </div>
       </div>
