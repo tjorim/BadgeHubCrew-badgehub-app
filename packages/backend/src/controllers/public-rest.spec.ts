@@ -36,34 +36,32 @@ describe(
       ).toMatchInlineSnapshot(
         {
           installs: expect.any(Number),
-        },
-        `
-          {
-            "badges": [
-              "mch2022",
-              "why2025",
-            ],
-            "categories": [
-              "Event related",
-              "Games",
-            ],
-            "description": "With CodeCraft, you can do interesting things with the sensors.",
-            "icon_map": {
-              "64x64": {
-                "full_path": "icon5.png",
-                "url": "http://localhost:8081/api/v3/projects/codecraft/rev1/files/icon5.png",
-              },
+        }, `
+        {
+          "badges": [
+            "mch2022",
+            "why2025",
+          ],
+          "categories": [
+            "Event related",
+            "Games",
+          ],
+          "description": "With CodeCraft, you can do interesting things with the sensors.",
+          "icon_map": {
+            "64x64": {
+              "full_path": "icon5.png",
+              "url": "http://localhost:8081/api/v3/projects/codecraft/rev1/files/icon5.png",
             },
-            "idp_user_id": "CyberSherpa",
-            "installs": Any<Number>,
-            "license_type": "MIT",
-            "name": "CodeCraft",
-            "published_at": "2024-05-23T14:01:16.975Z",
-            "revision": 1,
-            "slug": "codecraft",
-          }
-        `
-      );
+          },
+          "idp_user_id": "CyberSherpa",
+          "installs": Any<Number>,
+          "license_type": "MIT",
+          "name": "CodeCraft",
+          "published_at": "2024-05-23T14:01:16.975Z",
+          "revision": 1,
+          "slug": "codecraft",
+        }
+      `);
     });
 
     test("GET /api/v3/project-summaries should not contain unpublished apps", async () => {
@@ -381,6 +379,7 @@ describe(
 
       expect(restVersion).toMatchInlineSnapshot(`
         {
+          "blur_hash": null,
           "project_slug": "codecraft",
           "published_at": "2024-05-23T14:01:16.975Z",
           "revision": 1,
@@ -407,6 +406,7 @@ describe(
       const { app_metadata, files, ...restVersion } = version!;
       expect(restVersion).toMatchInlineSnapshot(`
         {
+          "blur_hash": null,
           "project_slug": "codecraft",
           "published_at": "2024-05-23T14:01:16.975Z",
           "revision": 1,

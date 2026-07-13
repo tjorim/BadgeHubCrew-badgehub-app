@@ -20,6 +20,7 @@ export interface VersionRelation {
 
 export interface Version {
   revision: RevisionNumber;
+  blur_hash?: null | string; // see https://github.com/woltapp/blurhash
   // zip?: null | string;
   // size_of_zip?: null | number;
   // git_commit_id?: null | string; // Allow spefifying a git commit ID for the version, if it exists // TODO allow updating this somehow
@@ -32,6 +33,7 @@ export interface Version {
 
 export const versionSchema = z.object({
   revision: z.number(),
+  blur_hash: z.string().optional().nullable(),
   // zip: z.string().optional().nullable(),
   // size_of_zip: z.number().optional().nullable(),
   // git_commit_id: z.string().optional().nullable(),

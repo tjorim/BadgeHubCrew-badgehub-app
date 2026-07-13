@@ -43,7 +43,10 @@ const iconSizeSchema = z.enum(["8x8", "16x16", "32x32", "64x64"]);
 
 const setDraftIconBodySchema = z.object({
   filePath: z.string(),
-  sizes: z.array(iconSizeSchema).min(1),
+  sizes: z
+    .array(iconSizeSchema)
+    .min(1)
+    .describe("The sizes that the icon should be available in."),
 });
 
 const setDraftIconResponseSchema = z.object({
@@ -110,7 +113,7 @@ export const scriptablePrivateProjectContracts = c.router(
         404: errorResponseSchema,
       },
       summary:
-        "Set the 64x64 draft icon by converting the existing project file given in the body",
+        "Set the draft icon by converting the existing project file into standard icon sizes",
     },
 
     deleteDraftFile: {

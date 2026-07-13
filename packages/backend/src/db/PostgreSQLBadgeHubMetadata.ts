@@ -25,7 +25,6 @@ import {
 import {
   convertDatedData,
   stripDatedData,
-  timestampTZToDate,
   timestampTZToISODateString,
 } from "@db/sqlHelpers/dbDates";
 import { DBVersion } from "@db/models/project/DBVersion";
@@ -290,8 +289,8 @@ export class PostgreSQLBadgeHubMetadata {
     await this.pool.query(sql`
       with inserted_version as (
         insert
-          into versions (project_slug, revision, app_metadata, created_at, updated_at)
-            values (${project.slug}, 1, ${appMetadata}, ${createdAt}, ${updatedAt}) returning revision)
+          into versions (project_slug, revision, app_metadata, blur_hash, created_at, updated_at)
+            values (${project.slug}, 1, ${appMetadata}, null, ${createdAt}, ${updatedAt}) returning revision)
       insert
       into projects (${keys}, draft_revision)
       values (${values}, (select revision from inserted_version))`);
@@ -327,12 +326,13 @@ export class PostgreSQLBadgeHubMetadata {
       with published_version as (
         update versions v
           set published_at = (${mockDate ?? raw("now()")}) , updated_at = (${mockDate ?? raw("now()")})
-          where v.id = (${getVersionQuery(projectSlug, "draft")}) returning revision, id, app_metadata),
+          where v.id = (${getVersionQuery(projectSlug, "draft")}) returning revision, id, app_metadata, blur_hash),
            new_draft_version as (
              insert
-               into versions (project_slug, app_metadata, revision, created_at, updated_at)
+               into versions (project_slug, app_metadata, blur_hash, revision, created_at, updated_at)
                  (select project_slug,
                          app_metadata,
+                         blur_hash,
                          revision + 1,
                          (${mockDate ?? raw("now()")}),
                          (${mockDate ?? raw("now()")})
@@ -513,18 +513,20 @@ and v.app_metadata->'badges' @>
   async updateDraftMetadata(
     projectSlug: string,
     newAppMetadata: WriteAppMetadataJSON,
+    blurHash: string | null,
     mockDates?: DBDatedData
   ): Promise<void> {
     const setters = getUpdateAssignmentsSql({
-      ...newAppMetadata,
+      app_metadata: newAppMetadata,
       ...mockDates,
+      blur_hash: blurHash,
     });
     if (!setters) {
       return;
     }
 
     const appMetadataUpdateQuery = sql`update versions
-                                       set app_metadata = (${newAppMetadata})
+                                       set ${setters}
                                        where id = ${getVersionQuery(projectSlug, "draft")}`;
     const queryResult = await this.pool.query(appMetadataUpdateQuery);
     return queryResult as any;

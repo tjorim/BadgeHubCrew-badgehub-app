@@ -1,3 +1,4 @@
+import { encode } from "blurhash";
 import sharp from "sharp";
 import { UploadedFile } from "@shared/domain/UploadedFile";
 import { ImageDimensions } from "@domain/ImageDimensions";
@@ -37,4 +38,20 @@ export async function createIconBuffer(
     })
     .png()
     .toBuffer();
+}
+
+export async function createBlurHash(
+  fileContent: Uint8Array
+): Promise<string | undefined> {
+  try {
+    const { data, info } = await sharp(fileContent)
+      .resize(32, 32, { fit: "inside" })
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    return encode(new Uint8ClampedArray(data), info.width, info.height, 4, 3);
+  } catch (e) {
+    console.error("Sharp failed to create blurhash", e);
+    return undefined;
+  }
 }

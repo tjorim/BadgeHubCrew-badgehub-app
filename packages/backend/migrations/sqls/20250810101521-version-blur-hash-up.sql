@@ -1,0 +1,2 @@
+ALTER TABLE versions
+    ADD COLUMN IF NOT EXISTS blur_hash TEXT;

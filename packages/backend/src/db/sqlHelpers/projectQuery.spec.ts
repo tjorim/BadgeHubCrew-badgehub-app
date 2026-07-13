@@ -17,6 +17,7 @@ describe("projectQueryResponseToReadModel", () => {
       project_slug: "versioned-app",
       id: 1,
       revision: 1,
+      blur_hash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
       app_metadata: {
         name: "Versioned App",
         version: "1.2.3",
@@ -29,6 +30,7 @@ describe("projectQueryResponseToReadModel", () => {
     expect(projectQueryResponseToReadModel(dbProject)).toMatchObject({
       slug: "versioned-app",
       name: "Versioned App",
+      blur_hash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
       revision: 1,
       version: "1.2.3",
     });

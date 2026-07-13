@@ -17,8 +17,8 @@ import {
 } from "@shared/contracts/privateRestContracts";
 import { RouterImplementation } from "@ts-rest/express/src/lib/types";
 import {
-  getUser,
   AuthenticatedRequest,
+  getUser,
   UserDataInRequest,
 } from "@auth/jwt-decode";
 import {
@@ -92,7 +92,12 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
       );
       if (authorizationFailureResponse) return authorizationFailureResponse;
       // Update metadata for the draft version of the project.
-      await badgeHubData.updateDraftMetadata(slug, body);
+      try {
+        await badgeHubData.updateDraftMetadata(slug, body);
+      } catch (e) {
+        console.error(e); // TODO clean up after switching to oRPC
+        throw e;
+      }
       return noContent();
     },
 
@@ -347,12 +352,9 @@ const checkProjectAuthorization = async (
 
   // Handle user authentication
   if (
-    !requestIsFromAllowedUser(
-      authenticatedRequest,
-      {
-        allowedUsers: [project?.idp_user_id],
-      }
-    )
+    !requestIsFromAllowedUser(authenticatedRequest, {
+      allowedUsers: [project?.idp_user_id],
+    })
   ) {
     return nok(
       HTTP_FORBIDDEN,

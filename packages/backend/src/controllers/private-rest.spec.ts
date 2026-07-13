@@ -77,6 +77,7 @@ describe("Authenticated API Routes", () => {
               "git_url": "https://github.com/badgehubcrew/badgehub-app",
               "name": "Test App Name",
             },
+            "blur_hash": null,
             "files": Any<Array>,
             "project_slug": Any<String>,
             "revision": 1,
@@ -218,6 +219,9 @@ describe("Authenticated API Routes", () => {
             "32x32": "icon-32x32.png",
             "64x64": "icon-64x64.png",
           });
+          expect(getDraftRes.body.version.blur_hash).toMatchInlineSnapshot(
+            `"L9TSUA~qfQ~q~qoffQoffQfQfQfQ"`
+          );
         });
 
         test("Overwrite deleted file", async () => {
@@ -258,7 +262,9 @@ describe("Authenticated API Routes", () => {
           expect(postProjectRes.statusCode).toBe(204);
 
           const uploadKeptFileRes = await request(app)
-            .post(`/api/v3/projects/${publishTestAppId}/draft/files/${keptFilePath}`)
+            .post(
+              `/api/v3/projects/${publishTestAppId}/draft/files/${keptFilePath}`
+            )
             .auth(USER1_TOKEN, { type: "bearer" })
             .attach("file", Buffer.from(keptFileContent), keptFilePath);
           expect(uploadKeptFileRes.statusCode).toBe(204);
@@ -288,14 +294,20 @@ describe("Authenticated API Routes", () => {
             .auth(USER1_TOKEN, { type: "bearer" });
           expect(getLatestRes.statusCode).toBe(200);
           expect(
-            getLatestRes.body.version.files.map((f: { full_path: string }) => f.full_path)
+            getLatestRes.body.version.files.map(
+              (f: { full_path: string }) => f.full_path
+            )
           ).toContain(keptFilePath);
           expect(
-            getLatestRes.body.version.files.map((f: { full_path: string }) => f.full_path)
+            getLatestRes.body.version.files.map(
+              (f: { full_path: string }) => f.full_path
+            )
           ).not.toContain(deletedFilePath);
 
           const getDraftKeptFileRes = await request(app)
-            .get(`/api/v3/projects/${publishTestAppId}/draft/files/${keptFilePath}`)
+            .get(
+              `/api/v3/projects/${publishTestAppId}/draft/files/${keptFilePath}`
+            )
             .auth(USER1_TOKEN, { type: "bearer" });
           expect(getDraftKeptFileRes.statusCode).toBe(200);
           expect(getDraftKeptFileRes.text).toBe(keptFileContent);
