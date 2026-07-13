@@ -12,6 +12,7 @@ import {
 import { initContract } from "@ts-rest/core";
 import { EXPRESS_PORT } from "@config";
 import { NO_BODY_DESCRIPTION } from "@shared/contracts/tsRestNoBodyPatch";
+import { monkeyPatchDraftFileUploadSwagger } from "@monkeyPatchDraftFileUploadSwagger";
 
 const c = initContract();
 export const swaggerJsonContract = c.router({
@@ -88,48 +89,6 @@ function removeEmptyBodiesFromPaths(paths: PathsObject) {
   );
 }
 
-const draftFileUploadRequestBody = {
-  description:
-    'Multipart form data containing the draft file under the "file" field.',
-  required: true,
-  content: {
-    "multipart/form-data": {
-      schema: {
-        type: "object",
-        required: ["file"],
-        properties: {
-          file: {
-            type: "string",
-            format: "binary",
-            description:
-              'Draft file to upload. The multipart field name must be "file".',
-          },
-        },
-      },
-    },
-  },
-};
-
-function documentDraftFileUploadRequestBody(paths: PathsObject): PathsObject {
-  const draftFileUploadPath = "/api/v3/projects/{slug}/draft/files/{filePath}";
-  const draftFileUploadPost = paths[draftFileUploadPath]?.post;
-
-  if (!draftFileUploadPost) {
-    return paths;
-  }
-
-  return {
-    ...paths,
-    [draftFileUploadPath]: {
-      ...paths[draftFileUploadPath],
-      post: {
-        ...draftFileUploadPost,
-        requestBody: draftFileUploadRequestBody,
-      },
-    },
-  };
-}
-
 export const createSwaggerDoc = () => {
   const apiDoc = { info: { title: "BadgeHub API", version: "1.0.0" } };
   const jsonSwagger = generateOpenApi(swaggerJsonContract, apiDoc, {
@@ -151,7 +110,7 @@ export const createSwaggerDoc = () => {
 
   return {
     ...jsonSwagger,
-    paths: documentDraftFileUploadRequestBody(
+    paths: monkeyPatchDraftFileUploadSwagger(
       removeEmptyBodiesFromPaths(
         _.merge(
           jsonSwagger.paths,
