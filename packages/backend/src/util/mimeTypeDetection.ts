@@ -6,6 +6,9 @@ const customMimeTypes: Record<string, string> = {
   tsx: "text/typescript-jsx",
   ts: "text/typescript",
   jsx: "text/javascript-jsx",
+  // MicroPythonOS app package (a ZIP container); binary, so it must never
+  // inherit a generic text/plain type from the uploading client.
+  mpk: "application/octet-stream",
 };
 
 // Generic MIME types that clients fall back to when they don't know (or

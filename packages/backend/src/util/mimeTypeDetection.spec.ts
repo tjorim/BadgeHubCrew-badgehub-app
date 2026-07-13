@@ -69,6 +69,25 @@ describe("MIME Type Detection", () => {
     );
   });
 
+  it("should treat .mpk uploads (MicroPythonOS app packages) as binary regardless of client MIME type", () => {
+    // Explicit binary type from a well-behaved client stays binary.
+    expect(detectMimeType("application/octet-stream", "app.mpk")).toBe(
+      "application/octet-stream"
+    );
+    // publish_badgehub.py-style upload without a real content type must not
+    // leave a binary package stored as text/plain.
+    expect(detectMimeType("text/plain", "com.example.app.mpk")).toBe(
+      "application/octet-stream"
+    );
+    expect(detectMimeType(undefined, "app.mpk")).toBe(
+      "application/octet-stream"
+    );
+    // A specific, trusted client-provided type is still honored.
+    expect(detectMimeType("application/zip", "app.mpk")).toBe(
+      "application/zip"
+    );
+  });
+
   it("should treat generic browser MIME types case-insensitively and ignore parameters", () => {
     expect(detectMimeType("Text/Plain; charset=utf-8", "icon.png")).toBe(
       "image/png"
@@ -96,6 +115,9 @@ describe("isSafeToRenderInline", () => {
     expect(isSafeToRenderInline("text/html")).toBe(false);
     expect(isSafeToRenderInline("text/x-python")).toBe(false);
     expect(isSafeToRenderInline("application/json")).toBe(false);
+    // .mpk packages are stored as application/octet-stream and must be
+    // served as a download, never rendered inline.
+    expect(isSafeToRenderInline("application/octet-stream")).toBe(false);
   });
 
   it("rejects missing MIME type", () => {
