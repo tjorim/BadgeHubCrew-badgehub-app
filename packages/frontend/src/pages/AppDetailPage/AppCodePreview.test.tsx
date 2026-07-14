@@ -26,6 +26,14 @@ vi.mock("@api/tsRestClient.ts", () => ({
           body: "This is a simple text file.\nIt contains multiple lines.\nEach line is plain text.",
         });
       }
+      if (params.filePath === "parsed.json") {
+        // The real ts-rest client auto-parses application/json responses
+        // (see #398), so the body arrives as an object, not a string/Blob.
+        return Promise.resolve({
+          status: 200,
+          body: { name: "parsed", version: "2.0.0" },
+        });
+      }
       return Promise.resolve({
         status: 404,
         body: "File not found",
@@ -92,6 +100,19 @@ const mockProject: ProjectDetails = {
         size_formatted: "500 B",
         full_path: "readme.txt",
         url: "http://example.com/readme.txt",
+        created_at: "2023-01-01T00:00:00Z",
+        updated_at: "2023-01-01T00:00:00Z",
+      },
+      {
+        dir: "",
+        name: "parsed",
+        ext: "json",
+        mimetype: "application/json",
+        size_of_content: 50,
+        sha256: "g".repeat(64),
+        size_formatted: "50 B",
+        full_path: "parsed.json",
+        url: "http://example.com/parsed.json",
         created_at: "2023-01-01T00:00:00Z",
         updated_at: "2023-01-01T00:00:00Z",
       },
@@ -215,6 +236,19 @@ describe("AppCodePreview", () => {
     const prettyPrintButton = screen.getByText("Pretty Print");
     fireEvent.click(prettyPrintButton);
     expect(screen.getByText("Show Raw")).toBeInTheDocument();
+  });
+
+  it("shows JSON preview when the client returns an already-parsed body", async () => {
+    render(<AppCodePreview project={mockProject} />);
+
+    fireEvent.click(screen.getByText("parsed.json"));
+
+    expect(await screen.findByText("JSON file")).toBeInTheDocument();
+    expect(
+      screen.queryByText("// Unable to display file content")
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('"parsed"')).toBeInTheDocument();
+    expect(screen.getByText('"2.0.0"')).toBeInTheDocument();
   });
 
   it("shows Python preview with syntax highlighting", async () => {
