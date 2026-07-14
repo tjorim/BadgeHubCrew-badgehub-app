@@ -1,6 +1,9 @@
 import { generateOpenApi } from "@ts-rest/open-api";
 import { publicRestContracts } from "@shared/contracts/publicRestContracts";
-import { scriptablePrivateProjectContracts } from "@shared/contracts/privateRestContracts";
+import {
+  nonScriptablePrivateContracts,
+  scriptablePrivateProjectContracts,
+} from "@shared/contracts/privateRestContracts";
 import _ from "lodash";
 import {
   OpenAPIObject,
@@ -8,6 +11,7 @@ import {
   ParameterObject,
   PathsObject,
   ReferenceObject,
+  SecurityRequirementObject,
 } from "openapi3-ts";
 import { initContract } from "@ts-rest/core";
 import { EXPRESS_PORT } from "@config";
@@ -47,12 +51,15 @@ const isApiTokenHeader = (p: ParameterObject | ReferenceObject) =>
   p.in === "header" &&
   p.name?.toLowerCase() === "badgehub-api-token";
 
-const withSecurity = (operation: OperationObject): OperationObject => ({
+const withSecurity = (
+  operation: OperationObject,
+  security: SecurityRequirementObject[]
+): OperationObject => ({
   ...operation,
   parameters: operation.parameters?.filter(
     (p) => !isAuthorizationHeader(p) && !isApiTokenHeader(p)
   ),
-  security: [{ bearerAuth: [] }, { apiTokenAuth: [] }],
+  security: security,
 });
 
 function isEmptyRequestBody(requestBody: Record<string, any> | undefined) {
@@ -99,12 +106,28 @@ export const createSwaggerDoc = () => {
     setOperationId: true,
     operationMapper: (op) => withTag(op, "Public"),
   });
-  const privateSwagger = generateOpenApi(
+  const privateScriptableSwagger = generateOpenApi(
     scriptablePrivateProjectContracts,
     apiDoc,
     {
       setOperationId: true,
-      operationMapper: (op) => withSecurity(withTag(op, "Private")),
+      operationMapper: (op) =>
+        withSecurity(withTag(op, "Private Scriptable"), [
+          { bearerAuth: [] },
+          { apiTokenAuth: [] },
+        ]),
+    }
+  );
+
+  const privateNonScriptableSwagger = generateOpenApi(
+    nonScriptablePrivateContracts,
+    apiDoc,
+    {
+      setOperationId: true,
+      operationMapper: (op) =>
+        withSecurity(withTag(op, "Private Non Scriptable"), [
+          { bearerAuth: [] },
+        ]),
     }
   );
 
@@ -115,7 +138,8 @@ export const createSwaggerDoc = () => {
         _.merge(
           jsonSwagger.paths,
           withPrefix("/api/v3", publicSwagger.paths),
-          withPrefix("/api/v3", privateSwagger.paths)
+          withPrefix("/api/v3", privateScriptableSwagger.paths),
+          withPrefix("/api/v3", privateNonScriptableSwagger.paths)
         )
       )
     ),
@@ -129,9 +153,14 @@ export const createSwaggerDoc = () => {
         description: "Operations available without any authentication.",
       },
       {
-        name: "Private",
+        name: "Private Scriptable",
         description:
           "Operations available to authenticated users via JWT Bearer token OR API token.",
+      },
+      {
+        name: "Private Non Scriptable",
+        description:
+          "Operations available to authenticated users via JWT Bearer token only.",
       },
     ],
     servers: [

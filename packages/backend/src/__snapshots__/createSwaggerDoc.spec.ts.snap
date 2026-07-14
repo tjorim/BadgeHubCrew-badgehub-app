@@ -583,7 +583,7 @@ exports[`createSwaggerDoc > swagger doc should match snapshot 1`] = `
         ],
         "summary": "Delete an existing project",
         "tags": [
-          "Private",
+          "Private Scriptable",
         ],
       },
       "get": {
@@ -1007,7 +1007,93 @@ Warning: if it is present, then badgehub clients on badges will not update the a
         ],
         "summary": "Update an existing project",
         "tags": [
-          "Private",
+          "Private Scriptable",
+        ],
+      },
+      "post": {
+        "deprecated": undefined,
+        "description": undefined,
+        "operationId": "createProject",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "description": "Schema request body for creating or updating a project",
+                "properties": {
+                  "git": {
+                    "type": "string",
+                  },
+                },
+                "type": "object",
+              },
+            },
+          },
+          "description": "Body",
+        },
+        "responses": {
+          "204": {
+            "content": {
+              "application/json": {
+                "schema": {},
+              },
+            },
+            "description": "204",
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "reason": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "reason",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "403",
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "reason": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "reason",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "409",
+          },
+        },
+        "security": [
+          {
+            "bearerAuth": [],
+          },
+        ],
+        "summary": "Create a new project",
+        "tags": [
+          "Private Non Scriptable",
         ],
       },
     },
@@ -1370,7 +1456,7 @@ Warning: if it is present, then badgehub clients on badges will not update the a
         ],
         "summary": "Get project details for the draft version of a project",
         "tags": [
-          "Private",
+          "Private Scriptable",
         ],
       },
     },
@@ -1453,7 +1539,7 @@ Warning: if it is present, then badgehub clients on badges will not update the a
         ],
         "summary": "Delete a file from the latest draft version of a project",
         "tags": [
-          "Private",
+          "Private Scriptable",
         ],
       },
       "get": {
@@ -1537,7 +1623,7 @@ Warning: if it is present, then badgehub clients on badges will not update the a
         ],
         "summary": "Get a file from the draft version of a project",
         "tags": [
-          "Private",
+          "Private Scriptable",
         ],
       },
       "post": {
@@ -1639,7 +1725,7 @@ Warning: if it is present, then badgehub clients on badges will not update the a
         ],
         "summary": "Upload a file to the latest draft version of a project",
         "tags": [
-          "Private",
+          "Private Scriptable",
         ],
       },
     },
@@ -1778,7 +1864,7 @@ Warning: if it is present, then badgehub clients on badges will not update the a
         ],
         "summary": "Set the draft icon by converting the existing project file into standard icon sizes",
         "tags": [
-          "Private",
+          "Private Scriptable",
         ],
       },
     },
@@ -2034,7 +2120,7 @@ Warning: if it is present, then badgehub clients on badges will not update the a
         "summary": "Overwrite the metadata of the latest draft version of a project. 
 This is actually just an alias for a post to /projects/:slug/draft/files/metadata.json",
         "tags": [
-          "Private",
+          "Private Scriptable",
         ],
       },
     },
@@ -2169,7 +2255,7 @@ This is actually just an alias for a post to /projects/:slug/draft/files/metadat
         ],
         "summary": "Publish the current draft as a new version",
         "tags": [
-          "Private",
+          "Private Scriptable",
         ],
       },
     },
@@ -2879,7 +2965,7 @@ Warning: if it is present, then badgehub clients on badges will not update the a
         ],
         "summary": "Delete the API token for the project",
         "tags": [
-          "Private",
+          "Private Scriptable",
         ],
       },
       "get": {
@@ -2967,7 +3053,7 @@ Warning: if it is present, then badgehub clients on badges will not update the a
         ],
         "summary": "Allow to check if there is an API token for the project and when it was last used and created.",
         "tags": [
-          "Private",
+          "Private Scriptable",
         ],
       },
       "post": {
@@ -3034,7 +3120,7 @@ Warning: if it is present, then badgehub clients on badges will not update the a
         "summary": "Create a new API token for the project (and invalidate the old one if there was one).
 This is an api key that can be used in the 'badgehub-api-token' header. Eg. set this header: 'badgehub-api-token:{token}'.",
         "tags": [
-          "Private",
+          "Private Scriptable",
         ],
       },
     },
@@ -3105,6 +3191,233 @@ This is an api key that can be used in the 'badgehub-api-token' header. Eg. set 
         ],
       },
     },
+    "/api/v3/users/{userId}/drafts": {
+      "get": {
+        "deprecated": undefined,
+        "description": undefined,
+        "operationId": "getUserDraftProjects",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "pageStart",
+            "schema": {
+              "nullable": true,
+              "type": "number",
+            },
+          },
+          {
+            "in": "query",
+            "name": "pageLength",
+            "schema": {
+              "nullable": true,
+              "type": "number",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "properties": {
+                      "badges": {
+                        "items": {
+                          "type": "string",
+                        },
+                        "type": "array",
+                      },
+                      "blur_hash": {
+                        "description": "A BlurHash of the icon, allowing for quickly showing something while icons are downloading. See https://github.com/woltapp/blurhash for more info.",
+                        "type": "string",
+                      },
+                      "categories": {
+                        "items": {
+                          "enum": [
+                            "Uncategorised",
+                            "Event related",
+                            "Games",
+                            "Graphics",
+                            "Hardware",
+                            "Utility",
+                            "Wearable",
+                            "Data",
+                            "Silly",
+                            "Hacking",
+                            "Troll",
+                            "Unusable",
+                            "Adult",
+                            "Virus",
+                            "SAO",
+                            "Interpreter",
+                            "Default",
+                          ],
+                          "type": "string",
+                        },
+                        "type": "array",
+                      },
+                      "description": {
+                        "type": "string",
+                      },
+                      "git_url": {
+                        "type": "string",
+                      },
+                      "hidden": {
+                        "type": "boolean",
+                      },
+                      "icon_map": {
+                        "description": "Icon Map of the project that maps from accepted sizes to a file path and url.",
+                        "properties": {
+                          "16x16": {
+                            "properties": {
+                              "full_path": {
+                                "type": "string",
+                              },
+                              "url": {
+                                "format": "uri",
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "full_path",
+                              "url",
+                            ],
+                            "type": "object",
+                          },
+                          "32x32": {
+                            "properties": {
+                              "full_path": {
+                                "type": "string",
+                              },
+                              "url": {
+                                "format": "uri",
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "full_path",
+                              "url",
+                            ],
+                            "type": "object",
+                          },
+                          "64x64": {
+                            "properties": {
+                              "full_path": {
+                                "type": "string",
+                              },
+                              "url": {
+                                "format": "uri",
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "full_path",
+                              "url",
+                            ],
+                            "type": "object",
+                          },
+                          "8x8": {
+                            "properties": {
+                              "full_path": {
+                                "type": "string",
+                              },
+                              "url": {
+                                "format": "uri",
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "full_path",
+                              "url",
+                            ],
+                            "type": "object",
+                          },
+                        },
+                        "type": "object",
+                      },
+                      "idp_user_id": {
+                        "type": "string",
+                      },
+                      "installs": {
+                        "description": "The number of badges that have reported to have installed this app at least once.",
+                        "type": "number",
+                      },
+                      "latest_revision": {
+                        "nullable": true,
+                        "type": "number",
+                      },
+                      "license_type": {
+                        "type": "string",
+                      },
+                      "name": {
+                        "type": "string",
+                      },
+                      "published_at": {
+                        "type": "string",
+                      },
+                      "revision": {
+                        "type": "number",
+                      },
+                      "slug": {
+                        "type": "string",
+                      },
+                      "version": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "slug",
+                      "idp_user_id",
+                      "name",
+                      "installs",
+                      "revision",
+                    ],
+                    "type": "object",
+                  },
+                  "type": "array",
+                },
+              },
+            },
+            "description": "200",
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "reason": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "reason",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "403",
+          },
+        },
+        "security": [
+          {
+            "bearerAuth": [],
+          },
+        ],
+        "summary": "Get all draft projects for a user",
+        "tags": [
+          "Private Non Scriptable",
+        ],
+      },
+    },
   },
   "servers": [
     {
@@ -3128,7 +3441,11 @@ This is an api key that can be used in the 'badgehub-api-token' header. Eg. set 
     },
     {
       "description": "Operations available to authenticated users via JWT Bearer token OR API token.",
-      "name": "Private",
+      "name": "Private Scriptable",
+    },
+    {
+      "description": "Operations available to authenticated users via JWT Bearer token only.",
+      "name": "Private Non Scriptable",
     },
   ],
 }

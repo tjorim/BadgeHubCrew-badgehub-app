@@ -234,7 +234,7 @@ This is actually just an alias for a post to /projects/:slug/draft/files/metadat
   }
 );
 
-export const privateProjectContracts = c.router(
+export const nonScriptablePrivateProjectContracts = c.router(
   {
     createProject: {
       method: "POST",
@@ -249,7 +249,6 @@ export const privateProjectContracts = c.router(
       summary: "Create a new project",
       headers: authorizationHeaderSchema,
     },
-    ...scriptablePrivateProjectContracts,
   },
   {
     baseHeaders: {
@@ -258,21 +257,42 @@ export const privateProjectContracts = c.router(
   }
 );
 
-export const privateRestContracts = c.router({
-  ...privateProjectContracts,
-  getUserDraftProjects: {
-    method: "GET",
-    path: "/users/:userId/drafts",
-    pathParams: z.object({ userId: z.string() }),
-    query: z.object({
-      pageStart: z.coerce.number().optional(),
-      pageLength: z.coerce.number().optional(),
-    }),
-    responses: {
-      200: z.array(projectSummarySchema),
-      403: errorResponseSchema,
+const nonScriptablePrivateUserContracts = c.router(
+  {
+    getUserDraftProjects: {
+      method: "GET",
+      path: "/users/:userId/drafts",
+      pathParams: z.object({ userId: z.string() }),
+      query: z.object({
+        pageStart: z.coerce.number().optional(),
+        pageLength: z.coerce.number().optional(),
+      }),
+      responses: {
+        200: z.array(projectSummarySchema),
+        403: errorResponseSchema,
+      },
+      summary: "Get all draft projects for a user",
+      headers: authorizationHeaderSchema,
     },
-    summary: "Get all draft projects for a user",
-    headers: authorizationHeaderSchema,
   },
+  {
+    baseHeaders: {
+      authorization: z.string(),
+    },
+  }
+);
+
+export const nonScriptablePrivateContracts = {
+  ...nonScriptablePrivateProjectContracts,
+  ...nonScriptablePrivateUserContracts,
+};
+export const privateProjectContracts = {
+  ...nonScriptablePrivateProjectContracts,
+  ...scriptablePrivateProjectContracts,
+};
+
+export const privateRestContracts = c.router({
+  ...nonScriptablePrivateProjectContracts,
+  ...scriptablePrivateProjectContracts,
+  ...nonScriptablePrivateUserContracts,
 });
