@@ -1,54 +1,28 @@
-# React + TypeScript + Vite
+# BadgeHub frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The BadgeHub frontend is a React application built with Vite, Tailwind CSS,
+and DaisyUI. It consumes the shared ts-rest contracts from `packages/shared`.
 
-Currently, two official plugins are available:
+Run commands from the repository root unless noted otherwise:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+```bash
+npm run dev
+npm run build --workspace=packages/frontend
+npm run check:ts --workspace=packages/frontend
+npm run test --workspace=packages/frontend
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+During development, Vite listens on port 5173 and serves assets referenced by
+`index-indirect-dev.html`. Open <http://localhost:8081>, not the Vite port: the
+backend injects runtime configuration and serves the application shell.
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+Frontend authentication is initialized by `SessionProvider` using the public
+Keycloak settings injected by the backend. Do not put client secrets or other
+private values in frontend environment variables or source files.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    "react-x": reactX,
-    "react-dom": reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs["recommended-typescript"].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
-```
+Tailwind CSS is integrated through `@tailwindcss/vite`; do not add CDN copies
+of Tailwind or DaisyUI to the HTML templates.
+
+See the root [README](../../README.md) and
+[CONTRIBUTING guide](../../CONTRIBUTING.md) for complete setup and contribution
+instructions.

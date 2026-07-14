@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 
 jobs:
@@ -28,11 +28,11 @@ jobs:
           npm run build
       - name: Start environment
         run: |
-          cp packages/backend/.env.test packages/backend/.env 
-          npm run test-db:up --workspace=packages/backend -- --wait
+          cp packages/backend/.env.test packages/backend/.env
+          npm run test-db:up
       - name: Populate the DB with test data
         run: |
-          npm run repopulate-db --workspace=packages/backend
+          npm run repopulate-db
       - name: Run test
         run: |
           npm run test
@@ -41,3 +41,6 @@ jobs:
         uses: davelosert/vitest-coverage-report-action@v2
         with:
           working-directory: packages/backend
+      - name: Stop test database
+        if: always()
+        run: npm run test-db:down

@@ -171,7 +171,8 @@ async function insertProjects(badgeHubData: BadgeHubData) {
   for (const projectName of PROJECT_NAMES) {
     const semiRandomNumber = await stringToSemiRandomNumber(projectName);
     const slug = projectName.toLowerCase();
-    const userName = USERS[semiRandomNumber % USERS.length]!;
+    const userName =
+      process.env.DEV_USER_SUB ?? USERS[semiRandomNumber % USERS.length]!;
 
     const { created_at, updated_at } = await getSemiRandomDates(projectName);
 

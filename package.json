@@ -13,6 +13,9 @@
   "license": "ISC",
   "author": "",
   "type": "module",
+  "engines": {
+    "node": ">=24.4.1 <25"
+  },
   "scripts": {
     "test": "npm run test --workspaces",
     "build": "npm run build --workspaces",
@@ -20,10 +23,15 @@
     "start": "npm run start --workspace=packages/backend",
     "dev": "concurrently -k -c 'auto' 'npm:dev:*'",
     "dev:frontend": "npm run dev --workspace=packages/frontend",
-    "test-db:up": "npm run --workspace=packages/backend test-db:up | exit 0",
-    "backup": "docker exec -it badgehub-db /usr/bin/pg_dump --username badgehub badgehub -f /var/backup/data-backup-`date +\"%Y-%m-%dT%H:%m\"`.sql",    
+    "test-db:up": "npm run --workspace=packages/backend test-db:up -- --wait",
+    "test-db:down": "npm run --workspace=packages/backend test-db:down",
+    "repopulate-db": "npm run --workspace=packages/backend repopulate-db",
+    "db-migrate:up": "npm run --workspace=packages/backend db-migrate:up",
+    "db-migrate:down": "npm run --workspace=packages/backend db-migrate:down",
+    "db-migrate:create": "npm run --workspace=packages/backend db-migrate:create --",
+    "backup": "docker compose --env-file infra/badgehub/.env.prod -f infra/badgehub/docker-compose.yml exec -T db sh -c 'pg_dump --username \"$POSTGRES_USER\" \"$POSTGRES_DB\"'",
     "dev:backend": "npm run test-db:up && npm run dev --workspace=packages/backend",
-    "dump-db": "docker exec -it badgehub-db /usr/bin/pg_dump --username badgehub --schema badgehub badgehub > mockup-data.sql",
+    "dump-db": "docker compose --env-file packages/backend/.env -f packages/backend/docker-compose.test-db.yml exec -T db sh -c 'pg_dump --username \"$POSTGRES_USER\" --schema badgehub \"$POSTGRES_DB\"'",
     "prepare": "husky",
     "lint-staged": "pretty-quick --staged",
     "lint": "pretty-quick --check",

@@ -1,4 +1,5 @@
-FROM node:24-bookworm-slim
+ARG NODE_VERSION=24.4.1
+FROM node:${NODE_VERSION}-bookworm-slim
 
 # First install dependencies without any source code affecting the docker cache
 WORKDIR /home/node/app

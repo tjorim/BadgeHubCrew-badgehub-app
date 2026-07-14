@@ -11,8 +11,8 @@
     "check:ts": "tsc --noEmit -p tsconfig.json",
     "dev": "node --watch --import tsx src/index.ts",
     "repopulate-db": "node --import tsx src/dev/populate-db/runPopulateDB.ts",
-    "test-db:up": "docker compose -f docker-compose.test-db.yml up -d",
-    "test-db:down": "docker compose -f docker-compose.test-db.yml down",
+    "test-db:up": "docker compose --env-file .env -f docker-compose.test-db.yml up -d",
+    "test-db:down": "docker compose --env-file .env -f docker-compose.test-db.yml down",
     "test": "vitest run --coverage.enabled true",
     "test:watch": "vitest watch --coverage.enabled true",
     "db-migrate:up": "db-migrate up",
@@ -22,7 +22,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=24.4.1 <25"
   },
   "dependencies": {
     "@ts-rest/core": "^3.53.0-rc.1",
