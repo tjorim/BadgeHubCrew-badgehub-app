@@ -9,20 +9,7 @@ import { assertDefined } from "@shared/util/assertions.ts";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { atomOneDark } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 import { atomOneLight } from "react-syntax-highlighter/dist/cjs/styles/hljs";
-
-function useIsDarkTheme() {
-  const [isDark, setIsDark] = useState(() =>
-    getComputedStyle(document.documentElement).colorScheme === "dark"
-  );
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsDark(getComputedStyle(document.documentElement).colorScheme === "dark");
-    });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => observer.disconnect();
-  }, []);
-  return isDark;
-}
+import { useIsDarkTheme } from "@hooks/useIsDarkTheme.ts";
 import Keycloak from "keycloak-js";
 import { getLanguageFromFile, getPreviewType } from "@utils/filePreview.ts";
 import { downloadProjectFile } from "@utils/downloadProjectFile.ts";
