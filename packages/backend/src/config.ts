@@ -12,7 +12,7 @@ console.log(`Using database: ${POSTGRES_DB}`);
 export const POSTGRES_USER = getAndAssertEnv("POSTGRES_USER");
 export const POSTGRES_PASSWORD = getAndAssertEnv("POSTGRES_PASSWORD");
 export const POSTGRES_HOST = getAndAssertEnv("POSTGRES_HOST");
-export const POSTGRES_PORT = 5432;
+export const POSTGRES_PORT = Number(process.env.POSTGRES_PORT ?? "5432");
 export const DISABLE_AUTH = process.env.DISABLE_AUTH === "true";
 export const MAX_UPLOAD_FILE_SIZE_BYTES = 32 * 1024 * 1024; // 32 MB
 
