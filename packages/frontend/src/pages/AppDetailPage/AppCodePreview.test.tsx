@@ -34,6 +34,15 @@ vi.mock("@api/tsRestClient.ts", () => ({
           body: { name: "parsed", version: "2.0.0" },
         });
       }
+      if (params.filePath === "null.json") {
+        // A .json file whose content is the literal JSON value `null` is
+        // valid and should still render, not fall through to the
+        // "unable to display" message.
+        return Promise.resolve({
+          status: 200,
+          body: null,
+        });
+      }
       return Promise.resolve({
         status: 404,
         body: "File not found",
@@ -113,6 +122,19 @@ const mockProject: ProjectDetails = {
         size_formatted: "50 B",
         full_path: "parsed.json",
         url: "http://example.com/parsed.json",
+        created_at: "2023-01-01T00:00:00Z",
+        updated_at: "2023-01-01T00:00:00Z",
+      },
+      {
+        dir: "",
+        name: "null",
+        ext: "json",
+        mimetype: "application/json",
+        size_of_content: 4,
+        sha256: "h".repeat(64),
+        size_formatted: "4 B",
+        full_path: "null.json",
+        url: "http://example.com/null.json",
         created_at: "2023-01-01T00:00:00Z",
         updated_at: "2023-01-01T00:00:00Z",
       },
@@ -265,6 +287,18 @@ describe("AppCodePreview", () => {
     fireEvent.click(screen.getByText("Pretty Print"));
     const prettyText = container.querySelector("pre")?.textContent ?? "";
     expect(prettyText).toMatch(/\n/);
+  });
+
+  it("renders a JSON file whose content is the literal value null", async () => {
+    const { container } = render(<AppCodePreview project={mockProject} />);
+
+    fireEvent.click(screen.getByText("null.json"));
+
+    expect(await screen.findByText("JSON file")).toBeInTheDocument();
+    expect(
+      screen.queryByText("// Unable to display file content")
+    ).not.toBeInTheDocument();
+    expect(container.querySelector("pre")?.textContent).toBe("null");
   });
 
   it("shows Python preview with syntax highlighting", async () => {
