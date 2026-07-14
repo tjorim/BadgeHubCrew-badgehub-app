@@ -10,12 +10,12 @@ import {
   noContent,
   nok,
   ok,
+  type RouterImplementation,
 } from "@controllers/ts-rest/httpResponses";
 import {
   privateProjectContracts,
   privateRestContracts,
 } from "@shared/contracts/privateRestContracts";
-import { RouterImplementation } from "@ts-rest/express/src/lib/types";
 import {
   AuthenticatedRequest,
   getUser,

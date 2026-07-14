@@ -9,9 +9,9 @@ import {
 import { BadgeHubData } from "@domain/BadgeHubData";
 import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
 import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
-import { noContent, nok, ok } from "@controllers/ts-rest/httpResponses";
+import { noContent, nok, ok, type RouterImplementation } from "@controllers/ts-rest/httpResponses";
 import { Readable } from "node:stream";
-import { RouterImplementation } from "@ts-rest/express/src/lib/types";
+
 import { ProjectLatestRevisions } from "@shared/domain/readModels/project/ProjectRevision";
 import { isSafeToRenderInline } from "@util/mimeTypeDetection";
 

@@ -16,7 +16,7 @@
   "scripts": {
     "test": "pnpm -r test",
     "build": "pnpm -r build",
-    "check:ts": "pnpm -r check:ts",
+    "check:ts": "pnpm --filter frontend check:ts && pnpm --filter badgehub-api check:ts",
     "start": "pnpm --filter badgehub-api start",
     "dev": "concurrently -k -c 'auto' 'pnpm --filter frontend dev' 'pnpm --filter badgehub-api dev'",
     "dev:frontend": "pnpm --filter frontend dev",
@@ -31,7 +31,7 @@
     "validate": "pnpm run lint && pnpm run check:ts && pnpm run build && pnpm run test"
   },
   "dependencies": {
-    "@ts-rest/core": "^3.53.0-rc.1",
+    "@ts-rest/core": "3.53.0-rc.1",
     "zod": "^3.25.42"
   },
   "devDependencies": {

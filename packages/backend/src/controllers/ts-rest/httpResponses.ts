@@ -1,3 +1,12 @@
+import { initServer } from "@ts-rest/express";
+import type { AppRouter } from "@ts-rest/core";
+
+const _server = initServer();
+
+export type RouterImplementation<T extends AppRouter> = Parameters<
+  typeof _server.router<T>
+>[1];
+
 export const HTTP_NOT_FOUND = 404;
 export const HTTP_FORBIDDEN = 403;
 export const HTTP_OK = 403;

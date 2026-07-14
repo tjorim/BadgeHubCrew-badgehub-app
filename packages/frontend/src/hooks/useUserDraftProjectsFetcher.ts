@@ -33,7 +33,7 @@ export const useUserDraftProjectsFetcher = ({
         params: {
           userId: user.id,
         },
-        headers: {
+        extraHeaders: {
           authorization: `Bearer ${keycloak.token}`,
         },
       })
