@@ -22,12 +22,12 @@ and fill out the details.
 ### Running locally
 The most convenient way to run BadgeHub locally is this way:
 - configure the `.env` file to use the dev keycloak server, like it is done in the `.env.example` file.
-- start the test database with docker: `npm run test-db:up`
+- start the test database with docker: `pnpm run test-db:up`
 - if this is your first time running BadgeHub, or the populate db script was updated, you should also do:
   ```bash
-  npm run --workspace=packages/backend repopulate-db
+  pnpm --filter badgehub-api run repopulate-db
   ```
-- start the frontend and backend with this command: `npm run dev`
+- start the frontend and backend with this command: `pnpm run dev`
 
 ### Database Migrations
 
@@ -39,7 +39,7 @@ To create a new migration, follow the steps below.
 #### Create a new migration
 
 ```bash
-npm run --workspace=packages/backend db-migrate:create -- <migration-name>
+pnpm --filter badgehub-api run db-migrate:create -- <migration-name>
 ```
 
 This will create a new migration file in the `migrations` directory with the name `<timestamp>-<migration-name>.js` as well as 2 sql files, one for the up migration and one for the down migration.
@@ -51,13 +51,13 @@ These sql commands should take care of changing the database schema as well as m
 #### Run the migration to test it.
 
 ```bash
-npm run --workspace=packages/backend db-migrate:up
+pnpm --filter badgehub-api run db-migrate:up
 ```
 
 #### Run the down migration to test it.
 
 ```bash
-npm run --workspace=packages/backend db-migrate:down
+pnpm --filter badgehub-api run db-migrate:down
 ```
 
 #### Commit the migration files to git.
@@ -67,13 +67,13 @@ When the code is deployed, the up migrations will be run automatically before st
 ### Testing
 The unit test require the test database to be up and filled in.
 So first do:
-`npm run test-db:up`
+`pnpm run test-db:up`
 
 And if this is the very first time, or the populate db script was updated, you should also do:
-`npm run --workspace=packages/backend repopulate-db`
+`pnpm --filter badgehub-api run repopulate-db`
 
 Then to run the tests, do:
-`npm run test`
+`pnpm run test`
  
 ## - Production -
 
@@ -83,7 +83,7 @@ PM2 is used to run Node.js multithreaded.
 
 The first time, a Docker container is created. Make sure the `dist` directory
 contains the latest build to be copied to the container.
-Also the `public` directory and `package.json` and `package-lock.json` will
+Also the `public` directory and `package.json` and `pnpm-lock.yaml` will
 be copied.
 
 To start:

@@ -6,39 +6,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Development
 ```bash
-npm run dev              # Start both frontend (Vite :5173) and backend (:8081) concurrently
-npm run test-db:up       # Start PostgreSQL test DB via Docker
-npm run test-db:down     # Stop test DB
-npm run repopulate-db    # Load mock data into test DB
+pnpm run dev              # Start both frontend (Vite :5173) and backend (:8081) concurrently
+pnpm run test-db:up       # Start PostgreSQL test DB via Docker
+pnpm run test-db:down     # Stop test DB
+pnpm run repopulate-db    # Load mock data into test DB
 ```
 
 ### Build & Validate
 ```bash
-npm run build            # Build all workspaces
-npm run check:ts         # TypeScript type checking across all packages
-npm run lint             # Prettier formatting check
-npm run validate         # Full validation: lint + check:ts + build + test
+pnpm run build            # Build all workspaces
+pnpm run check:ts         # TypeScript type checking across all packages
+pnpm run lint             # Prettier formatting check
+pnpm run validate         # Full validation: lint + check:ts + build + test
 ```
 
 ### Testing
 ```bash
-npm run test                                          # All tests across workspaces
-npm run test --workspace=packages/frontend            # Frontend tests only
-npm run test --workspace=packages/backend             # Backend tests only
-npx vitest run src/path/to/file.test.ts               # Single test file (run from package dir)
-npx vitest run --reporter=verbose                     # Verbose output
+pnpm run test                                          # All tests across workspaces
+pnpm --filter frontend test                            # Frontend tests only
+pnpm --filter badgehub-api test                        # Backend tests only
+pnpm --filter frontend exec vitest run src/path/to/file.test.ts   # Single test file
+pnpm --filter frontend exec vitest run --reporter=verbose         # Verbose output from frontend package
+# Or cd packages/frontend && pnpm exec vitest run ... (from package dir)
 ```
 
 ### Database Migrations
 ```bash
-npm run db-migrate:up    # Run pending migrations
-npm run db-migrate:down  # Rollback last migration
-npm run db-migrate:create -- migration-name  # Create new migration
+pnpm --filter badgehub-api run db-migrate:up    # Run pending migrations
+pnpm --filter badgehub-api run db-migrate:down  # Rollback last migration
+pnpm --filter badgehub-api run db-migrate:create -- migration-name  # Create new migration
 ```
 
 ### Code Quality
 ```bash
-npx prettier --write .   # Auto-fix formatting
+pnpm exec prettier --write .   # Auto-fix formatting
+# or: pnpm dlx prettier --write .
 ```
 
 ## Architecture
