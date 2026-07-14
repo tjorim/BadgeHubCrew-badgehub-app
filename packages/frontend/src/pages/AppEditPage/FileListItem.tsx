@@ -3,7 +3,7 @@ import { FileMetadata } from "@shared/domain/readModels/project/FileMetadata.ts"
 import { DeleteIcon } from "@sharedComponents/icons/DeleteIcon.tsx";
 import { DownloadIcon } from "@sharedComponents/AppsGrid/DownloadIcon.tsx";
 import Keycloak from "keycloak-js";
-import { IMAGE_FILE_EXTENSIONS } from "@utils/fileUtils.ts";
+import { NON_EXECUTABLE_EXTENSIONS } from "@utils/fileUtils.ts";
 import { downloadProjectFile } from "@utils/downloadProjectFile.ts";
 
 /**
@@ -45,16 +45,10 @@ export const FileListItem: React.FC<FileListItemProps> = ({
   const showIconButton = onSetIcon && file.mimetype.startsWith("image/");
   const deletable = isDeletable(file);
 
-  const excludedExtensions = [
-    ...IMAGE_FILE_EXTENSIONS.map((ext) => `.${ext}`),
-    ".md",
-    ".txt",
-    ".json",
-  ];
   const isSelectableAsMain =
     deletable &&
     onSetMainExecutable &&
-    !excludedExtensions.some((ext) =>
+    !NON_EXECUTABLE_EXTENSIONS.some((ext) =>
       file.full_path.toLowerCase().endsWith(ext)
     );
   const isCurrentMain = mainExecutable === file.full_path;
