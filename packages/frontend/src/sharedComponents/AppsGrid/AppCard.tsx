@@ -5,7 +5,6 @@ import { ERROR_ICON_URL, FALLBACK_ICON_URL } from "@config.ts";
 import { DownloadIcon } from "@sharedComponents/AppsGrid/DownloadIcon.tsx";
 import GitLink from "@sharedComponents/GitLink.tsx";
 import { useSession } from "@sharedComponents/keycloakSession/SessionContext.tsx";
-import MarkdownText from "@sharedComponents/MarkdownText.tsx";
 
 const AppCard: React.FC<
   AppCardProps & {
@@ -129,14 +128,9 @@ const AppCard: React.FC<
         </div>
 
         {/* Description with line clamp */}
-        {description && (
-          <MarkdownText
-            plainText
-            className="text-sm opacity-70 leading-relaxed line-clamp-2"
-          >
-            {description}
-          </MarkdownText>
-        )}
+        <p className="text-sm opacity-70 leading-relaxed line-clamp-2">
+          {description}
+        </p>
 
         {/* Tags section pushed to bottom */}
         <div className="mt-auto mb-3">
@@ -163,9 +157,7 @@ const AppCard: React.FC<
                   <span
                     key={tag.id}
                     className={`${
-                      tag.type === "category"
-                        ? "badge badge-neutral"
-                        : "badge badge-success"
+                      tag.type === "category" ? "badge badge-neutral" : "badge badge-success"
                     } text-xs font-semibold mr-2`}
                   >
                     {tag.text}
