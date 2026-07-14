@@ -251,6 +251,22 @@ describe("AppCodePreview", () => {
     expect(screen.getByText('"2.0.0"')).toBeInTheDocument();
   });
 
+  it("pretty print actually reformats an already-parsed JSON body", async () => {
+    const { container } = render(<AppCodePreview project={mockProject} />);
+
+    fireEvent.click(screen.getByText("parsed.json"));
+    await screen.findByText("JSON file");
+
+    // Raw view should be compact (no line breaks), otherwise toggling to
+    // Pretty Print has nothing to actually change.
+    const rawText = container.querySelector("pre")?.textContent ?? "";
+    expect(rawText).not.toMatch(/\n/);
+
+    fireEvent.click(screen.getByText("Pretty Print"));
+    const prettyText = container.querySelector("pre")?.textContent ?? "";
+    expect(prettyText).toMatch(/\n/);
+  });
+
   it("shows Python preview with syntax highlighting", async () => {
     render(<AppCodePreview project={mockProject} />);
 
