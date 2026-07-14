@@ -38,4 +38,10 @@ describe("AppCardTags", () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/more categories/i)).not.toBeInTheDocument();
   });
+
+  it("handles null tag arrays without rendering groups", () => {
+    render(<AppCardTags categories={null} badges={null} />);
+
+    expect(screen.queryByRole("group")).not.toBeInTheDocument();
+  });
 });

@@ -23,7 +23,7 @@ const TagGroup: React.FC<{
       {visibleTags.map((tag, index) => (
         <span
           key={`${tag}-${index}`}
-          className={`${badgeClassName} min-w-0 flex-1 text-xs font-semibold`}
+          className={`${badgeClassName} min-w-0 text-xs font-semibold`}
           title={tag}
         >
           <span className="truncate">{tag}</span>
@@ -45,23 +45,28 @@ const TagGroup: React.FC<{
 };
 
 const AppCardTags: React.FC<{
-  categories: readonly string[] | undefined;
-  badges: readonly string[] | undefined;
-}> = ({ categories = [], badges = [] }) => (
-  <div className="mt-auto mb-3 flex w-full min-w-0 items-center gap-2">
-    <TagGroup
-      label="Categories"
-      singularLabel="category"
-      tags={categories}
-      badgeClassName="badge badge-neutral"
-    />
-    <TagGroup
-      label="Badges"
-      singularLabel="badge"
-      tags={badges}
-      badgeClassName="badge badge-success"
-    />
-  </div>
-);
+  categories: readonly string[] | null | undefined;
+  badges: readonly string[] | null | undefined;
+}> = ({ categories, badges }) => {
+  const safeCategories = categories ?? [];
+  const safeBadges = badges ?? [];
+
+  return (
+    <div className="mt-auto mb-3 flex w-full min-w-0 items-center gap-2">
+      <TagGroup
+        label="Categories"
+        singularLabel="category"
+        tags={safeCategories}
+        badgeClassName="badge badge-neutral"
+      />
+      <TagGroup
+        label="Badges"
+        singularLabel="badge"
+        tags={safeBadges}
+        badgeClassName="badge badge-success"
+      />
+    </div>
+  );
+};
 
 export default AppCardTags;
