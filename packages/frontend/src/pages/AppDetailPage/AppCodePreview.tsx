@@ -6,10 +6,7 @@ import {
 import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
 import { FileMetadata } from "@shared/domain/readModels/project/FileMetadata.ts";
 import { assertDefined } from "@shared/util/assertions.ts";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { atomOneDark } from "react-syntax-highlighter/dist/cjs/styles/hljs";
-import { atomOneLight } from "react-syntax-highlighter/dist/cjs/styles/hljs";
-import { useIsDarkTheme } from "@hooks/useIsDarkTheme.ts";
+import CodeBlock from "@sharedComponents/CodeBlock.tsx";
 import Keycloak from "keycloak-js";
 import { getLanguageFromFile, getPreviewType } from "@utils/filePreview.ts";
 import { downloadProjectFile } from "@utils/downloadProjectFile.ts";
@@ -33,7 +30,7 @@ const DownloadIcon = () => (
 );
 
 // JSON Preview Component with pretty print option and syntax highlighting
-const JsonPreview: React.FC<{ content: string; isDark: boolean }> = ({ content, isDark }) => {
+const JsonPreview: React.FC<{ content: string }> = ({ content }) => {
   const [isPretty, setIsPretty] = useState(false);
 
   const formatJson = (jsonStr: string): string => {
@@ -60,60 +57,27 @@ const JsonPreview: React.FC<{ content: string; isDark: boolean }> = ({ content, 
           {isPretty ? "Show Raw" : "Pretty Print"}
         </button>
       </div>
-      <div className="rounded overflow-hidden">
-        <SyntaxHighlighter
-          language="json"
-          style={isDark ? atomOneDark : atomOneLight}
-          customStyle={{
-            padding: "1rem",
-            margin: 0,
-            fontSize: "0.875rem",
-            lineHeight: "1.25rem",
-          }}
-          showLineNumbers={false}
-          wrapLines={true}
-          wrapLongLines={true}
-        >
-          {displayContent}
-        </SyntaxHighlighter>
-      </div>
+      <CodeBlock language="json">{displayContent}</CodeBlock>
     </div>
   );
 };
 
 // Python Preview Component with syntax highlighting
-const PythonPreview: React.FC<{ content: string; isDark: boolean }> = ({ content, isDark }) => {
+const PythonPreview: React.FC<{ content: string }> = ({ content }) => {
   return (
     <div>
       <div className="mb-2">
         <span className="text-base-content/80 text-sm">Python file</span>
       </div>
-      <div className="rounded overflow-hidden">
-        <SyntaxHighlighter
-          language="python"
-          style={isDark ? atomOneDark : atomOneLight}
-          customStyle={{
-            padding: "1rem",
-            margin: 0,
-            fontSize: "0.875rem",
-            lineHeight: "1.25rem",
-          }}
-          showLineNumbers={false}
-          wrapLines={true}
-          wrapLongLines={true}
-        >
-          {content}
-        </SyntaxHighlighter>
-      </div>
+      <CodeBlock language="python">{content}</CodeBlock>
     </div>
   );
 };
 
 // Text Preview Component with syntax highlighting for recognized file types
-const TextPreview: React.FC<{ content: string; filename: string; isDark: boolean }> = ({
+const TextPreview: React.FC<{ content: string; filename: string }> = ({
   content,
   filename,
-  isDark,
 }) => {
   const language = getLanguageFromFile(filename);
 
@@ -137,23 +101,7 @@ const TextPreview: React.FC<{ content: string; filename: string; isDark: boolean
       <div className="mb-2">
         <span className="text-base-content/80 text-sm">{language} file</span>
       </div>
-      <div className="rounded overflow-hidden">
-        <SyntaxHighlighter
-          language={language}
-          style={isDark ? atomOneDark : atomOneLight}
-          customStyle={{
-            padding: "1rem",
-            margin: 0,
-            fontSize: "0.875rem",
-            lineHeight: "1.25rem",
-          }}
-          showLineNumbers={false}
-          wrapLines={true}
-          wrapLongLines={true}
-        >
-          {content}
-        </SyntaxHighlighter>
-      </div>
+      <CodeBlock language={language}>{content}</CodeBlock>
     </div>
   );
 };
@@ -245,7 +193,6 @@ const renderFilePreview = (
   previewedFile: string | null,
   currentFile: FileMetadata | null,
   fileContent: string | null,
-  isDark: boolean,
   previewBlob?: Blob
 ): React.ReactElement => {
   if (loading) {
@@ -272,19 +219,19 @@ const renderFilePreview = (
       return <AudioPreview file={currentFile} audioBlob={previewBlob} />;
     case "json":
       return fileContent ? (
-        <JsonPreview content={fileContent} isDark={isDark} />
+        <JsonPreview content={fileContent} />
       ) : (
         <div className="opacity-60">Loading JSON...</div>
       );
     case "python":
       return fileContent ? (
-        <PythonPreview content={fileContent} isDark={isDark} />
+        <PythonPreview content={fileContent} />
       ) : (
         <div className="opacity-60">Loading Python file...</div>
       );
     case "text":
       return fileContent ? (
-        <TextPreview content={fileContent} filename={currentFile.full_path} isDark={isDark} />
+        <TextPreview content={fileContent} filename={currentFile.full_path} />
       ) : (
         <div className="opacity-60">Loading text file...</div>
       );
@@ -314,7 +261,6 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
     () => project?.version?.files ?? [],
     [project?.version?.files]
   );
-  const isDark = useIsDarkTheme();
   const [previewedFile, setPreviewedFile] = useState<string | null>(null);
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
@@ -541,7 +487,6 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
             previewedFile,
             currentFile,
             fileContent,
-            isDark,
             previewBlob || undefined
           )}
         </div>
