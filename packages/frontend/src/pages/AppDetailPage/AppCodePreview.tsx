@@ -461,7 +461,7 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
               const text = await res.body.text();
               setFileContent(text);
               setPreviewBlob(null);
-            } else if (res.body != null) {
+            } else if (res.body !== undefined) {
               // The ts-rest client auto-parses JSON responses (e.g. for
               // .json files, which now get a proper Content-Type per #398),
               // so the body arrives already parsed rather than as text/Blob.
