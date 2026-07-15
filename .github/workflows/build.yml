@@ -29,14 +29,14 @@ jobs:
           pnpm run build
       - name: Start environment
         run: |
-          cp packages/backend/.env.test packages/backend/.env 
-          pnpm --filter badgehub-api run test-db:up -- --wait
+          cp packages/backend/.env.test packages/backend/.env
+          pnpm --filter badgehub-api run test-db:up
       - name: Populate the DB with test data
         run: |
           pnpm --filter badgehub-api run repopulate-db
       - name: Run test
         run: |
-          pnpm run test
+          pnpm run test --coverage
       - name: Report Coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2
