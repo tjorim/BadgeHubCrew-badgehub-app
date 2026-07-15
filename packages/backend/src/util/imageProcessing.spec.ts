@@ -1,7 +1,6 @@
-import { describe, expect, test } from "vitest";
-import sharp from "sharp";
-
 import { createBlurHash } from "@util/imageProcessing";
+import sharp from "sharp";
+import { describe, expect, test } from "vitest";
 
 describe("createBlurHash", () => {
   test("creates a blurhash for image content", async () => {

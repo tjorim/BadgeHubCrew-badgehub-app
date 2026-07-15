@@ -1,11 +1,15 @@
-import { generateOpenApi } from "@ts-rest/open-api";
-import { publicRestContracts } from "@shared/contracts/publicRestContracts";
+import { EXPRESS_PORT } from "@config";
+import { monkeyPatchDraftFileUploadSwagger } from "@monkeyPatchDraftFileUploadSwagger";
 import {
   nonScriptablePrivateContracts,
   scriptablePrivateProjectContracts,
 } from "@shared/contracts/privateRestContracts";
+import { publicRestContracts } from "@shared/contracts/publicRestContracts";
+import { NO_BODY_DESCRIPTION } from "@shared/contracts/tsRestNoBodyPatch";
+import { initContract } from "@ts-rest/core";
+import { generateOpenApi } from "@ts-rest/open-api";
 import _ from "lodash";
-import {
+import type {
   OpenAPIObject,
   OperationObject,
   ParameterObject,
@@ -13,10 +17,6 @@ import {
   ReferenceObject,
   SecurityRequirementObject,
 } from "openapi3-ts";
-import { initContract } from "@ts-rest/core";
-import { EXPRESS_PORT } from "@config";
-import { NO_BODY_DESCRIPTION } from "@shared/contracts/tsRestNoBodyPatch";
-import { monkeyPatchDraftFileUploadSwagger } from "@monkeyPatchDraftFileUploadSwagger";
 
 const c = initContract();
 export const swaggerJsonContract = c.router({
@@ -29,8 +29,8 @@ export const swaggerJsonContract = c.router({
   },
 });
 
-function withPrefix(prefix: string, paths: Record<string, any>) {
-  const prefixedPaths: Record<string, any> = {};
+function withPrefix(prefix: string, paths: PathsObject): PathsObject {
+  const prefixedPaths: PathsObject = {};
   for (const [path, value] of Object.entries(paths)) {
     prefixedPaths[`${prefix}${path}`] = value;
   }
@@ -62,16 +62,21 @@ const withSecurity = (
   security: security,
 });
 
-function isEmptyRequestBody(requestBody: Record<string, any> | undefined) {
+function isEmptyRequestBody(
+  requestBody: OperationObject["requestBody"] | undefined
+) {
+  if (!requestBody || !("content" in requestBody)) {
+    return false;
+  }
   return (
-    requestBody?.content?.["application/json"]?.schema?.description ===
-    NO_BODY_DESCRIPTION
+    requestBody.content?.["application/json"]?.schema &&
+    "description" in requestBody.content["application/json"].schema &&
+    requestBody.content["application/json"].schema.description ===
+      NO_BODY_DESCRIPTION
   );
 }
 
-function removeRequestBodyIfEmpty(
-  details: Record<string, any>
-): Record<string, any> {
+function removeRequestBodyIfEmpty(details: OperationObject): OperationObject {
   const { requestBody, ...detailsWithoutRequestBody } = details;
   if (!isEmptyRequestBody(requestBody)) {
     return details;

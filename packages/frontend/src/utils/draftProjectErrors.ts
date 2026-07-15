@@ -1,7 +1,4 @@
-export type DraftProjectErrorCode =
-  | "authentication"
-  | "not_found"
-  | "unknown";
+export type DraftProjectErrorCode = "authentication" | "not_found" | "unknown";
 
 export const draftProjectErrorFromStatus = (
   status: number

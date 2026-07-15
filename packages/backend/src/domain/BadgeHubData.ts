@@ -1,44 +1,44 @@
+import { randomBytes } from "node:crypto";
+import type { TimestampTZ } from "@db/models/DBTypes";
+import type { DBDatedData } from "@db/models/project/DBDatedData";
+import type { DBProject } from "@db/models/project/DBProject";
+import type { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
+import type { BadgeHubFiles } from "@domain/BadgeHubFiles";
+import { parseIconSize } from "@domain/ImageDimensions";
+import { UserError } from "@domain/UserError";
+import type { BadgeSlug } from "@shared/domain/readModels/Badge";
+import type { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
 import {
+  appMetadataJSONSchema,
+  type IconMap,
+  type IconSize,
+} from "@shared/domain/readModels/project/AppMetadataJSON";
+import {
+  type CategoryName,
+  isAdminCategory,
+} from "@shared/domain/readModels/project/Category";
+import type { FileMetadata } from "@shared/domain/readModels/project/FileMetadata";
+import type { OrderByOption } from "@shared/domain/readModels/project/ordering";
+import type {
   ProjectDetails,
   ProjectSlug,
 } from "@shared/domain/readModels/project/ProjectDetails";
-import {
+import type { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries";
+import type { User } from "@shared/domain/readModels/project/User";
+import type {
   LatestOrDraftAlias,
   RevisionNumberOrAlias,
 } from "@shared/domain/readModels/project/Version";
-import { User } from "@shared/domain/readModels/project/User";
-import { FileMetadata } from "@shared/domain/readModels/project/FileMetadata";
-import { BadgeSlug } from "@shared/domain/readModels/Badge";
-import {
-  CategoryName,
-  isAdminCategory,
-} from "@shared/domain/readModels/project/Category";
-import { DBProject } from "@db/models/project/DBProject";
-import { BadgeHubFiles } from "@domain/BadgeHubFiles";
-import { UploadedFile } from "@shared/domain/UploadedFile";
-import { DBDatedData } from "@db/models/project/DBDatedData";
-import { stringToSha256, uint8ToSha256 } from "@util/sha256";
-import { TimestampTZ } from "@db/models/DBTypes";
-import { CreateProjectProps } from "@shared/domain/writeModels/project/WriteProject";
-import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON";
-import { LRUCache } from "lru-cache";
-import {
-  appMetadataJSONSchema,
-  IconMap,
-  IconSize,
-} from "@shared/domain/readModels/project/AppMetadataJSON";
-import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
+import type { UploadedFile } from "@shared/domain/UploadedFile";
+import type { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON";
+import type { CreateProjectProps } from "@shared/domain/writeModels/project/WriteProject";
 import {
   createBlurHash,
   createIconBuffer,
   getImageProps,
 } from "@util/imageProcessing";
-import { UserError } from "@domain/UserError";
-import { randomBytes } from "node:crypto";
-import { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
-import { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries";
-import { OrderByOption } from "@shared/domain/readModels/project/ordering";
-import { parseIconSize } from "@domain/ImageDimensions";
+import { stringToSha256, uint8ToSha256 } from "@util/sha256";
+import { LRUCache } from "lru-cache";
 
 type FileContext =
   | { projectSlug: string; revision: number; filePath: string }
@@ -84,7 +84,7 @@ export class BadgeHubData {
       max: 1000,
       // for use with tracking overall storage size
       maxSize: 500_000_000, // 500MB
-      sizeCalculation: (value, key) => {
+      sizeCalculation: (value, _key) => {
         return value.length;
       },
       // how long to live in ms
@@ -165,7 +165,7 @@ export class BadgeHubData {
     projectSlug: ProjectSlug,
     versionRevision: RevisionNumberOrAlias
   ): Promise<undefined | ProjectDetails> {
-    const cacheKey = projectSlug + "_" + versionRevision;
+    const cacheKey = `${projectSlug}_${versionRevision}`;
     if (typeof versionRevision === "number") {
       const result = await this.immutableProjectCache.fetch(cacheKey, {
         context: {
@@ -198,7 +198,7 @@ export class BadgeHubData {
     filePath: FileMetadata["name"]
   ): Promise<Uint8Array | undefined> {
     if (typeof versionRevision === "number") {
-      const cacheKey = projectSlug + "_rev" + versionRevision + ":" + filePath;
+      const cacheKey = `${projectSlug}_rev${versionRevision}:${filePath}`;
       const fileData = await this.immutableFileCache.fetch(cacheKey, {
         context: {
           projectSlug,
@@ -244,8 +244,8 @@ export class BadgeHubData {
   }
 
   getVersionZipContents(
-    projectSlug: ProjectSlug,
-    versionRevision: RevisionNumberOrAlias
+    _projectSlug: ProjectSlug,
+    _versionRevision: RevisionNumberOrAlias
   ): Promise<Uint8Array> {
     // TODO here we should get the file path from the DB in order to fetch the correct file
     // TODO do not forget download counts
@@ -265,7 +265,11 @@ export class BadgeHubData {
   }
 
   async getStats(): Promise<BadgeHubStats> {
-    return (await this.statsCache.fetch("stats"))!;
+    const stats = await this.statsCache.fetch("stats");
+    if (!stats) {
+      throw new Error("Failed to fetch badge hub stats");
+    }
+    return stats;
   }
 
   getProjectSummaries(
@@ -305,7 +309,7 @@ export class BadgeHubData {
     );
   }
 
-  async writeDraftProjectZip(projectSlug: string, zipContent: Uint8Array) {
+  async writeDraftProjectZip(_projectSlug: string, _zipContent: Uint8Array) {
     throw new Error("Method not implemented.");
     // TODO when implementing file management, we should still decide whether we want to delete here, then get all files and save them with updateDraftFile, or better let the file management handle this more.
     // TODO database management: project metadata in db should be updated with the metadata.json from the zip file
@@ -521,7 +525,7 @@ export class BadgeHubData {
     slug: ProjectSlug,
     revision: number,
     badge: { id?: string; mac?: string },
-    body: { reason?: string }
+    _body: { reason?: string }
   ): Promise<void> {
     if (badge.id) {
       await this.registerBadge(badge.id, badge.mac);
@@ -555,7 +559,9 @@ export class BadgeHubData {
   }
 }
 
-function getPreferredIconPath(iconMap: IconMap | undefined): string | undefined {
+function getPreferredIconPath(
+  iconMap: IconMap | undefined
+): string | undefined {
   return BLUR_HASH_ICON_SIZE_PREFERENCE.map((size) => iconMap?.[size]).find(
     Boolean
   );

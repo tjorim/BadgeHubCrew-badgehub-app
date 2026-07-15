@@ -1,8 +1,8 @@
 import { dummyApps } from "@__test__/fixtures";
-import { ApiFetcherArgs, initClient } from "@ts-rest/core";
 import { matchRoute } from "@__test__/routeContractMatch.ts";
-import { publicTsRestClient as defaultPrivateTsRestClient } from "@api/tsRestClient.ts";
+import type { publicTsRestClient as defaultPrivateTsRestClient } from "@api/tsRestClient.ts";
 import { tsRestApiContracts } from "@shared/contracts/restContracts.ts";
+import { type ApiFetcherArgs, initClient } from "@ts-rest/core";
 
 export function privateTsRestClientBuilder(apps = dummyApps) {
   return initClient(tsRestApiContracts, {

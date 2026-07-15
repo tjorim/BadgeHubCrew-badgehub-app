@@ -1,9 +1,10 @@
-import React, { useState } from "react";
 import { BadgeHubIcon } from "@sharedComponents/BadgeHubIcon.tsx";
-import ProfileIcon from "@sharedComponents/ProfileIcon";
-import { MLink } from "@sharedComponents/MLink.tsx";
-import ThemePicker from "@sharedComponents/ThemePicker.tsx";
 import { useSession } from "@sharedComponents/keycloakSession/SessionContext.tsx";
+import { MLink } from "@sharedComponents/MLink.tsx";
+import ProfileIcon from "@sharedComponents/ProfileIcon";
+import ThemePicker from "@sharedComponents/ThemePicker.tsx";
+import type React from "react";
+import { useState } from "react";
 
 const navLinks = [
   { label: "Browse Projects", to: "/", testId: "BrowseProjects" },
@@ -87,7 +88,7 @@ const Header: React.FC<Partial<SearchProps>> = (searchProps) => {
               to={link.to}
               external={link.external}
               key={link.label}
-              data-testid={"Header/Link/" + link.testId}
+              data-testid={`Header/Link/${link.testId}`}
               className={
                 (link.to.endsWith("/todo") ? "todoElement " : "") +
                 "text-base-content/70 hover:bg-base-300 hover:text-base-content px-3 py-2 rounded-md text-sm font-medium transition-colors text-center"
@@ -99,9 +100,7 @@ const Header: React.FC<Partial<SearchProps>> = (searchProps) => {
         </nav>
 
         <div className="flex items-center gap-3 flex-shrink-0">
-          {checkedSearchProps && (
-            <SearchField {...checkedSearchProps} />
-          )}
+          {checkedSearchProps && <SearchField {...checkedSearchProps} />}
           <div className="hidden lg:block">
             <ThemePicker />
           </div>
@@ -113,44 +112,45 @@ const Header: React.FC<Partial<SearchProps>> = (searchProps) => {
           </div>
           <div className="lg:hidden">
             <button
+              type="button"
               id="mobile-menu-button"
               className="btn btn-ghost btn-sm"
               aria-label="Open main menu"
               aria-expanded={mobileOpen}
               onClick={() => setMobileOpen((v) => !v)}
             >
-            <span className="sr-only">Open main menu</span>
-            <svg
-              className={`${mobileOpen ? "hidden" : "block"} h-6 w-6`}
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-            <svg
-              className={`${mobileOpen ? "block" : "hidden"} h-6 w-6`}
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              <span className="sr-only">Open main menu</span>
+              <svg
+                className={`${mobileOpen ? "hidden" : "block"} h-6 w-6`}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+              <svg
+                className={`${mobileOpen ? "block" : "hidden"} h-6 w-6`}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -179,6 +179,7 @@ const Header: React.FC<Partial<SearchProps>> = (searchProps) => {
                 <p className="text-xs opacity-60 truncate">{user.email}</p>
               </div>
               <button
+                type="button"
                 onClick={account}
                 className="text-base-content/70 hover:bg-base-300 hover:text-base-content px-3 py-2 rounded-md text-sm font-medium transition-colors text-left w-full"
                 data-testid="mobile-account-button"
@@ -186,6 +187,7 @@ const Header: React.FC<Partial<SearchProps>> = (searchProps) => {
                 Account
               </button>
               <button
+                type="button"
                 onClick={logout}
                 className="text-base-content/70 hover:bg-base-300 hover:text-base-content px-3 py-2 rounded-md text-sm font-medium transition-colors text-left w-full"
                 data-testid="mobile-logout-button"
@@ -195,6 +197,7 @@ const Header: React.FC<Partial<SearchProps>> = (searchProps) => {
             </>
           ) : (
             <button
+              type="button"
               onClick={login}
               className="text-base-content/70 hover:bg-base-300 hover:text-base-content px-3 py-2 rounded-md text-sm font-medium transition-colors text-left w-full"
               data-testid="mobile-login-button"

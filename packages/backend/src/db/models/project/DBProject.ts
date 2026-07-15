@@ -1,7 +1,7 @@
-import { UserRelation } from "./DBUser";
-import { DBDatedData } from "@db/models/project/DBDatedData";
-import { ProjectSlug } from "@shared/domain/readModels/project/ProjectDetails";
-import { VersionRelation } from "@db/models/project/DBVersion";
+import type { DBDatedData } from "@db/models/project/DBDatedData";
+import type { VersionRelation } from "@db/models/project/DBVersion";
+import type { ProjectSlug } from "@shared/domain/readModels/project/ProjectDetails";
+import type { UserRelation } from "./DBUser";
 
 export interface DBProjectBase {
   slug: ProjectSlug; // The directory name of this project

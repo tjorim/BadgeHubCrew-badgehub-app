@@ -1,4 +1,5 @@
-import express, { NextFunction } from "express";
+import type express from "express";
+import type { NextFunction } from "express";
 
 export interface JwtError extends Error {
   status: number;
@@ -8,7 +9,7 @@ export interface JwtError extends Error {
 // Handle TSOA errors
 export function jwtErrorHandler(
   error: Error,
-  req: express.Request,
+  _req: express.Request,
   res: express.Response,
   next: NextFunction
 ) {

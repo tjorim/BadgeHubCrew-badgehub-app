@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@__test__";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
+import { describe, expect, it, vi } from "vitest";
 import AppEditCategorization from "./AppEditCategorization.tsx";
 import type { ProjectEditFormData } from "./ProjectEditFormData.ts";
 

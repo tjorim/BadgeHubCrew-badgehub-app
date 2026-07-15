@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { getLanguageFromFile, getPreviewType } from "@utils/filePreview.ts";
+import { describe, expect, it } from "vitest";
 
 describe("getPreviewType", () => {
   it("detects image types by mimetype", () => {
@@ -24,14 +24,22 @@ describe("getPreviewType", () => {
   });
 
   it("falls back to extension for octet-stream", () => {
-    expect(getPreviewType("application/octet-stream", "script.py")).toBe("python");
+    expect(getPreviewType("application/octet-stream", "script.py")).toBe(
+      "python"
+    );
     expect(getPreviewType("application/octet-stream", "notes.md")).toBe("text");
-    expect(getPreviewType("application/octet-stream", "photo.jpg")).toBe("image");
-    expect(getPreviewType("application/octet-stream", "sounds/Warning.wav")).toBe("audio");
+    expect(getPreviewType("application/octet-stream", "photo.jpg")).toBe(
+      "image"
+    );
+    expect(
+      getPreviewType("application/octet-stream", "sounds/Warning.wav")
+    ).toBe("audio");
   });
 
   it("returns unsupported when no match is found", () => {
-    expect(getPreviewType("application/zip", "archive.zip")).toBe("unsupported");
+    expect(getPreviewType("application/zip", "archive.zip")).toBe(
+      "unsupported"
+    );
   });
 });
 

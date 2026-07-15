@@ -12,10 +12,10 @@ const client = mqtt.connect(server, {
   reconnectPeriod: 1000,
 });
 
-client.on("connect", function () {
+client.on("connect", () => {
   console.log(`Connected to ${server}`);
 
-  client.subscribe(topicOnly ? topic : "#", function (err) {
+  client.subscribe(topicOnly ? topic : "#", (err) => {
     if (!err) {
       console.log(`Subscribed ${topicOnly ? topic : "to all topics"}`);
     } else {
@@ -24,17 +24,17 @@ client.on("connect", function () {
   });
 });
 
-client.on("message", function (topic, message) {
+client.on("message", (topic, message) => {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] Topic: ${topic}`);
   console.log(`Message: ${message.toString()}`);
   console.log("---");
 });
 
-client.on("error", function (error) {
+client.on("error", (error) => {
   console.error("Connection error:", error);
 });
 
-client.on("close", function () {
+client.on("close", () => {
   console.log("Connection closed");
 });

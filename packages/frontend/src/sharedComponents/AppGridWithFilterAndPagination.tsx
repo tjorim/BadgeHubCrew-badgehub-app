@@ -1,14 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
-import type { AppCardProps } from "@sharedComponents/types.ts";
-import Filters, { SortOption } from "@sharedComponents/AppsGrid/Filters.tsx";
-import Spinner from "@sharedComponents/Spinner.tsx";
+import type { getProjectsQuerySchema } from "@shared/contracts/publicRestContracts.ts";
+import type { BadgeSlug } from "@shared/domain/readModels/Badge.ts";
+import type { CategoryName } from "@shared/domain/readModels/project/Category.ts";
+import type { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries.ts";
 import AppsGrid from "@sharedComponents/AppsGrid/AppsGrid.tsx";
+import Filters, {
+  type SortOption,
+} from "@sharedComponents/AppsGrid/Filters.tsx";
 import Pagination from "@sharedComponents/AppsGrid/Pagination.tsx";
-import { z } from "zod/v3";
-import { getProjectsQuerySchema } from "@shared/contracts/publicRestContracts.ts";
-import { BadgeSlug } from "@shared/domain/readModels/Badge.ts";
-import { CategoryName } from "@shared/domain/readModels/project/Category.ts";
-import { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries.ts";
+import Spinner from "@sharedComponents/Spinner.tsx";
+import type { AppCardProps } from "@sharedComponents/types.ts";
+import { useEffect, useMemo, useState } from "react";
+import type { z } from "zod/v3";
 
 export type ProjectQueryParams = z.infer<typeof getProjectsQuerySchema>;
 export type AppFetcher = (

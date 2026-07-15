@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useCallback } from "react";
-import Keycloak from "keycloak-js";
 import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
-import { ProjectApiTokenMetadata } from "@shared/domain/readModels/project/ProjectApiToken";
-import { assertDefined } from "@shared/util/assertions";
-
-import { DeleteIcon } from "@sharedComponents/icons/DeleteIcon.tsx";
-import { EyeIcon } from "@sharedComponents/icons/EyeIcon.tsx";
-import { ClipboardCopyIcon } from "@sharedComponents/icons/ClipboardCopyIcon.tsx";
-import { EyeOffIcon } from "@sharedComponents/icons/EyeOffIcon.tsx";
 import { BADGHUB_API_V3_URL } from "@config.ts";
 import { privateProjectContracts } from "@shared/contracts/privateRestContracts.ts";
+import type { ProjectApiTokenMetadata } from "@shared/domain/readModels/project/ProjectApiToken";
+import { assertDefined } from "@shared/util/assertions";
+import { ClipboardCopyIcon } from "@sharedComponents/icons/ClipboardCopyIcon.tsx";
+import { DeleteIcon } from "@sharedComponents/icons/DeleteIcon.tsx";
+import { EyeIcon } from "@sharedComponents/icons/EyeIcon.tsx";
+import { EyeOffIcon } from "@sharedComponents/icons/EyeOffIcon.tsx";
+import type Keycloak from "keycloak-js";
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface AppEditTokenManagerProps {
   slug: string;
@@ -150,85 +150,41 @@ const AppEditTokenManager: React.FC<AppEditTokenManagerProps> = ({
   return (
     <section className="card bg-base-200 shadow-lg">
       <div className="card-body">
-      <h2 className="card-title text-2xl mb-2">API Token</h2>
-      <div className="space-y-4">
-        {error && <p className="text-error">{error}</p>}
+        <h2 className="card-title text-2xl mb-2">API Token</h2>
+        <div className="space-y-4">
+          {error && <p className="text-error">{error}</p>}
 
-        {newToken && (
-          <div className="bg-base-300 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-success">
-              New Token Generated
-            </h3>
-            <p className="opacity-70 text-sm mb-2">
-              Please copy this token. You will not be able to see it again.
-            </p>
-            <div className="flex items-center space-x-2 bg-base-200 p-2 rounded-md">
-              <input
-                type={showToken ? "text" : "password"}
-                readOnly
-                value={newToken}
-                className="flex-grow bg-transparent border-none font-mono focus:ring-0 focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => setShowToken(!showToken)}
-                className="btn btn-sm btn-ghost"
-                title={showToken ? "Hide token" : "Show token"}
-              >
-                {showToken ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
-              <button
-                type="button"
-                onClick={handleCopyToken}
-                className="btn btn-sm btn-ghost relative"
-                title="Copy to clipboard"
-              >
-                <ClipboardCopyIcon />
-                {tokenCopied && (
-                  <span className="absolute -top-7 right-0 badge badge-success text-xs">
-                    Copied!
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {tokenMetadata ? (
-          <div className={newToken ? "mt-4" : ""}>
-            {!newToken && (
-              <p>
-                An API token exists for this project.
+          {newToken && (
+            <div className="bg-base-300 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-success">
+                New Token Generated
+              </h3>
+              <p className="opacity-70 text-sm mb-2">
+                Please copy this token. You will not be able to see it again.
               </p>
-            )}
-            <div className="flex flex-col sm:flex-row sm:gap-6">
-              <p className="text-sm opacity-60">
-                <span className="font-semibold">Created:</span>{" "}
-                {new Date(tokenMetadata.created_at).toLocaleString()}
-              </p>
-              {tokenMetadata.last_used_at && (
-                <p className="text-sm opacity-60">
-                  <span className="font-semibold">Last used:</span>{" "}
-                  {new Date(tokenMetadata.last_used_at).toLocaleString()}
-                </p>
-              )}
-            </div>
-            <div className="mt-6 mb-4">
-              <h4 className="text-lg font-semibold mb-2">
-                Example Usage (cURL)
-              </h4>
-              <div className="flex items-start space-x-2 bg-base-300 p-2 rounded-md font-mono text-sm">
-                <pre className="text-success overflow-x-auto whitespace-pre-wrap flex-grow pt-1">
-                  <code>{curlCommand}</code>
-                </pre>
+              <div className="flex items-center space-x-2 bg-base-200 p-2 rounded-md">
+                <input
+                  type={showToken ? "text" : "password"}
+                  readOnly
+                  value={newToken}
+                  className="flex-grow bg-transparent border-none font-mono focus:ring-0 focus:outline-none"
+                />
                 <button
                   type="button"
-                  onClick={handleCopyCommand}
+                  onClick={() => setShowToken(!showToken)}
+                  className="btn btn-sm btn-ghost"
+                  title={showToken ? "Hide token" : "Show token"}
+                >
+                  {showToken ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyToken}
                   className="btn btn-sm btn-ghost relative"
-                  title="Copy command"
+                  title="Copy to clipboard"
                 >
                   <ClipboardCopyIcon />
-                  {commandCopied && (
+                  {tokenCopied && (
                     <span className="absolute -top-7 right-0 badge badge-success text-xs">
                       Copied!
                     </span>
@@ -236,40 +192,80 @@ const AppEditTokenManager: React.FC<AppEditTokenManagerProps> = ({
                 </button>
               </div>
             </div>
-            <div className="flex gap-4 items-center">
-              <button
-                type="button"
-                onClick={handleRevokeToken}
-                disabled={isOperating}
-                className="btn btn-error flex items-center gap-2"
-              >
-                <DeleteIcon />
-                Revoke Token
-              </button>
+          )}
+
+          {tokenMetadata ? (
+            <div className={newToken ? "mt-4" : ""}>
+              {!newToken && <p>An API token exists for this project.</p>}
+              <div className="flex flex-col sm:flex-row sm:gap-6">
+                <p className="text-sm opacity-60">
+                  <span className="font-semibold">Created:</span>{" "}
+                  {new Date(tokenMetadata.created_at).toLocaleString()}
+                </p>
+                {tokenMetadata.last_used_at && (
+                  <p className="text-sm opacity-60">
+                    <span className="font-semibold">Last used:</span>{" "}
+                    {new Date(tokenMetadata.last_used_at).toLocaleString()}
+                  </p>
+                )}
+              </div>
+              <div className="mt-6 mb-4">
+                <h4 className="text-lg font-semibold mb-2">
+                  Example Usage (cURL)
+                </h4>
+                <div className="flex items-start space-x-2 bg-base-300 p-2 rounded-md font-mono text-sm">
+                  <pre className="text-success overflow-x-auto whitespace-pre-wrap flex-grow pt-1">
+                    <code>{curlCommand}</code>
+                  </pre>
+                  <button
+                    type="button"
+                    onClick={handleCopyCommand}
+                    className="btn btn-sm btn-ghost relative"
+                    title="Copy command"
+                  >
+                    <ClipboardCopyIcon />
+                    {commandCopied && (
+                      <span className="absolute -top-7 right-0 badge badge-success text-xs">
+                        Copied!
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </div>
+              <div className="flex gap-4 items-center">
+                <button
+                  type="button"
+                  onClick={handleRevokeToken}
+                  disabled={isOperating}
+                  className="btn btn-error flex items-center gap-2"
+                >
+                  <DeleteIcon />
+                  Revoke Token
+                </button>
+                <button
+                  type="button"
+                  onClick={handleGenerateToken}
+                  disabled={isOperating}
+                  className="btn btn-info"
+                >
+                  Regenerate Token
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p>No active API token.</p>
               <button
                 type="button"
                 onClick={handleGenerateToken}
                 disabled={isOperating}
-                className="btn btn-info"
+                className="btn btn-success mt-4"
               >
-                Regenerate Token
+                Generate New Token
               </button>
             </div>
-          </div>
-        ) : (
-          <div>
-            <p>No active API token.</p>
-            <button
-              type="button"
-              onClick={handleGenerateToken}
-              disabled={isOperating}
-              className="btn btn-success mt-4"
-            >
-              Generate New Token
-            </button>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
       </div>
     </section>
   );

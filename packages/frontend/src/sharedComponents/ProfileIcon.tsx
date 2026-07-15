@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-
 import { useSession } from "@sharedComponents/keycloakSession/SessionContext.tsx";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 
 // --- ProfileIcon ---
 const ProfileIcon: React.FC = () => {
@@ -17,7 +17,7 @@ const ProfileIcon: React.FC = () => {
   }
 
   async function account() {
-    await keycloak?.accountManagement()
+    await keycloak?.accountManagement();
   }
 
   // Close menu on outside click
@@ -40,8 +40,11 @@ const ProfileIcon: React.FC = () => {
 
   return (
     <div className="relative" ref={menuRef}>
-      <div className="hidden md:inline-block align-top p-2 pr-3">{user?.name}</div>
+      <div className="hidden md:inline-block align-top p-2 pr-3">
+        {user?.name}
+      </div>
       <button
+        type="button"
         className="btn btn-ghost btn-circle relative"
         aria-label="Profile"
         onClick={() => setMenuOpen((v) => !v)}
@@ -50,7 +53,6 @@ const ProfileIcon: React.FC = () => {
         {user && (
           <span
             className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-success ring-2 ring-base-200"
-            aria-label="Logged in"
             title="Logged in"
           />
         )}
@@ -59,6 +61,7 @@ const ProfileIcon: React.FC = () => {
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -77,15 +80,29 @@ const ProfileIcon: React.FC = () => {
                 <span className="text-xs opacity-60">{user.email}</span>
               </li>
               <li>
-                <button onClick={account} data-testid="logout-button">Account</button>
+                <button
+                  type="button"
+                  onClick={account}
+                  data-testid="account-button"
+                >
+                  Account
+                </button>
               </li>
               <li>
-                <button onClick={logout} data-testid="logout-button">Logout</button>
+                <button
+                  type="button"
+                  onClick={logout}
+                  data-testid="logout-button"
+                >
+                  Logout
+                </button>
               </li>
             </>
           ) : (
             <li>
-              <button onClick={login} data-testid="login-button">Login / Register</button>
+              <button type="button" onClick={login} data-testid="login-button">
+                Login / Register
+              </button>
             </li>
           )}
         </ul>

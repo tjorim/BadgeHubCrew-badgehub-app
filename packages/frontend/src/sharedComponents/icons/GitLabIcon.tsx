@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 /**
  * Renders the GitLab icon as an SVG element.

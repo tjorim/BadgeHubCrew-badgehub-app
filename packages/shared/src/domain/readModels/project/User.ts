@@ -1,6 +1,6 @@
-import { DatedData, datedDataSchema } from "./DatedData";
-import { z } from "zod/v3";
 import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
+import { z } from "zod/v3";
+import { type DatedData, datedDataSchema } from "./DatedData";
 
 export interface UserRelation {
   user: User;

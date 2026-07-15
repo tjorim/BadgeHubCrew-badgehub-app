@@ -1,9 +1,9 @@
-import { BadgeHubFiles } from "@domain/BadgeHubFiles";
-import { UploadedFile } from "@shared/domain/UploadedFile";
-import { Pool } from "pg";
 import { getPool } from "@db/connectionPool";
+import type { DBDatedData } from "@db/models/project/DBDatedData";
+import type { BadgeHubFiles } from "@domain/BadgeHubFiles";
+import type { UploadedFile } from "@shared/domain/UploadedFile";
+import type { Pool } from "pg";
 import sql from "sql-template-tag";
-import { DBDatedData } from "@db/models/project/DBDatedData";
 
 export class PostgreSQLBadgeHubFiles implements BadgeHubFiles {
   private readonly pool: Pool = getPool();

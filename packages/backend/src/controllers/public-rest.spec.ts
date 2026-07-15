@@ -1,15 +1,15 @@
-import { beforeEach, describe, expect, test } from "vitest";
-import request from "supertest";
-import express from "express";
-import { createExpressServer } from "@createExpressServer";
 import { randomUUID } from "node:crypto";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails";
-import { isInDebugMode } from "@util/debug";
-import { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON";
-import { ProjectLatestRevisions } from "@shared/domain/readModels/project/ProjectRevision";
-import { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
-import { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries";
+import { createExpressServer } from "@createExpressServer";
 import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
+import type { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
+import type { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails";
+import type { ProjectLatestRevisions } from "@shared/domain/readModels/project/ProjectRevision";
+import type { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries";
+import { isInDebugMode } from "@util/debug";
+import type express from "express";
+import request from "supertest";
+import { beforeEach, describe, expect, test } from "vitest";
 
 describe(
   "Public API Routes",
@@ -36,7 +36,8 @@ describe(
       ).toMatchInlineSnapshot(
         {
           installs: expect.any(Number),
-        }, `
+        },
+        `
         {
           "badges": [
             "mch2022",
@@ -61,7 +62,8 @@ describe(
           "revision": 1,
           "slug": "codecraft",
         }
-      `);
+      `
+      );
     });
 
     test("GET /api/v3/project-summaries should not contain unpublished apps", async () => {
@@ -143,7 +145,7 @@ describe(
 
       const sortedExpected = summaries
         .map((p) => p.published_at)
-        .sort((a, b) => Date.parse(b!) - Date.parse(a!));
+        .sort((a, b) => Date.parse(b ?? "") - Date.parse(a ?? ""));
       expect(
         summaries.map((app: ProjectSummary) => app.published_at)
       ).toStrictEqual(sortedExpected);
@@ -225,7 +227,7 @@ describe(
       expect(res.statusCode).toBe(200);
       const result: ProjectSummary[] = res.body;
       expect(result.length).toBe(1);
-      expect(result[0]!.slug).toEqual("codecrafter");
+      expect(result[0]?.slug).toEqual("codecrafter");
     });
 
     test("GET /api/v3/project-summaries with search query filter searching for description", async () => {
@@ -307,7 +309,8 @@ describe(
         }
       `);
 
-      const { app_metadata, files, ...restVersion } = version!;
+      expect(version).toBeDefined();
+      const { app_metadata, files, ...restVersion } = version ?? {};
       expect(app_metadata).toMatchInlineSnapshot(`
         {
           "author": "CyberSherpa",
@@ -403,7 +406,8 @@ describe(
         }
       `);
 
-      const { app_metadata, files, ...restVersion } = version!;
+      expect(version).toBeDefined();
+      const { app_metadata, files, ...restVersion } = version ?? {};
       expect(restVersion).toMatchInlineSnapshot(`
         {
           "blur_hash": null,
@@ -489,17 +493,17 @@ describe(
       expect(res.statusCode).toBe(404);
     });
 
-    test.each(["latest", "rev1"])(
-      "GET /projects/{slug}/%s/files/metadata.json",
-      async (revision) => {
-        const getRes = await request(app).get(
-          `/api/v3/projects/codecraft/${revision}/files/metadata.json`
-        );
-        expect(getRes.statusCode).toBe(200);
-        const metadata = JSON.parse(getRes.text) as AppMetadataJSON; // TODO, seems like we are returning the wrong content-type since we need to use .text here.
-        expect(metadata.name).toEqual("CodeCraft");
-      }
-    );
+    test.each([
+      "latest",
+      "rev1",
+    ])("GET /projects/{slug}/%s/files/metadata.json", async (revision) => {
+      const getRes = await request(app).get(
+        `/api/v3/projects/codecraft/${revision}/files/metadata.json`
+      );
+      expect(getRes.statusCode).toBe(200);
+      const metadata = JSON.parse(getRes.text) as AppMetadataJSON; // TODO, seems like we are returning the wrong content-type since we need to use .text here.
+      expect(metadata.name).toEqual("CodeCraft");
+    });
 
     test("GET files using url prop should work same as from path", async () => {
       const res = await request(app).get("/api/v3/projects/codecraft/rev1");
@@ -522,35 +526,35 @@ describe(
       }
     });
 
-    test.each(["latest", "rev1"])(
-      "GET /projects/{slug}/%s/files/__init__.py",
-      async (revision) => {
-        const getRes = await request(app).get(
-          `/api/v3/projects/codecraft/${revision}/files/__init__.py`
-        );
-        expect(getRes.statusCode).toBe(200);
-        expect(getRes.text).toEqual(
-          "print('Hello world from the CodeCraft app')"
-        );
-        expect(getRes.headers["content-disposition"]).toEqual(
-          'attachment; filename="__init__.py"'
-        );
-      }
-    );
+    test.each([
+      "latest",
+      "rev1",
+    ])("GET /projects/{slug}/%s/files/__init__.py", async (revision) => {
+      const getRes = await request(app).get(
+        `/api/v3/projects/codecraft/${revision}/files/__init__.py`
+      );
+      expect(getRes.statusCode).toBe(200);
+      expect(getRes.text).toEqual(
+        "print('Hello world from the CodeCraft app')"
+      );
+      expect(getRes.headers["content-disposition"]).toEqual(
+        'attachment; filename="__init__.py"'
+      );
+    });
 
-    test.each(["latest", "rev1"])(
-      "GET /projects/{slug}/%s/files/icon5.png sets Content-Type and renders inline",
-      async (revision) => {
-        const getRes = await request(app).get(
-          `/api/v3/projects/codecraft/${revision}/files/icon5.png`
-        );
-        expect(getRes.statusCode).toBe(200);
-        expect(getRes.headers["content-type"]).toEqual("image/png");
-        expect(getRes.headers["content-disposition"]).toEqual(
-          'inline; filename="icon5.png"'
-        );
-      }
-    );
+    test.each([
+      "latest",
+      "rev1",
+    ])("GET /projects/{slug}/%s/files/icon5.png sets Content-Type and renders inline", async (revision) => {
+      const getRes = await request(app).get(
+        `/api/v3/projects/codecraft/${revision}/files/icon5.png`
+      );
+      expect(getRes.statusCode).toBe(200);
+      expect(getRes.headers["content-type"]).toEqual("image/png");
+      expect(getRes.headers["content-disposition"]).toEqual(
+        'inline; filename="icon5.png"'
+      );
+    });
 
     describe("ping should return pong", () => {
       test.each([
@@ -574,25 +578,26 @@ describe(
     });
 
     describe("unpublished versions should not be requestable", () => {
-      test.each(["rev3", "rev2"])(
-        "GET /projects/{slug}/%s/files/metadata.json",
-        async (revision) => {
-          const getRes = await request(app).get(
-            `/api/v3/projects/codecraft/${revision}/files/metadata.json`
-          );
-          expect(getRes.statusCode).toBe(404);
-        }
-      );
+      test.each([
+        "rev3",
+        "rev2",
+      ])("GET /projects/{slug}/%s/files/metadata.json", async (revision) => {
+        const getRes = await request(app).get(
+          `/api/v3/projects/codecraft/${revision}/files/metadata.json`
+        );
+        expect(getRes.statusCode).toBe(404);
+      });
 
-      test.each(["rev0", "rev2", "rev3"])(
-        "GET /projects/{slug}/%s",
-        async (revision) => {
-          const getRes = await request(app).get(
-            `/api/v3/projects/codecraft/${revision}`
-          );
-          expect(getRes.statusCode).toBe(404);
-        }
-      );
+      test.each([
+        "rev0",
+        "rev2",
+        "rev3",
+      ])("GET /projects/{slug}/%s", async (revision) => {
+        const getRes = await request(app).get(
+          `/api/v3/projects/codecraft/${revision}`
+        );
+        expect(getRes.statusCode).toBe(404);
+      });
     });
 
     describe("project-summaries fields query parameter", () => {
@@ -605,8 +610,9 @@ describe(
         expect(Object.keys(projectRevisionMap).length).toBeGreaterThanOrEqual(
           20
         );
-        expect(projectRevisionMap.find((p) => p.slug === "codecraft"))
-          .toMatchInlineSnapshot(`
+        expect(
+          projectRevisionMap.find((p) => p.slug === "codecraft")
+        ).toMatchInlineSnapshot(`
             {
               "revision": 1,
               "slug": "codecraft",

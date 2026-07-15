@@ -1,6 +1,6 @@
-import { build, type BuildOptions, context } from "esbuild";
-import path from "path";
-import { fileURLToPath } from "url";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { type BuildOptions, build, context } from "esbuild";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -1,10 +1,10 @@
-import React from "react";
-import { FileMetadata } from "@shared/domain/readModels/project/FileMetadata.ts";
-import { DeleteIcon } from "@sharedComponents/icons/DeleteIcon.tsx";
+import type { FileMetadata } from "@shared/domain/readModels/project/FileMetadata.ts";
 import { DownloadIcon } from "@sharedComponents/AppsGrid/DownloadIcon.tsx";
-import Keycloak from "keycloak-js";
-import { IMAGE_FILE_EXTENSIONS } from "@utils/fileUtils.ts";
+import { DeleteIcon } from "@sharedComponents/icons/DeleteIcon.tsx";
 import { downloadProjectFile } from "@utils/downloadProjectFile.ts";
+import { IMAGE_FILE_EXTENSIONS } from "@utils/fileUtils.ts";
+import type Keycloak from "keycloak-js";
+import type React from "react";
 
 /**
  * Determines if a file can be deleted.
@@ -102,9 +102,7 @@ export const FileListItem: React.FC<FileListItemProps> = ({
         <p className="flex-grow font-mono opacity-60">{file.full_path}</p>
       )}
       {file.size_formatted && (
-        <span className="ml-2 opacity-60 text-xs">
-          {file.size_formatted}
-        </span>
+        <span className="ml-2 opacity-60 text-xs">{file.size_formatted}</span>
       )}{" "}
       {widthXHeight && (
         <span className="ml-2 opacity-60 text-xs">{widthXHeight}px</span>
@@ -132,9 +130,7 @@ export const FileListItem: React.FC<FileListItemProps> = ({
           className={`btn btn-xs ml-2 ${isCurrentIcon ? "btn-success" : "btn-ghost"}`}
           onClick={() => onSetIcon(file.full_path)}
           title={
-            isCurrentIcon
-              ? "This file is the current icon"
-              : "Set as icon"
+            isCurrentIcon ? "This file is the current icon" : "Set as icon"
           }
           disabled={isCurrentIcon}
         >

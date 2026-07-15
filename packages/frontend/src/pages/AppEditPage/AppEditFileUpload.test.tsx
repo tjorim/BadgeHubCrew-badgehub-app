@@ -1,8 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@__test__";
-import userEvent from "@testing-library/user-event";
-import AppEditFileUpload from "./AppEditFileUpload.tsx";
 import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import AppEditFileUpload from "./AppEditFileUpload.tsx";
 
 vi.mock("@api/tsRestClient.ts", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@api/tsRestClient.ts")>();
@@ -14,7 +14,7 @@ vi.mock("@api/tsRestClient.ts", async (importOriginal) => {
 
 const keycloak = {
   updateToken: vi.fn().mockResolvedValue(true),
-} as any;
+} as unknown as import("keycloak-js").default;
 
 describe("AppEditFileUpload", () => {
   it("uploads files and reports success", async () => {

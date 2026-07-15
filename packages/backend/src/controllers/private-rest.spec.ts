@@ -1,13 +1,13 @@
-import { beforeAll, describe, expect, test } from "vitest";
-import request from "supertest";
-import { Express } from "express";
 import { createExpressServer } from "@createExpressServer";
+import type { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails";
+import type { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries";
+import type { Version } from "@shared/domain/readModels/project/Version";
 import { isInDebugMode } from "@util/debug";
+import type { Express } from "express";
 import { decodeJwt } from "jose";
-import { Version } from "@shared/domain/readModels/project/Version";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails";
-import { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON";
-import { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries";
+import request from "supertest";
+import { beforeAll, describe, expect, test } from "vitest";
 
 const USER1_TOKEN =
   "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJnUGI4VjZ5dHZTMkpFakdjVDFlLWdTWVRPbFBTNm04Xzkta210cHFDMktVIn0.eyJleHAiOjE3NDgyOTA4NzMsImlhdCI6MTc0ODI5MDgxMywiYXV0aF90aW1lIjoxNzQ4MjkwODEzLCJqdGkiOiI1NmIzOTUwNS0yYjJmLTQ1MDgtOTY0NC03NTFmN2FjMzI0ZGQiLCJpc3MiOiJodHRwczovL2tleWNsb2FrLnAxbS5ubC9yZWFsbXMvbWFzdGVyIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImQ4MDc1MzM3LTBmMTAtNGNkYi04YjQ4LWJlMWRjMTg3NDdhMyIsInR5cCI6IkJlYXJlciIsImF6cCI6ImJhZGdlaHViIiwic2Vzc2lvbl9zdGF0ZSI6IjIzMWFkYmRkLTE1NDctNDRjYi1hNjI3LTI2MjJmNzI2YzcxMCIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cHM6Ly9iYWRnZWh1Yi5wMW0ubmwvIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLW1hc3RlciIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwic2lkIjoiMjMxYWRiZGQtMTU0Ny00NGNiLWE2MjctMjYyMmY3MjZjNzEwIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoidGVzdCB1c2VyIDEgVGVzdGVyIiwicHJlZmVycmVkX3VzZXJuYW1lIjoidGVzdHVzZXIxIiwiZ2l2ZW5fbmFtZSI6InRlc3QgdXNlciAxIiwiZmFtaWx5X25hbWUiOiJUZXN0ZXIiLCJlbWFpbCI6ImZkdXZpdmllcit0ZXN0dXNlcjFAZ21haWwuY29tIn0.h9R3nkDZ4C1LMAHKY-iBr24vW2tZMDwNgkA-6S1GQ2KNdnCjaOnROGB0bOCD5vaJO09YqItduM2gBD-oWGX0WuX57p5r5h3lCJi12NEV1YUdc0Z_pqB5ZvmXnJcquejqnnIiia8utcsOUQOsvhDZI4E0afyNl4J0JzcTwwIeOsP_oxkaFCb1aIMOVEIVwyOQYUfIcXsyFNJm356zgMQbD3WNI3eNCi2bDs-KfKaasCdgrMYjEM7gfXetgkJVbgT0v0AXyo9pzVGFDjzNPkoNNo0P5in8AA0qh2C3F-EXFsj3Xmagb_K1un94q4wW4IEMUqbhHbuR2bdePzg6219-Kg";
@@ -21,7 +21,7 @@ describe("Authenticated API Routes", () => {
     app = createExpressServer();
   });
   describe("/projects/{slug}", () => {
-    test("POST /api/v3/projects/${user1AppId}", async () => {
+    test("POST /api/v3/projects/{user1AppId}", async () => {
       const dynamicTestAppId = toSlug(`test_user1_app_${crypto.randomUUID()}`);
       const postRes = await request(app)
         .post(`/api/v3/projects/${dynamicTestAppId}`)
@@ -124,6 +124,8 @@ describe("Authenticated API Routes", () => {
     "with new project created",
     () => {
       let user1AppId: string;
+      // Nested suite needs its own project fixture; not a duplicate of the root hook.
+      // biome-ignore lint/suspicious/noDuplicateTestHooks: legitimate nested describe setup
       beforeAll(async () => {
         console.warn = () => {}; // Suppress console.warn messages during tests
         user1AppId = toSlug(`test_user1_app_${crypto.randomUUID()}`);
@@ -142,25 +144,25 @@ describe("Authenticated API Routes", () => {
           expect(res.statusCode).toBe(404);
         });
 
-        test.each(["non-existing", "codecraft"])(
-          "should respond with 401 for [%s] if there is no jwt token in the request",
-          async (projectName) => {
-            const res = await request(app).get(
-              `/api/v3/projects/${projectName}/draft`
-            );
-            expect(res.statusCode).toBe(401);
-          }
-        );
+        test.each([
+          "non-existing",
+          "codecraft",
+        ])("should respond with 401 for [%s] if there is no jwt token in the request", async (projectName) => {
+          const res = await request(app).get(
+            `/api/v3/projects/${projectName}/draft`
+          );
+          expect(res.statusCode).toBe(401);
+        });
 
-        test.each(["non-existing", "codecraft"])(
-          "should respond with 401 for [%s] if the valid jwt token in the request cannot be decoded",
-          async (projectName) => {
-            const res = await request(app)
-              .get(`/api/v3/projects/${projectName}/draft`)
-              .auth("some random string", { type: "bearer" });
-            expect(res.statusCode).toBe(401);
-          }
-        );
+        test.each([
+          "non-existing",
+          "codecraft",
+        ])("should respond with 401 for [%s] if the valid jwt token in the request cannot be decoded", async (projectName) => {
+          const res = await request(app)
+            .get(`/api/v3/projects/${projectName}/draft`)
+            .auth("some random string", { type: "bearer" });
+          expect(res.statusCode).toBe(401);
+        });
       });
 
       describe("/projects/{slug}/draft/files/{filePath}", () => {
@@ -397,7 +399,7 @@ describe("Authenticated API Routes", () => {
         test("publish version to check revision change", async () => {
           // Create a new project
           const publishTestAppId = `test_app_publish_${Date.now()}`;
-          const appName = "Test App Name";
+          const _appName = "Test App Name";
           const postRes = await request(app)
             .post(`/api/v3/projects/${publishTestAppId}`)
             .auth(USER1_TOKEN, { type: "bearer" })

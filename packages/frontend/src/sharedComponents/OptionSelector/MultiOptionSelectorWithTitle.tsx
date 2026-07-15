@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import type React from "react";
+import { useMemo, useState } from "react";
 
 export const MultiOptionSelectorWithTitle: React.FC<{
   title: string;
@@ -20,8 +21,7 @@ export const MultiOptionSelectorWithTitle: React.FC<{
     }
     return entries.filter(([key, label]) => {
       return (
-        key.toLowerCase().includes(query) ||
-        label.toLowerCase().includes(query)
+        key.toLowerCase().includes(query) || label.toLowerCase().includes(query)
       );
     });
   }, [searchQuery, valueMap]);
@@ -45,7 +45,9 @@ export const MultiOptionSelectorWithTitle: React.FC<{
       </label>
       <div className="mb-2">
         <label htmlFor={searchId} className="label">
-          <span className="label-text-alt whitespace-normal break-words">Search {title}</span>
+          <span className="label-text-alt whitespace-normal break-words">
+            Search {title}
+          </span>
         </label>
         <input
           id={searchId}

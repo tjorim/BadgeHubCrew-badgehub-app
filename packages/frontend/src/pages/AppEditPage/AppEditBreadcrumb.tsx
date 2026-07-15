@@ -1,6 +1,6 @@
-import React from "react";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
 import Breadcrumb from "@sharedComponents/Breadcrumb.tsx";
+import type React from "react";
 
 const AppEditBreadcrumb: React.FC<{ project: ProjectDetails }> = ({
   project,
@@ -11,7 +11,10 @@ const AppEditBreadcrumb: React.FC<{ project: ProjectDetails }> = ({
       items={[
         { label: "Home", to: "/" },
         { label: "Apps", to: "/page/my-projects" },
-        { label: appMetadata.name ?? project.slug, to: `/page/project/${project.slug}` },
+        {
+          label: appMetadata.name ?? project.slug,
+          to: `/page/project/${project.slug}`,
+        },
         { label: "Edit" },
       ]}
     />

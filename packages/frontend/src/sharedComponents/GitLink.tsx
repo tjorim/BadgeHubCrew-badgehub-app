@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import { GitHubIcon } from "./icons/GitHubIcon.tsx";
 import { GitLabIcon } from "./icons/GitLabIcon.tsx";
 

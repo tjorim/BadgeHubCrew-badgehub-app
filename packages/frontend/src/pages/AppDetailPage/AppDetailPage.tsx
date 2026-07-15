@@ -1,38 +1,38 @@
-import React from "react";
-import { publicTsRestClient as defaultTsRestClient } from "../../api/tsRestClient.ts";
-import AppDetailHeader from "./AppDetailHeader.tsx";
-import AppDescription from "./AppDescription.tsx";
-import AppCodePreview from "./AppCodePreview.tsx";
-// import AppReviews from "./AppDetailPage/AppReviews";
-import AppSidebarDetails from "./AppSidebarDetails.tsx";
-import AppSidebarAuthor from "./AppSidebarAuthor.tsx";
-import AppSidebarSimilar from "./AppSidebarSimilar.tsx";
-import AppBreadcrumb from "./AppBreadcrumb.tsx";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
-import PageLayout from "@sharedComponents/PageLayout.tsx";
-import { useTitle } from "@hooks/useTitle.ts";
 import { useAsyncResource } from "@hooks/useAsyncResource.ts";
+import { useTitle } from "@hooks/useTitle.ts";
+import PageLayout from "@sharedComponents/PageLayout.tsx";
 import {
   normalizePublicProjectError,
   publicProjectErrorFromStatus,
   publicProjectErrorMessage,
 } from "@utils/publicProjectErrors.ts";
+import type React from "react";
+import { publicTsRestClient as defaultTsRestClient } from "../../api/tsRestClient.ts";
+import AppBreadcrumb from "./AppBreadcrumb.tsx";
+import AppCodePreview from "./AppCodePreview.tsx";
+import AppDescription from "./AppDescription.tsx";
+import AppDetailHeader from "./AppDetailHeader.tsx";
+import AppSidebarAuthor from "./AppSidebarAuthor.tsx";
+// import AppReviews from "./AppDetailPage/AppReviews";
+import AppSidebarDetails from "./AppSidebarDetails.tsx";
+import AppSidebarSimilar from "./AppSidebarSimilar.tsx";
 
 const AppDetailPage: React.FunctionComponent<{
   tsRestClient?: typeof defaultTsRestClient;
   slug: string;
 }> = ({ tsRestClient = defaultTsRestClient, slug }) => {
   useTitle(slug);
-  const { data: project, error, loading } = useAsyncResource(
-    async () => {
-      const res = await tsRestClient.getProject({ params: { slug } });
-      if (res.status === 200) {
-        return res.body;
-      }
-      throw new Error(publicProjectErrorFromStatus(res.status));
-    },
-    [slug, tsRestClient]
-  );
+  const {
+    data: project,
+    error,
+    loading,
+  } = useAsyncResource(async () => {
+    const res = await tsRestClient.getProject({ params: { slug } });
+    if (res.status === 200) {
+      return res.body;
+    }
+    throw new Error(publicProjectErrorFromStatus(res.status));
+  }, [slug, tsRestClient]);
 
   const errorMessage = error
     ? publicProjectErrorMessage(normalizePublicProjectError(error))

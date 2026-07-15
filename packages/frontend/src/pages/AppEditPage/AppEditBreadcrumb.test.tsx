@@ -1,11 +1,15 @@
-import { describe, expect, it } from "vitest";
 import { render, screen } from "@__test__";
-import AppEditBreadcrumb from "./AppEditBreadcrumb.tsx";
 import { dummyApps } from "@__test__/fixtures";
+import { describe, expect, it } from "vitest";
+import AppEditBreadcrumb from "./AppEditBreadcrumb.tsx";
 
 describe("AppEditBreadcrumb", () => {
   it("renders breadcrumb links for the edit flow", () => {
-    const project = dummyApps[0]!.details;
+    const project = dummyApps[0]?.details;
+    expect(project).toBeDefined();
+    if (!project) {
+      throw new Error("Expected dummy project details");
+    }
     render(<AppEditBreadcrumb project={project} />);
 
     expect(screen.getByRole("link", { name: /home/i })).toHaveAttribute(
@@ -16,9 +20,11 @@ describe("AppEditBreadcrumb", () => {
       "href",
       "/page/my-projects"
     );
-    expect(
-      screen.getByRole("link", { name: project.version.app_metadata.name! })
-    ).toHaveAttribute("href", `/page/project/${project.slug}`);
+    const projectName = project.version.app_metadata.name ?? "";
+    expect(screen.getByRole("link", { name: projectName })).toHaveAttribute(
+      "href",
+      `/page/project/${project.slug}`
+    );
     expect(screen.getByText(/edit/i)).toBeInTheDocument();
   });
 });

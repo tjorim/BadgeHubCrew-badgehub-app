@@ -1,15 +1,15 @@
-import { initContract } from "@ts-rest/core";
-import { z } from "zod/v3";
+import { NO_BODY_SCHEMA } from "@shared/contracts/tsRestNoBodyPatch";
+import { projectApiTokenMetadataSchema } from "@shared/domain/readModels/project/ProjectApiToken";
 import { detailedProjectSchema } from "@shared/domain/readModels/project/ProjectDetails";
-import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
+import { projectSummarySchema } from "@shared/domain/readModels/project/ProjectSummaries";
+import { writeAppMetadataJSONSchema } from "@shared/domain/writeModels/AppMetadataJSON";
 import {
-  CreateProjectProps,
+  type CreateProjectProps,
   createProjectPropsSchema,
 } from "@shared/domain/writeModels/project/WriteProject";
-import { writeAppMetadataJSONSchema } from "@shared/domain/writeModels/AppMetadataJSON";
-import { projectApiTokenMetadataSchema } from "@shared/domain/readModels/project/ProjectApiToken";
-import { projectSummarySchema } from "@shared/domain/readModels/project/ProjectSummaries";
-import { NO_BODY_SCHEMA } from "@shared/contracts/tsRestNoBodyPatch";
+import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
+import { initContract } from "@ts-rest/core";
+import { z } from "zod/v3";
 
 const c = initContract();
 

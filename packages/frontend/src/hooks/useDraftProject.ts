@@ -1,20 +1,24 @@
-import { useEffect, useState } from "react";
-import Keycloak from "keycloak-js";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
 import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
 import { useAsyncResource } from "@hooks/useAsyncResource.ts";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
 import {
-  DraftProjectErrorCode,
+  type DraftProjectErrorCode,
   draftProjectErrorFromStatus,
   normalizeDraftProjectError,
 } from "@utils/draftProjectErrors.ts";
+import type Keycloak from "keycloak-js";
+import { useEffect, useState } from "react";
 
 export type PossiblyStaleProject = ProjectDetails & { stale?: true };
 
 export const useDraftProject = (slug: string, keycloak?: Keycloak) => {
   const [project, setProject] = useState<PossiblyStaleProject | null>(null);
   const shouldFetchProject = Boolean(keycloak) && (!project || project.stale);
-  const { data: fetchedProject, error: fetchError, loading } = useAsyncResource(
+  const {
+    data: fetchedProject,
+    error: fetchError,
+    loading,
+  } = useAsyncResource(
     async () => {
       if (!keycloak) {
         throw new Error("authentication");

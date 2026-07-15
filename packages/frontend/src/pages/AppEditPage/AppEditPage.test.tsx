@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@__test__";
-import AppEditPage from "./AppEditPage.tsx";
 import { dummyApps } from "@__test__/fixtures";
 import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import AppEditPage from "./AppEditPage.tsx";
 
 vi.mock("@api/tsRestClient.ts", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@api/tsRestClient.ts")>();
@@ -25,7 +25,7 @@ describe("AppEditPage", () => {
     vi.mocked(getFreshAuthorizedTsRestClient).mockResolvedValue({
       getDraftProject: vi.fn().mockResolvedValue({
         status: 200,
-        body: dummyApps[0]!.details,
+        body: dummyApps[0]?.details,
       }),
     } as unknown as Awaited<ReturnType<typeof getFreshAuthorizedTsRestClient>>);
 

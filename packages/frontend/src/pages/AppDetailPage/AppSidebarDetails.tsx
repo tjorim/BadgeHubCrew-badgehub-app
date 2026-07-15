@@ -1,5 +1,5 @@
-import React from "react";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import type React from "react";
 
 const AppSidebarDetails: React.FC<{ project: ProjectDetails }> = ({
   project,
@@ -17,44 +17,44 @@ const AppSidebarDetails: React.FC<{ project: ProjectDetails }> = ({
   return (
     <section className="card bg-base-200 shadow-lg">
       <div className="card-body p-6">
-      <h2 className="text-xl font-semibold mb-4 border-b border-base-300 pb-2">
-        App Details
-      </h2>
-      <ul className="text-sm space-y-3 font-mono">
-        {version && (
+        <h2 className="text-xl font-semibold mb-4 border-b border-base-300 pb-2">
+          App Details
+        </h2>
+        <ul className="text-sm space-y-3 font-mono">
+          {version && (
+            <li>
+              <strong>Version:</strong> {version}
+            </li>
+          )}
           <li>
-            <strong>Version:</strong> {version}
+            <strong>Revision:</strong> {revision ?? "—"}
           </li>
-        )}
-        <li>
-          <strong>Revision:</strong> {revision ?? "—"}
-        </li>
-        {licenseType && (
+          {licenseType && (
+            <li>
+              <strong>License:</strong> {licenseType}
+            </li>
+          )}
           <li>
-            <strong>License:</strong> {licenseType}
+            <strong>Badges:</strong> {app_metadata.badges?.join(", ") ??
+              "—"}{" "}
           </li>
-        )}
-        <li>
-          <strong>Badges:</strong>{" "}
-          {app_metadata.badges?.join(", ") ?? "—"}{" "}
-        </li>
-        <li>
-          <strong>Categories:</strong>{" "}
-          {app_metadata.categories?.join(",") ?? "—"}
-        </li>
-        <li>
-          <strong>Type:</strong> {app_metadata.project_type ?? "app"}
-        </li>
-        <li className={"todoElement"}>
-          <strong>Downloads:</strong> {"Download count not available"}
-        </li>
-        <li className={"todoElement"}>
-          <strong>Rating:</strong>{" "}
-          {
-            "4.8/5 (120 votes)" // TODO
-          }
-        </li>
-      </ul>
+          <li>
+            <strong>Categories:</strong>{" "}
+            {app_metadata.categories?.join(",") ?? "—"}
+          </li>
+          <li>
+            <strong>Type:</strong> {app_metadata.project_type ?? "app"}
+          </li>
+          <li className={"todoElement"}>
+            <strong>Downloads:</strong> {"Download count not available"}
+          </li>
+          <li className={"todoElement"}>
+            <strong>Rating:</strong>{" "}
+            {
+              "4.8/5 (120 votes)" // TODO
+            }
+          </li>
+        </ul>
       </div>
     </section>
   );

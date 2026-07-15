@@ -1,5 +1,5 @@
+import type Keycloak from "keycloak-js";
 import React, { use } from "react";
-import Keycloak from "keycloak-js";
 
 export interface User {
   name: string;

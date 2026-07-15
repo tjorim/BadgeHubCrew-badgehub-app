@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@__test__";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import AppEditActions from "./AppEditActions.tsx";
 
 describe("AppEditActions", () => {
@@ -10,9 +10,10 @@ describe("AppEditActions", () => {
     expect(
       screen.getByRole("button", { name: /save & publish/i })
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: /cancel/i })
-    ).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: /cancel/i })).toHaveAttribute(
+      "href",
+      "/"
+    );
     expect(
       screen.getByRole("button", { name: /delete application/i })
     ).toBeInTheDocument();
@@ -21,7 +22,9 @@ describe("AppEditActions", () => {
   it("invokes delete handler when clicked", async () => {
     const user = userEvent.setup();
     const onClickDeleteApplication = vi.fn();
-    render(<AppEditActions onClickDeleteApplication={onClickDeleteApplication} />);
+    render(
+      <AppEditActions onClickDeleteApplication={onClickDeleteApplication} />
+    );
 
     await user.click(
       screen.getByRole("button", { name: /delete application/i })

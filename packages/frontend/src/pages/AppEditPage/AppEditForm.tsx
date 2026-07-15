@@ -1,16 +1,16 @@
-import React from "react";
-import AppEditBreadcrumb from "./AppEditBreadcrumb.tsx";
-import AppEditBasicInfo from "./AppEditBasicInfo.tsx";
-import AppEditCategorization from "./AppEditCategorization.tsx";
-import AppEditActions from "./AppEditActions.tsx";
-import AppEditFileUpload from "./AppEditFileUpload.tsx";
-import AppEditFileList from "./AppEditFileList.tsx";
-import AppEditTokenManager from "./AppEditTokenManager.tsx";
 import AppCodePreview from "@pages/AppDetailPage/AppCodePreview.tsx";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
-import { ProjectEditFormData } from "@pages/AppEditPage/ProjectEditFormData.ts";
-import { User } from "@sharedComponents/keycloakSession/SessionContext.tsx";
-import Keycloak from "keycloak-js";
+import type { ProjectEditFormData } from "@pages/AppEditPage/ProjectEditFormData.ts";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import type { User } from "@sharedComponents/keycloakSession/SessionContext.tsx";
+import type Keycloak from "keycloak-js";
+import type React from "react";
+import AppEditActions from "./AppEditActions.tsx";
+import AppEditBasicInfo from "./AppEditBasicInfo.tsx";
+import AppEditBreadcrumb from "./AppEditBreadcrumb.tsx";
+import AppEditCategorization from "./AppEditCategorization.tsx";
+import AppEditFileList from "./AppEditFileList.tsx";
+import AppEditFileUpload from "./AppEditFileUpload.tsx";
+import AppEditTokenManager from "./AppEditTokenManager.tsx";
 
 const AppEditForm: React.FC<{
   project: ProjectDetails;

@@ -1,5 +1,5 @@
-import React from "react";
-import { DraftProjectErrorCode } from "@utils/draftProjectErrors.ts";
+import type { DraftProjectErrorCode } from "@utils/draftProjectErrors.ts";
+import type React from "react";
 
 const AppEditStateView: React.FC<{
   loading: boolean;
@@ -21,10 +21,7 @@ const AppEditStateView: React.FC<{
             <div className="opacity-70 mb-4">
               You need to log in to edit this project.
             </div>
-            <button
-              onClick={onLogin}
-              className="btn btn-primary"
-            >
+            <button type="button" onClick={onLogin} className="btn btn-primary">
               Log In
             </button>
           </>

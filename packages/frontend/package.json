@@ -7,7 +7,6 @@
     "dev": "mkdir -p dist && cp index-indirect-dev.html dist/index.html && vite",
     "check:ts": "tsc -p tsconfig.json && tsc -p tsconfig.node.json",
     "build": "vite build",
-    "lint": "biome .",
     "preview": "vite preview",
     "test": "vitest run"
   },
@@ -21,7 +20,6 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.3",
     "@tailwindcss/vite": "^4.3.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

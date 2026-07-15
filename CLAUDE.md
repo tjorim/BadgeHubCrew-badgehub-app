@@ -16,7 +16,8 @@ pnpm run repopulate-db    # Load mock data into test DB
 ```bash
 pnpm run build            # Build all workspaces
 pnpm run check:ts         # TypeScript type checking across all packages
-pnpm run lint             # Prettier formatting check
+pnpm run lint             # Biome format + lint check
+pnpm run lint:fix         # Biome auto-fix format + safe lint fixes
 pnpm run validate         # Full validation: lint + check:ts + build + test
 ```
 
@@ -39,8 +40,9 @@ pnpm --filter badgehub-api run db-migrate:create -- migration-name  # Create new
 
 ### Code Quality
 ```bash
-pnpm exec prettier --write .   # Auto-fix formatting
-# or: pnpm dlx prettier --write .
+pnpm run lint:fix           # Auto-fix with Biome (format + safe lint fixes)
+# Git hooks: lefthook runs biome on staged files at pre-commit
+# Config: biome.json (formatter + recommended linter rules)
 ```
 
 ## Architecture

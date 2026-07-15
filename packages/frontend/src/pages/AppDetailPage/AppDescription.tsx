@@ -1,5 +1,5 @@
-import React from "react";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import type React from "react";
 
 const AppDescription: React.FC<{ project: ProjectDetails }> = ({
   project: {

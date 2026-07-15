@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 interface PaginationProps {
   currentPage: number;
@@ -20,16 +20,17 @@ const Pagination: React.FC<PaginationProps> = ({
     >
       <div className="join">
         <button
+          type="button"
           onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className="join-item btn"
           data-testid="pagination-prev"
         >
-          <span className="sr-only">Previous</span>
-          «
+          <span className="sr-only">Previous</span>«
         </button>
         {pages.map((page) => (
           <button
+            type="button"
             key={page}
             onClick={() => onPageChange(page)}
             className={`join-item btn${page === currentPage ? " btn-active" : ""}`}
@@ -39,6 +40,7 @@ const Pagination: React.FC<PaginationProps> = ({
           </button>
         ))}
         <button
+          type="button"
           onClick={() =>
             currentPage < totalPages && onPageChange(currentPage + 1)
           }
@@ -46,8 +48,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="join-item btn"
           data-testid="pagination-next"
         >
-          <span className="sr-only">Next</span>
-          »
+          <span className="sr-only">Next</span>»
         </button>
       </div>
     </nav>

@@ -1,22 +1,22 @@
 import { EXPRESS_PORT, IS_DEV_ENVIRONMENT } from "@config";
-import { runMigrations } from "@db/migrations";
 import { createExpressServer } from "@createExpressServer";
+import { runMigrations } from "@db/migrations";
+import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
+import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
+import { BadgeHubData } from "@domain/BadgeHubData";
 import { startMqtt } from "@reporting/mqtt";
 import { startRefreshReportsInterval } from "@reporting/refreshReports";
-import { BadgeHubData } from "@domain/BadgeHubData";
-import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
-import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
 
 // unhandled-rejection-handler.js
 
-process.on("unhandledRejection", (reason, promise) => {
+process.on("unhandledRejection", (reason, _promise) => {
   console.error("=== UNHANDLED PROMISE REJECTION ===");
 
   if (reason instanceof Error) {
     console.error(reason.stack);
   } else {
     console.error("Non-error rejection value:");
-    console.error(require("util").inspect(reason, { depth: null }));
+    console.error(require("node:util").inspect(reason, { depth: null }));
   }
 
   // Ensure logs flush before exit

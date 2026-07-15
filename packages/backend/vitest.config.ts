@@ -1,8 +1,8 @@
-import { config } from "dotenv";
-import { defineConfig } from "vitest/config";
-import tsconfigPaths from "vite-tsconfig-paths";
-import { CoverageOptions } from "vitest/node";
 import * as path from "node:path";
+import { config } from "dotenv";
+import tsconfigPaths from "vite-tsconfig-paths";
+import { defineConfig } from "vitest/config";
+import type { CoverageOptions } from "vitest/node";
 
 const coverageConfig: CoverageOptions = {
   reporter: ["text", "json-summary", "json"],

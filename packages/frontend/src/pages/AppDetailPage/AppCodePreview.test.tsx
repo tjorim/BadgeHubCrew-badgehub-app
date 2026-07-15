@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import AppCodePreview from "./AppCodePreview";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails";
 
 // Mock the API client
 vi.mock("@api/tsRestClient.ts", () => ({

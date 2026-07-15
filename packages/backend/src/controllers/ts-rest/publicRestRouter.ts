@@ -1,18 +1,22 @@
-import { initServer } from "@ts-rest/express";
+import { Readable } from "node:stream";
 import {
-  publicFilesContracts,
-  publicOtherContracts,
-  publicProjectContracts,
-  publicReportContracts,
+  noContent,
+  nok,
+  ok,
+  type RouterImplementation,
+} from "@controllers/ts-rest/httpResponses";
+import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
+import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
+import { BadgeHubData } from "@domain/BadgeHubData";
+import {
+  type publicFilesContracts,
+  type publicOtherContracts,
+  type publicProjectContracts,
+  type publicReportContracts,
   publicRestContracts,
 } from "@shared/contracts/publicRestContracts";
-import { BadgeHubData } from "@domain/BadgeHubData";
-import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
-import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
-import { noContent, nok, ok, type RouterImplementation } from "@controllers/ts-rest/httpResponses";
-import { Readable } from "node:stream";
-
-import { ProjectLatestRevisions } from "@shared/domain/readModels/project/ProjectRevision";
+import type { ProjectLatestRevisions } from "@shared/domain/readModels/project/ProjectRevision";
+import { initServer } from "@ts-rest/express";
 import { isSafeToRenderInline } from "@util/mimeTypeDetection";
 
 const setFileResponseHeaders = (
@@ -106,7 +110,7 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
       return ok(data);
     },
     getProjectLatestRevisions: async ({ query, res }) => {
-      const slugs = (query.slugs && query.slugs?.split(",")) || undefined;
+      const slugs = query.slugs?.split(",") || undefined;
       const data = await badgeHubData.getProjectSummaries(
         { slugs: slugs, orderBy: "published_at" },
         "latest"
@@ -122,11 +126,11 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
     getProjectLatestRevision: async ({ params: { slug }, res }) => {
       // TODO optimize this
       const projectDetails = await badgeHubData.getProject(slug, "latest");
-      if (projectDetails?.latest_revision == undefined) {
+      if (projectDetails?.latest_revision == null) {
         return nok(404, `No published app with slug '${slug}' found`);
       }
       res.setHeader("Cache-Control", "max-age=10");
-      return ok(projectDetails?.latest_revision);
+      return ok(projectDetails.latest_revision);
     },
     getProjectForRevision: async ({ params: { slug, revision }, res }) => {
       const details = await badgeHubData.getProject(slug, revision);
@@ -197,5 +201,6 @@ export const createPublicRestRouter = (
     ...createFilesRouter(badgeHubData),
     ...createPublicOtherRouter(badgeHubData),
     ...createReportRouter(badgeHubData),
+    // biome-ignore lint/suspicious/noExplicitAny: aggregated router type is not expressible without a large refactor
   } as any);
 };

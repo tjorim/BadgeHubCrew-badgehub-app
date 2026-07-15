@@ -17,5 +17,6 @@ allowBuilds:
   '@scarf/scarf': true
   cpu-features: true
   esbuild: true
+  lefthook: true
   sharp: true
   ssh2: true

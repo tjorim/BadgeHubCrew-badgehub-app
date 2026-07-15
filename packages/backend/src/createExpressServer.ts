@@ -1,31 +1,41 @@
-import express from "express";
-import { pinoHttp } from "pino-http";
-import serveApiDocs from "@serveApiDocs";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { addAuthenticationMiddleware } from "@auth/jwt-decode";
+import { jwtVerifyTokenMiddleware } from "@auth/jwt-verify";
 import {
   FRONTEND_DIST_DIR,
   FRONTEND_PUBLIC_DIR,
   IS_DEV_ENVIRONMENT,
 } from "@config";
-import rateLimit from "express-rate-limit";
-import { createExpressEndpoints } from "@ts-rest/express";
-import { publicRestContracts } from "@shared/contracts/publicRestContracts";
-import { createPublicRestRouter } from "@controllers/ts-rest/publicRestRouter";
-import { privateRestContracts } from "@shared/contracts/privateRestContracts";
 import { createPrivateRestRouter } from "@controllers/ts-rest/privateRestRouter";
-import { addAuthenticationMiddleware } from "@auth/jwt-decode";
-import { jwtVerifyTokenMiddleware } from "@auth/jwt-verify";
-import cors from "cors";
-import * as path from "path";
-import * as fs from "node:fs";
+import { createPublicRestRouter } from "@controllers/ts-rest/publicRestRouter";
+import serveApiDocs from "@serveApiDocs";
 import { getSharedConfig } from "@shared/config/sharedConfig";
+import { privateRestContracts } from "@shared/contracts/privateRestContracts";
+import { publicRestContracts } from "@shared/contracts/publicRestContracts";
+import { createExpressEndpoints } from "@ts-rest/express";
+import cors from "cors";
+import express, {
+  type ErrorRequestHandler,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
+import rateLimit from "express-rate-limit";
+import { pinoHttp } from "pino-http";
 
 function getIndexHtmlContents() {
   const indexPath = path.join(FRONTEND_DIST_DIR, "index.html");
   let original: string;
   try {
     original = fs.readFileSync(indexPath, { encoding: "utf8" });
-  } catch (err: any) {
-    if (err.code === "ENOENT") {
+  } catch (err: unknown) {
+    if (
+      err &&
+      typeof err === "object" &&
+      "code" in err &&
+      err.code === "ENOENT"
+    ) {
       // Fallback for test runs or when frontend hasn't been built yet.
       // Prefer the indirect-dev template (used by frontend dev mode) if available.
       const indirectDevPath = path.join(
@@ -47,7 +57,7 @@ function getIndexHtmlContents() {
 export const createExpressServer = () => {
   const app = express();
   if (IS_DEV_ENVIRONMENT) {
-    app.use((req, res, next) => {
+    app.use((_req, res, next) => {
       res.header("Access-Control-Allow-Origin", "*");
       next(); // for inspection during development
     });
@@ -60,7 +70,7 @@ export const createExpressServer = () => {
   const indexHtmlContents = getIndexHtmlContents();
   // Handle requests for the root and /page routes by sending the main HTML file.
   // This is crucial for Single Page Applications (SPAs) that use client-side routing.
-  app.get(["/", "/page", "/page/*"], (req, res) => {
+  app.get(["/", "/page", "/page/*"], (_req, res) => {
     res.setHeader("Content-Type", "text/html");
     res.send(indexHtmlContents);
   });
@@ -97,9 +107,15 @@ export const createExpressServer = () => {
       ],
     }
   );
-  app.use((err: any, req: any, res: any, next: any) => {
+  const errorLogger: ErrorRequestHandler = (
+    err: unknown,
+    _req: Request,
+    _res: Response,
+    next: NextFunction
+  ) => {
     console.warn(err);
     next(err);
-  });
+  };
+  app.use(errorLogger);
   return app;
 };

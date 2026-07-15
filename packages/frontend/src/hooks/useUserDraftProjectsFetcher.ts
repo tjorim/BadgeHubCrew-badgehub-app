@@ -1,10 +1,8 @@
-import { useCallback } from "react";
-import Keycloak from "keycloak-js";
-import {
-  publicTsRestClient as defaultTsRestClient,
-} from "@api/tsRestClient.ts";
+import { publicTsRestClient as defaultTsRestClient } from "@api/tsRestClient.ts";
 import type { AppFetcher } from "@sharedComponents/AppGridWithFilterAndPagination.tsx";
 import type { User } from "@sharedComponents/keycloakSession/SessionContext.tsx";
+import type Keycloak from "keycloak-js";
+import { useCallback } from "react";
 
 interface UseUserDraftProjectsFetcherParams {
   tsRestClient?: typeof defaultTsRestClient;
@@ -23,9 +21,7 @@ export const useUserDraftProjectsFetcher = ({
     }
     await keycloak.updateToken(30).catch((e) => {
       console.error("Failed to update token", e);
-      throw new Error(
-        "Failed to update token. Please try logging in again."
-      );
+      throw new Error("Failed to update token. Please try logging in again.");
     });
 
     const result = await tsRestClient
@@ -40,7 +36,7 @@ export const useUserDraftProjectsFetcher = ({
       .catch((e) => {
         console.error("Failed to fetch draft projects", e);
         throw new Error(
-          "Failed to fetch your draft projects. Message: " + e.message
+          `Failed to fetch your draft projects. Message: ${e.message}`
         );
       });
     switch (result.status) {

@@ -1,9 +1,10 @@
-import multer from "multer";
-
-import { initServer } from "@ts-rest/express";
-import { BadgeHubData } from "@domain/BadgeHubData";
-import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
-import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
+import { Readable } from "node:stream";
+import {
+  type AuthenticatedRequest,
+  getUser,
+  type UserDataInRequest,
+} from "@auth/jwt-decode";
+import { MAX_UPLOAD_FILE_SIZE_BYTES } from "@config";
 import {
   HTTP_FORBIDDEN,
   HTTP_NOT_FOUND,
@@ -12,23 +13,21 @@ import {
   ok,
   type RouterImplementation,
 } from "@controllers/ts-rest/httpResponses";
+import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
+import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
+import { BadgeHubData } from "@domain/BadgeHubData";
+import { ProjectAlreadyExistsError, UserError } from "@domain/UserError";
 import {
-  privateProjectContracts,
+  type privateProjectContracts,
   privateRestContracts,
 } from "@shared/contracts/privateRestContracts";
-import {
-  AuthenticatedRequest,
-  getUser,
-  UserDataInRequest,
-} from "@auth/jwt-decode";
-import {
+import type {
   ProjectDetails,
   ProjectSlug,
 } from "@shared/domain/readModels/project/ProjectDetails";
-import { Readable } from "node:stream";
-import { MAX_UPLOAD_FILE_SIZE_BYTES } from "@config";
-import { ProjectAlreadyExistsError, UserError } from "@domain/UserError";
+import { initServer } from "@ts-rest/express";
 import { detectMimeType } from "@util/mimeTypeDetection";
+import multer from "multer";
 
 const upload = multer({
   limits: { fileSize: MAX_UPLOAD_FILE_SIZE_BYTES },
@@ -139,7 +138,7 @@ const createProjectRouter = (badgeHubData: BadgeHubData) => {
         if (authorizationFailureResponse) return authorizationFailureResponse;
         // Write a file to the draft version of the project.
 
-        let typedFile = file as Express.Multer.File | undefined;
+        const typedFile = file as Express.Multer.File | undefined;
         if (!typedFile?.buffer) {
           return nok(
             400,
@@ -307,7 +306,10 @@ const requestIsFromAllowedUser = (
   return user && allowedUsers.includes(user.idp_user_id);
 };
 
-const checkUserAuthorization = (userId: string, request: any) => {
+const checkUserAuthorization = (
+  userId: string,
+  request: { user: UserDataInRequest }
+) => {
   if (
     !requestIsFromAllowedUser(request, {
       allowedUsers: [userId],

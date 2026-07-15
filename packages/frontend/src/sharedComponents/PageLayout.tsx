@@ -1,6 +1,6 @@
-import React from "react";
-import Header from "@sharedComponents/Header.tsx";
 import Footer from "@sharedComponents/Footer.tsx";
+import Header from "@sharedComponents/Header.tsx";
+import type React from "react";
 
 interface PageLayoutProps {
   children: React.ReactNode;

@@ -1,31 +1,40 @@
-import React, { useEffect, useState, useMemo } from "react";
 import {
-  publicTsRestClient,
   getFreshAuthorizedTsRestClient,
+  publicTsRestClient,
 } from "@api/tsRestClient.ts";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
-import { FileMetadata } from "@shared/domain/readModels/project/FileMetadata.ts";
+import type { FileMetadata } from "@shared/domain/readModels/project/FileMetadata.ts";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
 import { assertDefined } from "@shared/util/assertions.ts";
+import type React from "react";
+import { useEffect, useMemo, useState } from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { atomOneDark } from "react-syntax-highlighter/dist/cjs/styles/hljs";
-import { atomOneLight } from "react-syntax-highlighter/dist/cjs/styles/hljs";
+import {
+  atomOneDark,
+  atomOneLight,
+} from "react-syntax-highlighter/dist/cjs/styles/hljs";
 
 function useIsDarkTheme() {
-  const [isDark, setIsDark] = useState(() =>
-    getComputedStyle(document.documentElement).colorScheme === "dark"
+  const [isDark, setIsDark] = useState(
+    () => getComputedStyle(document.documentElement).colorScheme === "dark"
   );
   useEffect(() => {
     const observer = new MutationObserver(() => {
-      setIsDark(getComputedStyle(document.documentElement).colorScheme === "dark");
+      setIsDark(
+        getComputedStyle(document.documentElement).colorScheme === "dark"
+      );
     });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
     return () => observer.disconnect();
   }, []);
   return isDark;
 }
-import Keycloak from "keycloak-js";
-import { getLanguageFromFile, getPreviewType } from "@utils/filePreview.ts";
+
 import { downloadProjectFile } from "@utils/downloadProjectFile.ts";
+import { getLanguageFromFile, getPreviewType } from "@utils/filePreview.ts";
+import type Keycloak from "keycloak-js";
 
 const DownloadIcon = () => (
   <svg
@@ -36,6 +45,7 @@ const DownloadIcon = () => (
     stroke="currentColor"
     strokeWidth={2}
     style={{ display: "inline", verticalAlign: "middle" }}
+    aria-hidden="true"
   >
     <path
       strokeLinecap="round"
@@ -46,7 +56,10 @@ const DownloadIcon = () => (
 );
 
 // JSON Preview Component with pretty print option and syntax highlighting
-const JsonPreview: React.FC<{ content: string; isDark: boolean }> = ({ content, isDark }) => {
+const JsonPreview: React.FC<{ content: string; isDark: boolean }> = ({
+  content,
+  isDark,
+}) => {
   const [isPretty, setIsPretty] = useState(false);
 
   const formatJson = (jsonStr: string): string => {
@@ -95,7 +108,10 @@ const JsonPreview: React.FC<{ content: string; isDark: boolean }> = ({ content, 
 };
 
 // Python Preview Component with syntax highlighting
-const PythonPreview: React.FC<{ content: string; isDark: boolean }> = ({ content, isDark }) => {
+const PythonPreview: React.FC<{ content: string; isDark: boolean }> = ({
+  content,
+  isDark,
+}) => {
   return (
     <div>
       <div className="mb-2">
@@ -123,11 +139,11 @@ const PythonPreview: React.FC<{ content: string; isDark: boolean }> = ({ content
 };
 
 // Text Preview Component with syntax highlighting for recognized file types
-const TextPreview: React.FC<{ content: string; filename: string; isDark: boolean }> = ({
-  content,
-  filename,
-  isDark,
-}) => {
+const TextPreview: React.FC<{
+  content: string;
+  filename: string;
+  isDark: boolean;
+}> = ({ content, filename, isDark }) => {
   const language = getLanguageFromFile(filename);
 
   if (language === "text") {
@@ -233,6 +249,7 @@ const AudioPreview: React.FC<{ file: FileMetadata; audioBlob?: Blob }> = ({
         <span className="text-base-content/80 text-sm">Audio file</span>
       </div>
       {audioUrl && (
+        // biome-ignore lint/a11y/useMediaCaption: audio is user-uploaded content without available captions
         <audio className="w-full" controls preload="metadata" src={audioUrl}>
           Your browser does not support audio playback.
         </audio>
@@ -297,7 +314,11 @@ const renderFilePreview = (
       );
     case "text":
       return fileContent ? (
-        <TextPreview content={fileContent} filename={currentFile.full_path} isDark={isDark} />
+        <TextPreview
+          content={fileContent}
+          filename={currentFile.full_path}
+          isDark={isDark}
+        />
       ) : (
         <div className="opacity-60">Loading text file...</div>
       );
@@ -469,8 +490,11 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
 
   const handleDownload = async (file: FileMetadata) => {
     if (isDraft) {
+      if (!keycloak) {
+        throw new Error("Keycloak is required to download draft files");
+      }
       // Draft mode - download via API
-      await downloadProjectFile(keycloak!, project.slug, file);
+      await downloadProjectFile(keycloak, project.slug, file);
     } else {
       // Published mode - use direct URL
       window.location.href = file.url;
@@ -483,82 +507,80 @@ const AppCodePreview: React.FC<AppCodePreviewProps> = ({
       data-testid="code-preview-section"
     >
       <div className="card-body">
-      <h2 className="card-title text-2xl mb-4">
-        Code Preview / Files
-      </h2>
-      {showFileList && (
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="md:w-1/3 w-full">
-            <h3 className="text-lg font-medium text-base-content mb-2">
-              Project Files:
-            </h3>
-            <ul className="list-none text-sm space-y-1">
-              {files.map((f, i: number) => (
-                <li key={i} className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    className="btn btn-xs btn-ghost"
-                    onClick={() => handleDownload(f)}
-                    title="Download file"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <DownloadIcon />
-                  </button>
-                  <button
-                    type="button"
-                    className={`text-left hover:underline font-mono ${
-                      previewedFile === f.full_path
-                        ? "text-base-content font-bold"
-                        : "opacity-60"
-                    }`}
-                    onClick={() => handlePreview(f.full_path)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        handlePreview(f.full_path);
-                      }
-                    }}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      padding: 0,
-                      cursor: "pointer",
-                    }}
-                    title="Preview file"
-                    aria-label={`Preview ${f.full_path}`}
-                  >
-                    {f.full_path}
-                  </button>
-                  {f.size_formatted ? (
-                    <span className="ml-2 opacity-60">
-                      {f.size_formatted}
-                    </span>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
+        <h2 className="card-title text-2xl mb-4">Code Preview / Files</h2>
+        {showFileList && (
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="md:w-1/3 w-full">
+              <h3 className="text-lg font-medium text-base-content mb-2">
+                Project Files:
+              </h3>
+              <ul className="list-none text-sm space-y-1">
+                {files.map((f) => (
+                  <li key={f.full_path} className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      className="btn btn-xs btn-ghost"
+                      onClick={() => handleDownload(f)}
+                      title="Download file"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <DownloadIcon />
+                    </button>
+                    <button
+                      type="button"
+                      className={`text-left hover:underline font-mono ${
+                        previewedFile === f.full_path
+                          ? "text-base-content font-bold"
+                          : "opacity-60"
+                      }`}
+                      onClick={() => handlePreview(f.full_path)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handlePreview(f.full_path);
+                        }
+                      }}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        cursor: "pointer",
+                      }}
+                      title="Preview file"
+                      aria-label={`Preview ${f.full_path}`}
+                    >
+                      {f.full_path}
+                    </button>
+                    {f.size_formatted ? (
+                      <span className="ml-2 opacity-60">
+                        {f.size_formatted}
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+        <div className={showFileList ? "mt-6 md:ml-0" : "mt-4"}>
+          <div className="code-block font-mono text-sm bg-base-300 rounded p-4 overflow-x-auto min-h-[200px]">
+            {renderFilePreview(
+              loading,
+              previewedFile,
+              currentFile,
+              fileContent,
+              isDark,
+              previewBlob || undefined
+            )}
           </div>
         </div>
-      )}
-      <div className={showFileList ? "mt-6 md:ml-0" : "mt-4"}>
-        <div className="code-block font-mono text-sm bg-base-300 rounded p-4 overflow-x-auto min-h-[200px]">
-          {renderFilePreview(
-            loading,
-            previewedFile,
-            currentFile,
-            fileContent,
-            isDark,
-            previewBlob || undefined
-          )}
-        </div>
-      </div>
       </div>
     </section>
   );

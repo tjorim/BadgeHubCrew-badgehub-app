@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 
 const THEMES = [
   "dark",
@@ -48,6 +49,7 @@ const ThemePicker: React.FC = () => {
   return (
     <div ref={ref} className="relative">
       <button
+        type="button"
         className="btn btn-ghost btn-sm gap-1.5"
         onClick={() => setOpen((v) => !v)}
         aria-label="Select theme"
@@ -60,6 +62,7 @@ const ThemePicker: React.FC = () => {
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -74,6 +77,7 @@ const ThemePicker: React.FC = () => {
           className="h-3 w-3 opacity-60 shrink-0"
           viewBox="0 0 20 20"
           fill="currentColor"
+          aria-hidden="true"
         >
           <path
             fillRule="evenodd"
@@ -87,6 +91,7 @@ const ThemePicker: React.FC = () => {
         <div className="absolute right-0 top-full mt-1 z-50 bg-base-200 border border-base-300 rounded-box shadow-lg w-44 max-h-72 overflow-y-auto">
           {THEMES.map((t) => (
             <button
+              type="button"
               key={t}
               className={`flex items-center justify-between w-full px-3 py-2 text-sm hover:bg-base-300 transition-colors gap-2${theme === t ? " text-primary font-semibold" : ""}`}
               onClick={() => {

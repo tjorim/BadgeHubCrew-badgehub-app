@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import {
-  getFreshAuthorizedTsRestClient,
-  publicTsRestClient as defaultTsRestClient,
-} from "../../api/tsRestClient.ts";
-import Keycloak from "keycloak-js";
 import { assertDefined } from "@shared/util/assertions.ts";
 import { isExecutableFileName } from "@utils/fileUtils.ts";
+import type Keycloak from "keycloak-js";
+import type React from "react";
+import { useState } from "react";
+import {
+  type publicTsRestClient as defaultTsRestClient,
+  getFreshAuthorizedTsRestClient,
+} from "../../api/tsRestClient.ts";
 
 const AppEditFileUpload: React.FC<{
   slug: string;
@@ -70,10 +71,11 @@ const AppEditFileUpload: React.FC<{
       <div className="card-body">
         <h2 className="card-title text-2xl mb-2">Files</h2>
         <div className="form-control">
-          <label className="label">
+          <label className="label" htmlFor="app-edit-file-upload-input">
             <span className="label-text">Upload Files</span>
           </label>
           <input
+            id="app-edit-file-upload-input"
             type="file"
             name="file-upload"
             data-testid="app-edit-file-upload-input"
@@ -82,12 +84,12 @@ const AppEditFileUpload: React.FC<{
             disabled={uploading}
             onChange={handleFileChange}
           />
-          <label className="label">
+          <p className="label">
             <span className="label-text-alt whitespace-normal break-words">
-              You can upload any file type (e.g., code, images, docs). Executable
-              file types will be selectable as "Main".
+              You can upload any file type (e.g., code, images, docs).
+              Executable file types will be selectable as "Main".
             </span>
-          </label>
+          </p>
           {uploading && (
             <p className="text-xs text-success mt-2">Uploading...</p>
           )}

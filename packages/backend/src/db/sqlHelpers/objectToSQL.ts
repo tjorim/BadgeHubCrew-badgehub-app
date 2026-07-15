@@ -5,15 +5,15 @@ const COLUMN_KEY_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
 export function assertValidColumKey(key: string): string {
   if (!COLUMN_KEY_REGEX.test(key)) {
-    throw new Error("Invalid column key: " + key);
+    throw new Error(`Invalid column key: ${key}`);
   }
   return key;
 }
 
-export function getInsertKeysAndValuesSql(user: Object) {
+export function getInsertKeysAndValuesSql<T extends object>(user: T) {
   const definedEntries = getEntriesWithDefinedValues(user);
   const keys = join(
-    definedEntries.map(([key]) => raw(assertValidColumKey(key)))
+    definedEntries.map(([key]) => raw(assertValidColumKey(String(key))))
   );
   const values = join(definedEntries.map(([, value]) => value));
   return { keys, values };

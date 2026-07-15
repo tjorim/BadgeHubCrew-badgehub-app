@@ -1,7 +1,7 @@
-import React from "react";
-import { ProjectEditFormData } from "@pages/AppEditPage/ProjectEditFormData.ts";
-import { MultiCategorySelector } from "@sharedComponents/OptionSelector/MultiCategorySelector.tsx";
+import type { ProjectEditFormData } from "@pages/AppEditPage/ProjectEditFormData.ts";
 import { MultiBadgeSelector } from "@sharedComponents/OptionSelector/MultiBadgeSelector.tsx";
+import { MultiCategorySelector } from "@sharedComponents/OptionSelector/MultiCategorySelector.tsx";
+import type React from "react";
 
 const AppEditCategorization: React.FC<{
   form: ProjectEditFormData;
@@ -32,7 +32,9 @@ const AppEditCategorization: React.FC<{
         <div className="form-control">
           <label htmlFor="licenseType" className="label">
             <span className="label-text">License Type</span>
-            <span className="label-text-alt whitespace-normal break-words">e.g., MIT</span>
+            <span className="label-text-alt whitespace-normal break-words">
+              e.g., MIT
+            </span>
           </label>
           <input
             type="text"

@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { stringToSemiRandomNumber } from "@dev/populate-db/stringToSemiRandomNumber";
+import { describe, expect, it } from "vitest";
 
 describe("stringToSemiRandomNumber in case of getLockId usage", () => {
   it("lock id should be deterministic", async () => {

@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import {
   dummyApps,
   render,
@@ -6,9 +5,10 @@ import {
   tsRestClientWithApps,
   waitFor,
 } from "@__test__";
-import HomePage from "./HomePage.tsx";
-import userEvent from "@testing-library/user-event";
 import { APP_GRID_PAGE_SIZE } from "@config.ts";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it } from "vitest";
+import HomePage from "./HomePage.tsx";
 
 describe("HomePage filtering", () => {
   it("shows all apps by default", async () => {
@@ -36,8 +36,8 @@ describe("HomePage filtering", () => {
       expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument()
     );
     dummyApps.forEach(({ summary: app }) => {
-      if (app.badges?.includes("why2025")) {
-        expect(screen.getByText(app.name!)).toBeInTheDocument();
+      if (app.badges?.includes("why2025") && app.name) {
+        expect(screen.getByText(app.name)).toBeInTheDocument();
       } else if (app.name) {
         expect(screen.queryByText(app.name)).not.toBeInTheDocument();
       }
@@ -54,14 +54,16 @@ describe("HomePage filtering", () => {
     );
     await waitFor(() =>
       dummyApps.forEach(({ summary: app }) => {
-        if (app.categories?.includes("Silly")) {
+        if (app.categories?.includes("Silly") && app.name) {
           // Use a function matcher to be more flexible with text rendering
+          const name = app.name;
           expect(
-            screen.getByText((content) => content.includes(app.name!))
+            screen.getByText((content) => content.includes(name))
           ).toBeInTheDocument();
         } else if (app.name) {
+          const name = app.name;
           expect(
-            screen.queryByText((content) => content.includes(app.name!))
+            screen.queryByText((content) => content.includes(name))
           ).not.toBeInTheDocument();
         }
       })
@@ -81,8 +83,8 @@ describe("HomePage filtering", () => {
     dummyApps.forEach(({ summary: app }) => {
       const match =
         app.badges?.includes("why2025") && app.categories?.includes("Silly");
-      if (match) {
-        expect(screen.getByText(app.name!)).toBeInTheDocument();
+      if (match && app.name) {
+        expect(screen.getByText(app.name)).toBeInTheDocument();
       } else if (app.name) {
         expect(screen.queryByText(app.name)).not.toBeInTheDocument();
       }
@@ -92,7 +94,9 @@ describe("HomePage filtering", () => {
   it("filters apps by search query", async () => {
     render(<HomePage tsRestClient={tsRestClientWithApps(dummyApps)} />);
     // Wait for apps to load
-    await screen.findByText(dummyApps[0]!.summary.name!);
+    const firstAppName = dummyApps[0]?.summary.name;
+    expect(firstAppName).toBeDefined();
+    await screen.findByText(firstAppName as string);
     const searchBar = await screen.findByTestId("search-bar");
     // Type a partial name of the first app
     const searchTerm = "game";
@@ -103,7 +107,7 @@ describe("HomePage filtering", () => {
     await waitFor(() => {
       dummyApps.forEach(({ summary: app }) => {
         if (app.name?.toLowerCase().includes(searchTerm)) {
-          expect(screen.getByText(app.name!)).toBeInTheDocument();
+          expect(screen.getByText(app.name)).toBeInTheDocument();
         } else if (app.name) {
           expect(screen.queryByText(app.name)).not.toBeInTheDocument();
         }

@@ -1,5 +1,5 @@
 import {
-  AppMetadataJSON,
+  type AppMetadataJSON,
   appMetadataJSONSchema,
 } from "@shared/domain/readModels/project/AppMetadataJSON";
 

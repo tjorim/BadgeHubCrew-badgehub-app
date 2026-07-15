@@ -1,7 +1,7 @@
-import { config } from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { getAndAssertEnv, getSharedConfig } from "@shared/config/sharedConfig";
+import { config } from "dotenv";
 
 config();
 
@@ -28,18 +28,16 @@ export const KEYCLOAK_CLIENT_ID =
 export const BADGEHUB_API_BASE_URL = sharedConfig.BADGEHUB_API_BASE_URL;
 export const KEYCLOAK_BASE_URL = sharedConfig.keycloakPublic.KEYCLOAK_BASE_URL;
 export const KEYCLOAK_REALM = sharedConfig.keycloakPublic.KEYCLOAK_REALM;
-export const KEYCLOAK_REALM_ISSUER_URL =
-  KEYCLOAK_BASE_URL + "/realms/" + KEYCLOAK_REALM;
+export const KEYCLOAK_REALM_ISSUER_URL = `${KEYCLOAK_BASE_URL}/realms/${KEYCLOAK_REALM}`;
 export const IS_DEV_ENVIRONMENT = sharedConfig.isDevEnvironment;
 
-export const KEYCLOAK_CERTS_URL =
-  KEYCLOAK_REALM_ISSUER_URL + "/protocol/openid-connect/certs";
+export const KEYCLOAK_CERTS_URL = `${KEYCLOAK_REALM_ISSUER_URL}/protocol/openid-connect/certs`;
 
 export * from "@shared/config/sharedConfig";
 
 // MQTT
 export const MQTT_CONFIG =
-  (process.env["MQTT_SERVER"] && {
+  (process.env.MQTT_SERVER && {
     MQTT_SERVER: getAndAssertEnv("MQTT_SERVER"),
     MQTT_USER: getAndAssertEnv("MQTT_USER"),
     MQTT_PASSWD: getAndAssertEnv("MQTT_PASSWD"),

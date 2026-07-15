@@ -3,12 +3,12 @@
 <head>
   <script type="module">
   const viteBase = `${window.location.protocol}//${window.location.hostname}:5173`;
-  const { injectIntoGlobalHook } = await import(viteBase + '/@react-refresh');
+  const { injectIntoGlobalHook } = await import(`${viteBase}/@react-refresh`);
   injectIntoGlobalHook(window);
   window.$RefreshReg$ = () => {};
   window.$RefreshSig$ = () => (type) => type;
-  await import(viteBase + '/@vite/client');
-  await import(viteBase + '/src/main.tsx');
+  await import(`${viteBase}/@vite/client`);
+  await import(`${viteBase}/src/main.tsx`);
   </script>
 
   <meta charset="UTF-8" />

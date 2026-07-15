@@ -1,10 +1,10 @@
-import userEvent from "@testing-library/user-event";
-import React from "react";
 import { SessionContext } from "@sharedComponents/keycloakSession/SessionContext.tsx";
-import Keycloak from "keycloak-js";
-import { vitest } from "vitest";
-import { MemoryRouter } from "react-router-dom";
 import { render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import type Keycloak from "keycloak-js";
+import type React from "react";
+import { MemoryRouter } from "react-router-dom";
+import { vitest } from "vitest";
 
 const TestSessionProvider: React.FC<{ children: React.ReactNode }> = ({
   children,

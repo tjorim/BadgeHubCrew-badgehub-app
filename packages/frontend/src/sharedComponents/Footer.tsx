@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 const Footer: React.FC = () => {
   const year = new Date().getFullYear();
@@ -10,6 +10,7 @@ const Footer: React.FC = () => {
             href="https://github.com/BadgeHubCrew/badgehub-app/blob/main/README.md"
             target="_blank"
             className="link link-hover text-sm"
+            rel="noopener"
           >
             About
           </a>
@@ -17,6 +18,7 @@ const Footer: React.FC = () => {
             href="https://github.com/badgehubcrew/badgehub-app/issues"
             target="_blank"
             className="link link-hover text-sm"
+            rel="noopener"
           >
             Contact
           </a>

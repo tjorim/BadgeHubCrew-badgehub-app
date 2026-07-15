@@ -1,5 +1,5 @@
-import path from "path";
-import { stringToSemiRandomNumber } from "@dev/populate-db/stringToSemiRandomNumber";
+import path from "node:path";
+import type { TimestampTZ } from "@db/models/DBTypes";
 import {
   CATEGORY_NAMES,
   ICON_COUNT,
@@ -9,11 +9,11 @@ import {
   TWENTY_FOUR_HOURS_IN_MS,
   USERS,
 } from "@dev/populate-db/fixtures";
-import sharp from "sharp";
+import { stringToSemiRandomNumber } from "@dev/populate-db/stringToSemiRandomNumber";
 import { getBadgeSlugs } from "@shared/domain/readModels/Badge";
-import { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON";
-import { TimestampTZ } from "@db/models/DBTypes";
-import { ISODateString } from "@shared/domain/readModels/ISODateString";
+import type { ISODateString } from "@shared/domain/readModels/ISODateString";
+import type { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON";
+import sharp from "sharp";
 
 export const getSemiRandomDates = async (stringToDigest: string) => {
   const semiRandomNumber = await stringToSemiRandomNumber(stringToDigest);
@@ -50,7 +50,10 @@ function getSemiRandomElementSelection<T>(
   const nbItems = Math.max(semiRandomNumber % max_items, 1);
   const selection = new Set<T>();
   for (let i = 0; i < nbItems; i++) {
-    selection.add(items[(i + semiRandomNumber) % items.length]!);
+    const item = items[(i + semiRandomNumber) % items.length];
+    if (item !== undefined) {
+      selection.add(item);
+    }
   }
   return [...selection];
 }
@@ -67,7 +70,7 @@ export async function createSemiRandomAppdata(
 
   const { created_at, updated_at } = await getSemiRandomDates(projectName);
 
-  let iconBuffer: Buffer | undefined = undefined;
+  let iconBuffer: Buffer | undefined;
 
   // Pick a semirandom icon
   const iconIndex = semiRandomNumber % (ICON_COUNT + 4);
@@ -79,7 +82,7 @@ export async function createSemiRandomAppdata(
     // Read icon file from disk
     try {
       iconBuffer = await sharp(iconFullPath).resize(64, 64).toBuffer();
-    } catch (e) {
+    } catch (_e) {
       console.warn(`Could not read icon file: ${iconFullPath}`);
     }
   }
@@ -99,7 +102,7 @@ export async function createSemiRandomAppdata(
     name: projectName,
     description,
     long_description: longDescription,
-    author: USERS[userId]!,
+    author: USERS[userId] ?? "unknown",
     license_type: "MIT",
     badges,
     categories,
