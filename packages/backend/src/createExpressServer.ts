@@ -20,11 +20,23 @@ import * as fs from "node:fs";
 import { getSharedConfig } from "@shared/config/sharedConfig";
 
 function getIndexHtmlContents() {
-  const original = fs.readFileSync(
-    path.join(FRONTEND_DIST_DIR, "index.html"),
-    // TODO replace indexHtmlContents
-    { encoding: "utf8" }
-  );
+  const indexPath = path.join(FRONTEND_DIST_DIR, "index.html");
+  let original: string;
+  try {
+    original = fs.readFileSync(indexPath, { encoding: "utf8" });
+  } catch (err: any) {
+    if (err.code === "ENOENT") {
+      // Fallback for test runs or when frontend hasn't been built yet.
+      // Prefer the indirect-dev template (used by frontend dev mode) if available.
+      const indirectDevPath = path.join(
+        path.dirname(FRONTEND_DIST_DIR),
+        "index-indirect-dev.html"
+      );
+      original = fs.readFileSync(indirectDevPath, { encoding: "utf8" });
+    } else {
+      throw err;
+    }
+  }
   return original.replace(
     `<!-- __SHARED_CONFIG_SCRIPT_PLACEHOLDER__ -->`,
     `<script type="application/javascript">globalThis.__SHARED_CONFIG__ = ${JSON.stringify(getSharedConfig())};</script>
