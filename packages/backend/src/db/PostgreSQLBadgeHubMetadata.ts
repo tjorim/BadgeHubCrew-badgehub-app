@@ -1,61 +1,63 @@
 // noinspection SqlResolve
 
-import {
-  detailedProjectSchema,
-  ProjectCore,
-  ProjectDetails,
-  ProjectSlug,
-} from "@shared/domain/readModels/project/ProjectDetails";
-import { User } from "@shared/domain/readModels/project/User";
-import {
-  LatestOrDraftAlias,
-  RevisionNumberOrAlias,
-  Version,
-} from "@shared/domain/readModels/project/Version";
-import { Pool } from "pg";
+import path from "node:path";
 import { getPool } from "@db/connectionPool";
-import { DBInsertProject, DBProject } from "@db/models/project/DBProject";
-import sql, { join, raw, Sql } from "sql-template-tag";
-import { getEntriesWithDefinedValues } from "@shared/util/objectEntries";
+import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
+import type { TimestampTZ } from "@db/models/DBTypes";
+import type {
+  DBDatedData,
+  DBSoftDeletable,
+} from "@db/models/project/DBDatedData";
 import {
-  getBaseSelectProjectQuery,
-  ProjectQueryResponse,
-  projectQueryResponseToReadModel,
-} from "@db/sqlHelpers/projectQuery";
+  type DBFileMetadata,
+  fileColumnsForCopying,
+} from "@db/models/project/DBFileMetadata";
+import type { DBInsertProject, DBProject } from "@db/models/project/DBProject";
+import type { DBProjectApiKey } from "@db/models/project/DBProjectApiKey";
+import type { DBVersion } from "@db/models/project/DBVersion";
 import {
   convertDatedData,
   stripDatedData,
   timestampTZToISODateString,
 } from "@db/sqlHelpers/dbDates";
-import { DBVersion } from "@db/models/project/DBVersion";
-
 import {
   assertValidColumKey,
   getInsertKeysAndValuesSql,
 } from "@db/sqlHelpers/objectToSQL";
-import { UploadedFile } from "@shared/domain/UploadedFile";
-import path from "node:path";
 import {
-  DBFileMetadata,
-  fileColumnsForCopying,
-} from "@db/models/project/DBFileMetadata";
-import { FileMetadata } from "@shared/domain/readModels/project/FileMetadata";
-import { DBDatedData, DBSoftDeletable } from "@db/models/project/DBDatedData";
-import { TimestampTZ } from "@db/models/DBTypes";
-import { VALID_SLUG_REGEX } from "@shared/contracts/slug";
+  getBaseSelectProjectQuery,
+  type ProjectQueryResponse,
+  projectQueryResponseToReadModel,
+} from "@db/sqlHelpers/projectQuery";
 import { ProjectAlreadyExistsError, UserError } from "@domain/UserError";
+import { VALID_SLUG_REGEX } from "@shared/contracts/slug";
+import { type BadgeSlug, getBadgeSlugs } from "@shared/domain/readModels/Badge";
+import type { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
 import {
-  CategoryName,
+  type CategoryName,
   getAllCategoryNames,
 } from "@shared/domain/readModels/project/Category";
-import { BadgeSlug, getBadgeSlugs } from "@shared/domain/readModels/Badge";
-import { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON";
-import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
-import { ProjectApiTokenMetadata } from "@shared/domain/readModels/project/ProjectApiToken";
-import { DBProjectApiKey } from "@db/models/project/DBProjectApiKey";
-import { BadgeHubStats } from "@shared/domain/readModels/BadgeHubStats";
-import { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries";
-import { OrderByOption } from "@shared/domain/readModels/project/ordering";
+import type { FileMetadata } from "@shared/domain/readModels/project/FileMetadata";
+import type { OrderByOption } from "@shared/domain/readModels/project/ordering";
+import type { ProjectApiTokenMetadata } from "@shared/domain/readModels/project/ProjectApiToken";
+import {
+  detailedProjectSchema,
+  type ProjectCore,
+  type ProjectDetails,
+  type ProjectSlug,
+} from "@shared/domain/readModels/project/ProjectDetails";
+import type { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries";
+import type { User } from "@shared/domain/readModels/project/User";
+import type {
+  LatestOrDraftAlias,
+  RevisionNumberOrAlias,
+  Version,
+} from "@shared/domain/readModels/project/Version";
+import type { UploadedFile } from "@shared/domain/UploadedFile";
+import type { WriteAppMetadataJSON } from "@shared/domain/writeModels/AppMetadataJSON";
+import { getEntriesWithDefinedValues } from "@shared/util/objectEntries";
+import type { Pool } from "pg";
+import sql, { join, raw, type Sql } from "sql-template-tag";
 
 const ONE_KILO = 1024;
 
@@ -66,7 +68,7 @@ function dbFileToFileMetadata(
 ): FileMetadata {
   const { image_width, image_height, version_id, ...dbFileWithoutVersionId } =
     dbFile;
-  const size_of_content = Number.parseInt(dbFile.size_of_content);
+  const size_of_content = Number.parseInt(dbFile.size_of_content, 10);
   const full_path = path.join(dbFile.dir, dbFile.name + dbFile.ext);
   const fileDownloadUrl = getFileDownloadUrl(
     project,
@@ -81,18 +83,18 @@ function dbFileToFileMetadata(
     size_of_content,
     url: fileDownloadUrl, // TODO profile files/sha endpoint and use that in the urls
     full_path,
-    size_formatted: (size_of_content / ONE_KILO).toFixed(2) + "KB",
+    size_formatted: `${(size_of_content / ONE_KILO).toFixed(2)}KB`,
   };
 }
 
-function getUpdateAssignmentsSql(changes: Object) {
+function getUpdateAssignmentsSql<T extends object>(changes: T) {
   const changeEntries = getEntriesWithDefinedValues(changes);
   if (!changeEntries.length) {
     return;
   }
   return join(
     changeEntries.map(
-      ([key, value]) => sql`${raw(assertValidColumKey(key))}
+      ([key, value]) => sql`${raw(assertValidColumKey(String(key)))}
       =
       ${value}`
     )
@@ -137,8 +139,6 @@ type ReportType = "install_count" | "launch_count" | "crash_count";
 
 export class PostgreSQLBadgeHubMetadata {
   private readonly pool: Pool = getPool();
-
-  constructor() {}
 
   async deleteDraftFile(slug: string, filePath: string): Promise<void> {
     const { dir, name, ext } = parsePath(filePath.split("/"));
@@ -368,7 +368,7 @@ export class PostgreSQLBadgeHubMetadata {
       return undefined;
     }
     const checkPublishedIfNotDraft =
-      versionRevision == "draft"
+      versionRevision === "draft"
         ? raw("")
         : raw("and p.latest_revision is not null");
     const dbProject = await this.pool
@@ -454,7 +454,7 @@ and v.app_metadata->'badges' @>
     }
 
     if (filter.slugs?.length) {
-      if (filter.slugs.length == 1) {
+      if (filter.slugs.length === 1) {
         query = sql`${query}
       and p.slug =
         ${filter.slugs[0]}`;
@@ -528,8 +528,7 @@ and v.app_metadata->'badges' @>
     const appMetadataUpdateQuery = sql`update versions
                                        set ${setters}
                                        where id = ${getVersionQuery(projectSlug, "draft")}`;
-    const queryResult = await this.pool.query(appMetadataUpdateQuery);
-    return queryResult as any;
+    await this.pool.query(appMetadataUpdateQuery);
   }
 
   async _getFilesMetadataForVersion(dbVersion: DBVersion) {

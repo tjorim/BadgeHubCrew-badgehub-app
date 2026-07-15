@@ -1,12 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@__test__";
+import { render, screen } from "@__test__";
+import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
+import { SessionContext } from "@sharedComponents/keycloakSession/SessionContext.tsx";
 import { render as rtlRender } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type Keycloak from "keycloak-js";
 import { MemoryRouter } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import AppCreationPage from "./AppCreationPage.tsx";
-import { SessionContext } from "@sharedComponents/keycloakSession/SessionContext.tsx";
-import Keycloak from "keycloak-js";
-import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
 
 const mockNavigate = vi.fn();
 
@@ -48,9 +48,7 @@ describe("AppCreationPage", () => {
 
   it("shows login message when user is not authenticated", () => {
     renderLoggedOut();
-    expect(
-      screen.getByText(/log in to create a project/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/log in to create a project/i)).toBeInTheDocument();
   });
 
   it("enables submit for valid slug values", async () => {
@@ -95,8 +93,6 @@ describe("AppCreationPage", () => {
     await user.type(screen.getByTestId("app-creation-slug-input"), "my_app");
     await user.click(screen.getByTestId("app-creation-submit-btn"));
 
-    expect(
-      await screen.findByText(/slug already exists/i)
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/slug already exists/i)).toBeInTheDocument();
   });
 });

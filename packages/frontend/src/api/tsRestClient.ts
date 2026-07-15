@@ -1,7 +1,7 @@
-import { initClient } from "@ts-rest/core";
 import { BADGHUB_API_V3_URL } from "@config.ts";
 import { tsRestApiContracts } from "@shared/contracts/restContracts.ts";
-import Keycloak from "keycloak-js";
+import { initClient } from "@ts-rest/core";
+import type Keycloak from "keycloak-js";
 
 export const publicTsRestClient = initClient(tsRestApiContracts, {
   baseUrl: BADGHUB_API_V3_URL,

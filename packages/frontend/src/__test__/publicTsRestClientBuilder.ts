@@ -1,11 +1,10 @@
-import { getProjectsQuerySchema } from "@shared/contracts/publicRestContracts.ts";
-import { publicTsRestClient as defaultTsRestClient } from "@api/tsRestClient.ts";
-import { DummyApp, dummyApps } from "@__test__/fixtures";
+import { type DummyApp, dummyApps } from "@__test__/fixtures";
 import { matchRoute } from "@__test__/routeContractMatch.ts";
+import type { publicTsRestClient as defaultTsRestClient } from "@api/tsRestClient.ts";
+import { getProjectsQuerySchema } from "@shared/contracts/publicRestContracts.ts";
 import { tsRestApiContracts } from "@shared/contracts/restContracts.ts";
-import { ApiFetcherArgs, initClient } from "@ts-rest/core";
-
-import { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries.ts";
+import type { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries.ts";
+import { type ApiFetcherArgs, initClient } from "@ts-rest/core";
 
 function parseProjectsQuery(rawQuery: unknown) {
   if (!rawQuery) return undefined;
@@ -42,10 +41,8 @@ export function tsRestClientWithApps(apps: DummyApp[] = dummyApps) {
         const badgeSlug = parsedQuery?.badge;
         const category = parsedQuery?.category;
         if (badgeSlug) {
-          filteredSummaries = filteredSummaries.filter(
-            (app) =>
-              app.badges &&
-              app.badges.map((b) => b.toLowerCase()).includes(badgeSlug)
+          filteredSummaries = filteredSummaries.filter((app) =>
+            app.badges?.map((b) => b.toLowerCase()).includes(badgeSlug)
           );
         }
         if (category) {

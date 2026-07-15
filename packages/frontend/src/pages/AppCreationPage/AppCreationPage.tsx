@@ -1,17 +1,16 @@
-import React, { useState } from "react";
-import PageLayout from "@sharedComponents/PageLayout.tsx";
-import AppCreationBreadcrumb from "./AppCreationBreadcrumb.tsx";
-import AppCreationBasicInfo from "./AppCreationBasicInfo.tsx";
-import AppCreationActions from "./AppCreationActions.tsx";
-import { VALID_SLUG_REGEX } from "@shared/contracts/slug.ts";
-import { useSession } from "@sharedComponents/keycloakSession/SessionContext.tsx";
-import {
-  getFreshAuthorizedTsRestClient,
-} from "@api/tsRestClient.ts";
-import { useNavigate } from "react-router-dom";
-import { PleaseLoginMessage } from "@sharedComponents/PleaseLoginMessage.tsx";
-import { assertDefined } from "@shared/util/assertions.ts";
+import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
 import { useTitle } from "@hooks/useTitle.ts";
+import { VALID_SLUG_REGEX } from "@shared/contracts/slug.ts";
+import { assertDefined } from "@shared/util/assertions.ts";
+import { useSession } from "@sharedComponents/keycloakSession/SessionContext.tsx";
+import PageLayout from "@sharedComponents/PageLayout.tsx";
+import { PleaseLoginMessage } from "@sharedComponents/PleaseLoginMessage.tsx";
+import type React from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AppCreationActions from "./AppCreationActions.tsx";
+import AppCreationBasicInfo from "./AppCreationBasicInfo.tsx";
+import AppCreationBreadcrumb from "./AppCreationBreadcrumb.tsx";
 
 export interface AppCreationFormData {
   slug: string;
@@ -74,9 +73,7 @@ const AppCreationPage: React.FC = () => {
   return (
     <PageLayout data-testid="app-creation-page">
       <AppCreationBreadcrumb />
-      <h1 className="text-3xl font-bold mb-6">
-        Create a New Project
-      </h1>
+      <h1 className="text-3xl font-bold mb-6">Create a New Project</h1>
       {!userIsLoggedIn ? (
         <PleaseLoginMessage whatToSee="create a project" />
       ) : (

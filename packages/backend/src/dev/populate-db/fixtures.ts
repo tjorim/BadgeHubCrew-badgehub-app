@@ -1,9 +1,9 @@
-import path from "path";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   getAdminOnlyCategoryNames,
   getAllCategoryNames,
 } from "@shared/domain/readModels/project/Category";
-import { fileURLToPath } from "url";
 
 export const PROJECT_NAMES = [
   "CodeCraft",
@@ -184,4 +184,4 @@ export const ICONS_ASSETS_PATH = path.resolve(__dirname, "./dummy-icons");
 
 export const BADGE_IDS = Array(50)
   .fill(0)
-  .map((_, i) => "badgeid" + i);
+  .map((_, i) => `badgeid${i}`);

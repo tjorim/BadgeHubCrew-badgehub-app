@@ -1,8 +1,8 @@
-import Keycloak from "keycloak-js";
-import { FileMetadata } from "@shared/domain/readModels/project/FileMetadata.ts";
-import { assertDefined } from "@shared/util/assertions.ts";
 import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
+import type { FileMetadata } from "@shared/domain/readModels/project/FileMetadata.ts";
+import { assertDefined } from "@shared/util/assertions.ts";
 import { extractFilename } from "@utils/fileUtils.ts";
+import type Keycloak from "keycloak-js";
 
 export async function downloadProjectFile(
   keycloak: Keycloak,

@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { render, screen } from "@__test__";
+import { describe, expect, it } from "vitest";
 import AppCreationBreadcrumb from "./AppCreationBreadcrumb.tsx";
 
 describe("AppCreationBreadcrumb", () => {

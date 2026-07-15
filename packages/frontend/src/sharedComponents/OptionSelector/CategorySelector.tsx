@@ -1,9 +1,9 @@
-import React from "react";
-import { OptionSelectorWithTitle } from "@sharedComponents/OptionSelector/OptionSelectorWithTitle.tsx";
 import {
-  CategoryName,
+  type CategoryName,
   getAllCategoryNames,
 } from "@shared/domain/readModels/project/Category.ts";
+import { OptionSelectorWithTitle } from "@sharedComponents/OptionSelector/OptionSelectorWithTitle.tsx";
+import type React from "react";
 
 export const CategorySelector: React.FC<{
   noValueSetName: string;

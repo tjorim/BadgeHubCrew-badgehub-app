@@ -1,5 +1,5 @@
-import React from "react";
 import Breadcrumb from "@sharedComponents/Breadcrumb.tsx";
+import type React from "react";
 
 const AppBreadcrumb: React.FC<{ projectName: string }> = ({ projectName }) => (
   <Breadcrumb

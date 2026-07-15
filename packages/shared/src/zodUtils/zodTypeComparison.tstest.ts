@@ -1,6 +1,7 @@
 // Example usage with a Zod schema
-import { z } from "zod/v3";
+
 import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
+import { z } from "zod/v3";
 
 type SubObject = {
   subProperty: string;
@@ -14,7 +15,7 @@ type Dog = {
   subObject: SubObject;
 };
 
-let subObjectSchema = z.object({
+const subObjectSchema = z.object({
   subProperty: z.string(),
   optionalSubProperty: z.string().optional(),
 });
@@ -28,7 +29,13 @@ const dogSchema = z.object({
 __tsCheckSame<Dog, Dog, z.infer<typeof dogSchema>>(true);
 
 // @ts-expect-error missing non-optional properties are detected with descriptive error
-__tsCheckSame<{}, {}, z.infer<typeof dogSchema>>(true);
+__tsCheckSame<
+  // biome-ignore lint/complexity/noBannedTypes: intentional empty object for type-level test
+  {},
+  // biome-ignore lint/complexity/noBannedTypes: intentional empty object for type-level test
+  {},
+  z.infer<typeof dogSchema>
+>(true);
 
 type DogMissingOptional = Omit<Dog, "optionalProperty">;
 

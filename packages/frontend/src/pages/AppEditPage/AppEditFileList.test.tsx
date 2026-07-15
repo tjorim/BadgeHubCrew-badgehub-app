@@ -1,14 +1,16 @@
-import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@__test__";
-import AppEditFileList from "./AppEditFileList.tsx";
-import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
 import { dummyApps } from "@__test__/fixtures";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import { describe, expect, it, vi } from "vitest";
+import AppEditFileList from "./AppEditFileList.tsx";
 
 vi.mock("./FileListItem.tsx", () => ({
   FileListItem: () => <li data-testid="file-list-item" />,
 }));
 
-const keycloak = { updateToken: vi.fn().mockResolvedValue(true) } as any;
+const keycloak = {
+  updateToken: vi.fn().mockResolvedValue(true),
+} as unknown as import("keycloak-js").default;
 
 const withFiles = (project: ProjectDetails, count: number): ProjectDetails => ({
   ...project,
@@ -33,7 +35,12 @@ const withFiles = (project: ProjectDetails, count: number): ProjectDetails => ({
 
 describe("AppEditFileList", () => {
   it("shows empty state when no files are present", () => {
-    const project = withFiles(dummyApps[0]!.details, 0);
+    const details = dummyApps[0]?.details;
+    expect(details).toBeDefined();
+    if (!details) {
+      throw new Error("Expected dummy project details");
+    }
+    const project = withFiles(details, 0);
     render(
       <AppEditFileList project={project} slug="demo" keycloak={keycloak} />
     );
@@ -44,7 +51,12 @@ describe("AppEditFileList", () => {
   });
 
   it("renders file list items when files exist", () => {
-    const project = withFiles(dummyApps[0]!.details, 2);
+    const details = dummyApps[0]?.details;
+    expect(details).toBeDefined();
+    if (!details) {
+      throw new Error("Expected dummy project details");
+    }
+    const project = withFiles(details, 2);
     render(
       <AppEditFileList project={project} slug="demo" keycloak={keycloak} />
     );

@@ -13,9 +13,8 @@ export const KEYCLOAK_CLIENT_ID =
 export const BADGEHUB_API_BASE_URL = sharedConfig.BADGEHUB_API_BASE_URL;
 export const KEYCLOAK_BASE_URL = sharedConfig.keycloakPublic.KEYCLOAK_BASE_URL;
 export const KEYCLOAK_REALM = sharedConfig.keycloakPublic.KEYCLOAK_REALM;
-export const KEYCLOAK_REALM_ISSUER_URL =
-  KEYCLOAK_BASE_URL + "/realms/" + KEYCLOAK_REALM;
+export const KEYCLOAK_REALM_ISSUER_URL = `${KEYCLOAK_BASE_URL}/realms/${KEYCLOAK_REALM}`;
 export const IS_DEV_ENVIRONMENT = sharedConfig.isDevEnvironment;
 
 export const BADGE_SLUGS = sharedConfig.BADGE_SLUGS;
-export const BADGHUB_API_V3_URL = BADGEHUB_API_BASE_URL + "/api/v3";
+export const BADGHUB_API_V3_URL = `${BADGEHUB_API_BASE_URL}/api/v3`;

@@ -1,15 +1,15 @@
-import Keycloak from "keycloak-js";
-import { useEffect, useRef, useState } from "react";
 import {
   BADGEHUB_FRONTEND_BASE_URL,
-  KEYCLOAK_REALM,
   KEYCLOAK_BASE_URL,
   KEYCLOAK_CLIENT_ID,
+  KEYCLOAK_REALM,
 } from "@config.ts";
 import {
   SessionContext,
-  User,
+  type User,
 } from "@sharedComponents/keycloakSession/SessionContext.tsx";
+import Keycloak from "keycloak-js";
+import { useEffect, useRef, useState } from "react";
 
 export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -58,7 +58,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Token refresh logic
   useEffect(() => {
-    if (!keycloak || !keycloak.authenticated) return;
+    if (!keycloak?.authenticated) return;
 
     // Set up token expiration handler
     keycloak.onTokenExpired = async () => {

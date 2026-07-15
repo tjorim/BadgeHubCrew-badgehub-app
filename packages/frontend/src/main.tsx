@@ -2,16 +2,15 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
 import "./index.css";
-import HomePage from "./pages/HomePage/HomePage.tsx";
-import AppDetailPage from "@pages/AppDetailPage/AppDetailPage.tsx";
-import AppEditPage from "@pages/AppEditPage/AppEditPage.tsx";
-import CreateProjectPage from "@pages/AppCreationPage/AppCreationPage.tsx";
-
-import { SessionProvider } from "@sharedComponents/keycloakSession/SessionProvider.tsx";
-import { TodoPage } from "@pages/TodoPage.tsx";
-import MyProjectsPage from "@pages/MyProjectsPage/MyProjectsPage.tsx";
 import { IS_DEV_ENVIRONMENT } from "@config.ts";
 import { useTitle } from "@hooks/useTitle.ts";
+import CreateProjectPage from "@pages/AppCreationPage/AppCreationPage.tsx";
+import AppDetailPage from "@pages/AppDetailPage/AppDetailPage.tsx";
+import AppEditPage from "@pages/AppEditPage/AppEditPage.tsx";
+import MyProjectsPage from "@pages/MyProjectsPage/MyProjectsPage.tsx";
+import { TodoPage } from "@pages/TodoPage.tsx";
+import { SessionProvider } from "@sharedComponents/keycloakSession/SessionProvider.tsx";
+import HomePage from "./pages/HomePage/HomePage.tsx";
 
 document.documentElement.setAttribute(
   "data-theme",
@@ -35,7 +34,12 @@ const AppEditPageWrapper = () => {
   return <AppEditPage slug={slug} />;
 };
 
-createRoot(document.getElementById("root")!).render(
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  throw new Error("Root element #root not found");
+}
+
+createRoot(rootElement).render(
   <StrictMode>
     <BrowserRouter>
       <SessionProvider>

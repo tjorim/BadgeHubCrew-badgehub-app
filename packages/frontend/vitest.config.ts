@@ -1,10 +1,8 @@
-import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
-import tsconfigPaths from "vite-tsconfig-paths";
-import type { CoverageOptions } from "vitest/node";
-import * as path from "node:path";
-import { isInDebugMode } from "./src/__test__/isInDebugMode";
 import { config } from "dotenv";
+import { defineConfig } from "vitest/config";
+import type { CoverageOptions } from "vitest/node";
+import { isInDebugMode } from "./src/__test__/isInDebugMode";
 
 const coverageConfig: CoverageOptions = {
   reporter: ["text", "json-summary", "json"],
@@ -13,12 +11,10 @@ const coverageConfig: CoverageOptions = {
 };
 
 export default defineConfig({
-  plugins: [...react(), tsconfigPaths()],
   resolve: {
-    alias: {
-      "@shared": path.resolve(__dirname, "../shared/src"),
-    },
+    tsconfigPaths: true,
   },
+  plugins: [...react()],
   test: {
     environment: "jsdom",
     globals: true,

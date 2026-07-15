@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@__test__";
+import { describe, expect, it, vi } from "vitest";
 import AppCreationBasicInfo from "./AppCreationBasicInfo.tsx";
 
 describe("AppCreationBasicInfo", () => {

@@ -1,7 +1,5 @@
 {
-  "extends": [
-    "../shared/tsconfig.json"
-  ],
+  "extends": ["../shared/tsconfig.json"],
   "compilerOptions": {
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -12,8 +10,5 @@
     "erasableSyntaxOnly": true,
     "noEmit": true
   },
-  "include": [
-    "vite.config.ts",
-    "vitest.config.ts"
-  ]
+  "include": ["vite.config.ts", "vitest.config.ts"]
 }

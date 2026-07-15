@@ -1,12 +1,12 @@
-import { AppMetadataJSON, appMetadataJSONSchema } from "./AppMetadataJSON";
-import { FileMetadata, fileMetadataSchema } from "./FileMetadata";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails";
-import { z } from "zod/v3";
-import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
 import {
-  ISODateString,
+  type ISODateString,
   isoDateStringSchema,
 } from "@shared/domain/readModels/ISODateString";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails";
+import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
+import { z } from "zod/v3";
+import { type AppMetadataJSON, appMetadataJSONSchema } from "./AppMetadataJSON";
+import { type FileMetadata, fileMetadataSchema } from "./FileMetadata";
 
 export type LatestVersionAlias = "latest";
 type DraftVersionAlias = "draft";

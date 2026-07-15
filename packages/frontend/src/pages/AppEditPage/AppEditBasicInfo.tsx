@@ -1,6 +1,6 @@
-import React from "react";
-import { ProjectEditFormData } from "@pages/AppEditPage/ProjectEditFormData.ts";
+import type { ProjectEditFormData } from "@pages/AppEditPage/ProjectEditFormData.ts";
 import GitLink from "@sharedComponents/GitLink.tsx";
+import type React from "react";
 
 /**
  * A component for editing the basic information of an application.
@@ -119,7 +119,10 @@ const AppEditBasicInfo: React.FC<{
 
           {/* Hidden Toggle */}
           <div className="form-control">
-            <label htmlFor="hidden" className="label cursor-pointer justify-start gap-3">
+            <label
+              htmlFor="hidden"
+              className="label cursor-pointer justify-start gap-3"
+            >
               <input
                 type="checkbox"
                 id="hidden"

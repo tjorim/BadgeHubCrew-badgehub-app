@@ -1,4 +1,3 @@
-import { describe, expect, it, vi } from "vitest";
 import {
   dummyApps,
   render,
@@ -7,6 +6,7 @@ import {
   tsRestClientWithError,
   waitFor,
 } from "@__test__";
+import { describe, expect, it, vi } from "vitest";
 import HomePage from "./HomePage.tsx";
 
 describe("HomePage", () => {

@@ -1,5 +1,5 @@
-import { ApiFetcherArgs } from "@ts-rest/core";
-import { tsRestApiContracts } from "@shared/contracts/restContracts.ts";
+import type { tsRestApiContracts } from "@shared/contracts/restContracts.ts";
+import type { ApiFetcherArgs } from "@ts-rest/core";
 
 function getPathValues(
   path: string,

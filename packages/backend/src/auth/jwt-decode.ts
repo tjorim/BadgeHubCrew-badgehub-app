@@ -1,7 +1,7 @@
 import { ErrorType, NotAuthenticatedError } from "@error";
+import type { User } from "@shared/domain/readModels/project/User";
+import type { NextFunction, Request, Response } from "express";
 import { decodeJwt } from "jose";
-import { NextFunction, Request, Response } from "express";
-import { User } from "@shared/domain/readModels/project/User";
 
 export type UserDataInRequest = Pick<User, "idp_user_id">;
 
@@ -31,7 +31,7 @@ const decodeTokenWithErrorHandling = (token: string) => {
       "JWT:decodeTokenWithErrorHandling: Unable to decodeJwt JWT token, error:",
       e
     );
-    throw NotAuthenticatedError("Unable to decode JWT token: " + e);
+    throw NotAuthenticatedError(`Unable to decode JWT token: ${e}`);
   }
 };
 
@@ -81,11 +81,11 @@ const addAuthenticationMiddleware = (
 
 const handleError = (err: unknown, res: Response) => {
   if (err && typeof err === "object" && "name" in err && "message" in err) {
-    if (err.name == ErrorType.NotAuthorized) {
+    if (err.name === ErrorType.NotAuthorized) {
       res.status(403).json({ reason: err.message });
       return;
     }
-    if (err.name == ErrorType.NotAuthenticated) {
+    if (err.name === ErrorType.NotAuthenticated) {
       res.status(401).json({ reason: err.message });
       return;
     }

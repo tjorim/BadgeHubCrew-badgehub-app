@@ -6,14 +6,14 @@ interface UseAsyncResourceOptions {
 
 export const useAsyncResource = <T>(
   loader: () => Promise<T>,
-  deps: React.DependencyList,
+  _deps: React.DependencyList,
   options: UseAsyncResourceOptions = {}
 ) => {
   const { enabled = true } = options;
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState<boolean>(enabled);
-  const [reloadToken, setReloadToken] = useState(0);
+  const [_reloadToken, setReloadToken] = useState(0);
 
   const reload = useCallback(() => {
     setReloadToken((token) => token + 1);
@@ -49,7 +49,7 @@ export const useAsyncResource = <T>(
     return () => {
       mounted = false;
     };
-  }, [enabled, reloadToken, ...deps]);
+  }, [enabled, loader]);
 
   return { data, error, loading, reload };
 };

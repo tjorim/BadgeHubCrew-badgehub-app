@@ -14,28 +14,29 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+      - name: Enable Corepack
+        run: corepack enable
       - name: Install dependencies
-        run: |
-          npm ci
+        run: pnpm install --frozen-lockfile
       - name: Run check:ts
         run: |
-          npm run check:ts
+          pnpm run check:ts
       - name: Run lint
         run: |
-          npm run lint
+          pnpm run lint
       - name: Run build
         run: |
-          npm run build
+          pnpm run build
       - name: Start environment
         run: |
-          cp packages/backend/.env.test packages/backend/.env 
-          npm run test-db:up --workspace=packages/backend -- --wait
+          cp packages/backend/.env.test packages/backend/.env
+          pnpm --filter badgehub-api run test-db:up
       - name: Populate the DB with test data
         run: |
-          npm run repopulate-db --workspace=packages/backend
+          pnpm --filter badgehub-api run repopulate-db
       - name: Run test
         run: |
-          npm run test
+          pnpm run test --coverage
       - name: Report Coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2

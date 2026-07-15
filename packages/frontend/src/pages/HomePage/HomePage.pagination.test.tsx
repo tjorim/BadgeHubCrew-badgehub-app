@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import {
   dummyApps,
   fireEvent,
@@ -7,6 +6,7 @@ import {
   tsRestClientWithApps,
   waitFor,
 } from "@__test__";
+import { describe, expect, it } from "vitest";
 import HomePage from "./HomePage.tsx";
 
 describe("HomePage Pagination", () => {

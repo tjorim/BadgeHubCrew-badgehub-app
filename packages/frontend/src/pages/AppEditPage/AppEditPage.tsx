@@ -1,16 +1,20 @@
-import React, { useState } from "react";
 import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
+import {
+  type PossiblyStaleProject,
+  useDraftProject,
+} from "@hooks/useDraftProject.ts";
+import type { ProjectEditFormData } from "@pages/AppEditPage/ProjectEditFormData.ts";
+import type { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON.ts";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import type { VariantJSON } from "@shared/domain/readModels/project/VariantJSON.ts";
+import { assertDefined } from "@shared/util/assertions.ts";
+import { useSession } from "@sharedComponents/keycloakSession/SessionContext.tsx";
 import PageLayout from "@sharedComponents/PageLayout.tsx";
+import type React from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AppEditForm from "./AppEditForm.tsx";
 import AppEditStateView from "./AppEditStateView.tsx";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
-import { ProjectEditFormData } from "@pages/AppEditPage/ProjectEditFormData.ts";
-import { useSession } from "@sharedComponents/keycloakSession/SessionContext.tsx";
-import { AppMetadataJSON } from "@shared/domain/readModels/project/AppMetadataJSON.ts";
-import { useNavigate } from "react-router-dom";
-import { VariantJSON } from "@shared/domain/readModels/project/VariantJSON.ts";
-import { assertDefined } from "@shared/util/assertions.ts";
-import { useDraftProject, PossiblyStaleProject } from "@hooks/useDraftProject.ts";
 
 function getAndEnsureApplication(newProjectData: ProjectDetails): VariantJSON {
   const application: VariantJSON =
@@ -104,9 +108,7 @@ const AppEditPage: React.FC<{
 
   const handleDeleteFile = async (filePath: string) => {
     assertDefined(keycloak);
-    await (
-      await getFreshAuthorizedTsRestClient(keycloak)
-    ).deleteDraftFile({
+    await (await getFreshAuthorizedTsRestClient(keycloak)).deleteDraftFile({
       params: { slug, filePath },
     });
     setProject((p) => {
@@ -238,10 +240,7 @@ const AppEditPage: React.FC<{
     <PageLayout data-testid="app-edit-page">
       <AppEditStateView
         loading={loading}
-        error={
-          error ??
-          (!project || !appMetadata ? "not_found" : null)
-        }
+        error={error ?? (!project || !appMetadata ? "not_found" : null)}
         onLogin={() => keycloak?.login()}
       >
         {project && appMetadata && keycloak && (

@@ -1,6 +1,6 @@
-import { z } from "zod/v3";
+import type { ProjectSlug } from "@shared/domain/readModels/project/ProjectDetails";
 import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
-import { ProjectSlug } from "@shared/domain/readModels/project/ProjectDetails";
+import { z } from "zod/v3";
 
 export type ProjectLatestRevision = {
   slug: ProjectSlug;

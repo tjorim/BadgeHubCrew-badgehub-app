@@ -1,8 +1,6 @@
-import { useCallback } from "react";
-import {
-  publicTsRestClient as defaultTsRestClient,
-} from "@api/tsRestClient.ts";
+import { publicTsRestClient as defaultTsRestClient } from "@api/tsRestClient.ts";
 import type { AppFetcher } from "@sharedComponents/AppGridWithFilterAndPagination.tsx";
+import { useCallback } from "react";
 
 export const useProjectSummariesFetcher = (
   tsRestClient: typeof defaultTsRestClient = defaultTsRestClient

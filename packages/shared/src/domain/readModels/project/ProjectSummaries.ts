@@ -1,18 +1,18 @@
-import { z } from "zod";
+import type { BadgeSlug } from "@shared/domain/readModels/Badge";
 import {
-  CategoryName,
+  type ISODateString,
+  isoDateStringSchema,
+} from "@shared/domain/readModels/ISODateString";
+import {
+  type CategoryName,
   categoryNameSchema,
 } from "@shared/domain/readModels/project/Category";
-import { BadgeSlug } from "@shared/domain/readModels/Badge";
 import {
-  ProjectCore,
+  type ProjectCore,
   projectCoreSchema,
 } from "@shared/domain/readModels/project/ProjectDetails";
 import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
-import {
-  ISODateString,
-  isoDateStringSchema,
-} from "@shared/domain/readModels/ISODateString";
+import { z } from "zod";
 
 export interface ProjectSummary extends ProjectCore {
   // Computed

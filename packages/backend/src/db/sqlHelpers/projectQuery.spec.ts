@@ -1,9 +1,8 @@
-import { describe, expect, test } from "vitest";
-
 import {
-  ProjectQueryResponse,
+  type ProjectQueryResponse,
   projectQueryResponseToReadModel,
 } from "@db/sqlHelpers/projectQuery";
+import { describe, expect, test } from "vitest";
 
 describe("projectQueryResponseToReadModel", () => {
   test("includes the metadata version in project summaries", () => {

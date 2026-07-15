@@ -1,5 +1,3 @@
-import React from "react";
-
 export const BadgeHubIcon = () => (
   <svg
     version="1.1"
@@ -12,6 +10,7 @@ export const BadgeHubIcon = () => (
     viewBox="0 0 1024 976"
     enableBackground="new 0 0 1024 976"
     xmlSpace="preserve"
+    aria-hidden="true"
   >
     <path
       fill="currentColor"

@@ -1,11 +1,11 @@
+import type { ImageDimensions } from "@domain/ImageDimensions";
+import type { UploadedFile } from "@shared/domain/UploadedFile";
 import { encode } from "blurhash";
 import sharp from "sharp";
-import { UploadedFile } from "@shared/domain/UploadedFile";
-import { ImageDimensions } from "@domain/ImageDimensions";
 
 export async function getImageProps(
   typedFile: UploadedFile
-): Promise<ImageDimensions | {}> {
+): Promise<ImageDimensions | Record<string, never>> {
   let image_width: number | undefined;
   let image_height: number | undefined;
 

@@ -1,6 +1,5 @@
-import { describe, expect, it } from "vitest";
-
 import { createSwaggerDoc } from "@createSwaggerDoc";
+import { describe, expect, it } from "vitest";
 
 const swaggerDoc = createSwaggerDoc();
 

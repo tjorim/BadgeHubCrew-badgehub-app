@@ -6,7 +6,7 @@ enum ErrorType {
 class BadgeHubApiError extends Error {
   override name: ErrorType;
   override message: string;
-  override cause: any;
+  override cause: unknown;
 
   constructor({
     name,
@@ -15,7 +15,7 @@ class BadgeHubApiError extends Error {
   }: {
     name: ErrorType;
     message: string;
-    cause?: any;
+    cause?: unknown;
   }) {
     super();
     this.name = name;
@@ -37,8 +37,8 @@ const NotAuthorizedError = (
 };
 
 export {
-  ErrorType,
   BadgeHubApiError,
-  NotAuthorizedError,
+  ErrorType,
   NotAuthenticatedError,
+  NotAuthorizedError,
 };

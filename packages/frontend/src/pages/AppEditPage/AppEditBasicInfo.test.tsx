@@ -1,9 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@__test__";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
+import { describe, expect, it, vi } from "vitest";
 import AppEditBasicInfo from "./AppEditBasicInfo.tsx";
 import type { ProjectEditFormData } from "./ProjectEditFormData.ts";
-import React, { useState } from "react";
 
 const baseForm: ProjectEditFormData = {
   name: "Demo",
@@ -82,9 +82,16 @@ describe("AppEditBasicInfo", () => {
     onChange.mockClear();
 
     await user.clear(screen.getByLabelText(/long description/i));
-    await user.type(screen.getByLabelText(/long description/i), "New Long Desc");
-    expect(screen.getByLabelText(/long description/i)).toHaveValue("New Long Desc");
-    expect(onChange).toHaveBeenLastCalledWith({ long_description: "New Long Desc" });
+    await user.type(
+      screen.getByLabelText(/long description/i),
+      "New Long Desc"
+    );
+    expect(screen.getByLabelText(/long description/i)).toHaveValue(
+      "New Long Desc"
+    );
+    expect(onChange).toHaveBeenLastCalledWith({
+      long_description: "New Long Desc",
+    });
     onChange.mockClear();
 
     await user.click(screen.getByLabelText(/hidden/i));

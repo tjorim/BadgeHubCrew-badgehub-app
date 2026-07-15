@@ -1,5 +1,5 @@
-import { MLink } from "@sharedComponents/MLink.tsx";
 import { REPO_URL } from "@config.ts";
+import { MLink } from "@sharedComponents/MLink.tsx";
 
 export const TodoPage = () => (
   <div style={{ textAlign: "center", marginTop: "4rem", fontSize: "1.5rem" }}>

@@ -1,17 +1,8 @@
-import { Version, versionSchema } from "./Version";
-import { User } from "./User";
-import { DatedData, datedDataSchema } from "./DatedData";
-import { BadgeSlug } from "../Badge";
-import {
-  CategoryName,
-  categoryNameSchema,
-} from "@shared/domain/readModels/project/Category";
-import { z } from "zod/v3";
 import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
-import {
-  ProjectSummary,
-  projectSummarySchema,
-} from "@shared/domain/readModels/project/ProjectSummaries";
+import { z } from "zod/v3";
+import { type DatedData, datedDataSchema } from "./DatedData";
+import type { User } from "./User";
+import { type Version, versionSchema } from "./Version";
 
 export type ProjectStatusName =
   | "working"

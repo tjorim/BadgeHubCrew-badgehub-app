@@ -1,16 +1,15 @@
-import moment from "moment";
-import { DBProject } from "@db/models/project/DBProject";
-import { DBVersion } from "@db/models/project/DBVersion";
-import sql, { raw } from "sql-template-tag";
-import { LatestOrDraftAlias } from "@shared/domain/readModels/project/Version";
 import { getFileDownloadUrl } from "@db/getFileDownloadUrl";
+import type { DBProjectInstallReport } from "@db/models/DBReporting";
+import type { DBProject } from "@db/models/project/DBProject";
+import type { DBVersion } from "@db/models/project/DBVersion";
+import { timestampTZToISODateString } from "@db/sqlHelpers/dbDates";
 import {
-  IconMapWithUrls,
-  ProjectSummary,
+  type IconMapWithUrls,
+  type ProjectSummary,
   projectSummarySchema,
 } from "@shared/domain/readModels/project/ProjectSummaries";
-import { DBProjectInstallReport } from "@db/models/DBReporting";
-import { timestampTZToISODateString } from "@db/sqlHelpers/dbDates";
+import type { LatestOrDraftAlias } from "@shared/domain/readModels/project/Version";
+import sql, { raw } from "sql-template-tag";
 
 export function getBaseSelectProjectQuery(
   revision: LatestOrDraftAlias = "latest"
@@ -43,7 +42,7 @@ export const projectQueryResponseToReadModel = (
     description: appMetadata.description,
     installs:
       (enrichedDBProject.distinct_installs &&
-        parseInt(enrichedDBProject.distinct_installs)) ||
+        parseInt(enrichedDBProject.distinct_installs, 10)) ||
       0,
     license_type: appMetadata.license_type,
     name: appMetadata.name ?? enrichedDBProject.slug,

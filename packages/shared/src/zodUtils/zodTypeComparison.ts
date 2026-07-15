@@ -3,6 +3,6 @@ type EqualTypes<X, Y> =
     ? true
     : false;
 
-export const __tsCheckSame = <T1, T1_REPEAT extends T2, T2 extends T1>(
-  value: EqualTypes<T1, T2>
+export const __tsCheckSame = <T1, _T1_REPEAT extends T2, T2 extends T1>(
+  _value: EqualTypes<T1, T2>
 ) => undefined;

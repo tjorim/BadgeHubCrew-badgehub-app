@@ -1,9 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@__test__";
-import userEvent from "@testing-library/user-event";
-import { FileListItem } from "./FileListItem.tsx";
-import type { FileMetadata } from "@shared/domain/readModels/project/FileMetadata.ts";
 import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
+import type { FileMetadata } from "@shared/domain/readModels/project/FileMetadata.ts";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { FileListItem } from "./FileListItem.tsx";
 
 vi.mock("@api/tsRestClient.ts", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@api/tsRestClient.ts")>();
@@ -13,7 +13,9 @@ vi.mock("@api/tsRestClient.ts", async (importOriginal) => {
   };
 });
 
-const keycloak = { updateToken: vi.fn().mockResolvedValue(true) } as any;
+const keycloak = {
+  updateToken: vi.fn().mockResolvedValue(true),
+} as unknown as import("keycloak-js").default;
 
 const baseFile: FileMetadata = {
   full_path: "main.py",

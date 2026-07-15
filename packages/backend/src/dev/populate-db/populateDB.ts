@@ -1,4 +1,3 @@
-import pg from "pg";
 import {
   POSTGRES_DB,
   POSTGRES_HOST,
@@ -6,18 +5,18 @@ import {
   POSTGRES_PORT,
   POSTGRES_USER,
 } from "@config";
-import sql, { raw } from "sql-template-tag";
-import { BadgeHubData } from "@domain/BadgeHubData";
-import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
 import { PostgreSQLBadgeHubFiles } from "@db/PostgreSQLBadgeHubFiles";
-import { stringToSemiRandomNumber } from "@dev/populate-db/stringToSemiRandomNumber";
-
-import { BADGE_IDS, PROJECT_NAMES, USERS } from "@dev/populate-db/fixtures";
+import { PostgreSQLBadgeHubMetadata } from "@db/PostgreSQLBadgeHubMetadata";
 import {
   createSemiRandomAppdata,
   get1DayAfterSemiRandomUpdatedAt,
   getSemiRandomDates,
 } from "@dev/populate-db/createSemiRandomAppdata";
+import { BADGE_IDS, PROJECT_NAMES, USERS } from "@dev/populate-db/fixtures";
+import { stringToSemiRandomNumber } from "@dev/populate-db/stringToSemiRandomNumber";
+import { BadgeHubData } from "@domain/BadgeHubData";
+import pg from "pg";
+import sql, { raw } from "sql-template-tag";
 
 async function reportSomeDownloads(
   badgeHubData: BadgeHubData,
@@ -28,12 +27,16 @@ async function reportSomeDownloads(
     .map((projectName) => projectName.toLowerCase());
   const nbDownloads = 500;
   for (let i = 0; i < nbDownloads; i++) {
-    const semiRandomIndex = await stringToSemiRandomNumber("download" + i);
-    await badgeHubData.reportInstall(
-      projectsWithDownloads[semiRandomIndex % projectsWithDownloads.length]!,
-      1,
-      { id: BADGE_IDS[i % BADGE_IDS.length >> 2] + "-v1" }
-    );
+    const semiRandomIndex = await stringToSemiRandomNumber(`download${i}`);
+    const projectSlug =
+      projectsWithDownloads[semiRandomIndex % projectsWithDownloads.length];
+    const badgeId = BADGE_IDS[(i % BADGE_IDS.length) >> 2];
+    if (!projectSlug || !badgeId) {
+      continue;
+    }
+    await badgeHubData.reportInstall(projectSlug, 1, {
+      id: `${badgeId}-v1`,
+    });
   }
   await badgeHubData.refreshReports();
 }
@@ -171,7 +174,10 @@ async function insertProjects(badgeHubData: BadgeHubData) {
   for (const projectName of PROJECT_NAMES) {
     const semiRandomNumber = await stringToSemiRandomNumber(projectName);
     const slug = projectName.toLowerCase();
-    const userName = USERS[semiRandomNumber % USERS.length]!;
+    const userName = USERS[semiRandomNumber % USERS.length];
+    if (!userName) {
+      throw new Error(`No user found for project ${projectName}`);
+    }
 
     const { created_at, updated_at } = await getSemiRandomDates(projectName);
 

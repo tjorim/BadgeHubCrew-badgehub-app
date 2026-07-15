@@ -1,9 +1,9 @@
-import React from "react";
-import { BadgeSlug } from "@shared/domain/readModels/Badge.ts";
-import { CategorySelector } from "@sharedComponents/OptionSelector/CategorySelector.tsx";
+import type { BadgeSlug } from "@shared/domain/readModels/Badge.ts";
+import type { CategoryName } from "@shared/domain/readModels/project/Category.ts";
 import { BadgeSelector } from "@sharedComponents/OptionSelector/BadgeSelector.tsx";
+import { CategorySelector } from "@sharedComponents/OptionSelector/CategorySelector.tsx";
 import { OptionSelectorWithTitle } from "@sharedComponents/OptionSelector/OptionSelectorWithTitle.tsx";
-import { CategoryName } from "@shared/domain/readModels/project/Category.ts";
+import type React from "react";
 
 export type SortOption = "mostInstalled" | undefined;
 
@@ -64,6 +64,7 @@ const Filters: React.FC<FiltersProps> = ({
               className="h-4 w-4 mr-2"
               fill="currentColor"
               viewBox="0 0 20 20"
+              aria-hidden="true"
             >
               <path d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L13 10.414V15a1 1 0 01-.293.707l-2 2A1 1 0 019 17v-6.586L4.293 6.707A1 1 0 014 6V3z" />
             </svg>

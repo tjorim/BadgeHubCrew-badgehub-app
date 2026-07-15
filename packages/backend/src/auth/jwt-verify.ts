@@ -1,12 +1,14 @@
-import { createRemoteJWKSet, jwtVerify } from "jose";
 import {
   DISABLE_AUTH,
   KEYCLOAK_CERTS_URL,
   KEYCLOAK_REALM_ISSUER_URL,
 } from "@config";
-import { NextFunction, Response } from "express";
+import type { NextFunction, Response } from "express";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 
-const JWKS = createRemoteJWKSet(new URL(KEYCLOAK_CERTS_URL!));
+const JWKS = createRemoteJWKSet(
+  new URL(KEYCLOAK_CERTS_URL ?? "http://localhost/missing-keycloak-certs-url")
+);
 
 async function jwtVerifyTokenMiddleware(
   req: { headers: { authorization?: string; "badgehub-api-token"?: string } },
@@ -20,11 +22,9 @@ async function jwtVerifyTokenMiddleware(
       next();
       return;
     }
-    return res
-      .status(401)
-      .json({
-        error: "Authorization as well as badgehub-api-token header is missing",
-      });
+    return res.status(401).json({
+      error: "Authorization as well as badgehub-api-token header is missing",
+    });
   }
 
   const [bearer, token] = authHeader.split(" ");

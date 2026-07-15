@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
-import type { AppCardProps } from "../types.ts";
-import { MLink } from "@sharedComponents/MLink.tsx";
 import { ERROR_ICON_URL, FALLBACK_ICON_URL } from "@config.ts";
 import { DownloadIcon } from "@sharedComponents/AppsGrid/DownloadIcon.tsx";
 import GitLink from "@sharedComponents/GitLink.tsx";
 import { useSession } from "@sharedComponents/keycloakSession/SessionContext.tsx";
+import { MLink } from "@sharedComponents/MLink.tsx";
+import type React from "react";
+import { useEffect, useState } from "react";
+import type { AppCardProps } from "../types.ts";
 
 const AppCard: React.FC<
   AppCardProps & {
@@ -157,7 +158,9 @@ const AppCard: React.FC<
                   <span
                     key={tag.id}
                     className={`${
-                      tag.type === "category" ? "badge badge-neutral" : "badge badge-success"
+                      tag.type === "category"
+                        ? "badge badge-neutral"
+                        : "badge badge-success"
                     } text-xs font-semibold mr-2`}
                   >
                     {tag.text}

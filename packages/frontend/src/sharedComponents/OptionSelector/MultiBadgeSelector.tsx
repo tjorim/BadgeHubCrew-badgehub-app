@@ -1,7 +1,7 @@
-import React from "react";
-import { BadgeSlug } from "@shared/domain/readModels/Badge.ts";
-import { MultiOptionSelectorWithTitle } from "@sharedComponents/OptionSelector/MultiOptionSelectorWithTitle.tsx";
 import { BADGE_SLUGS } from "@config.ts";
+import type { BadgeSlug } from "@shared/domain/readModels/Badge.ts";
+import { MultiOptionSelectorWithTitle } from "@sharedComponents/OptionSelector/MultiOptionSelectorWithTitle.tsx";
+import type React from "react";
 
 export const MultiBadgeSelector: React.FC<{
   badges: BadgeSlug[] | undefined;

@@ -1,4 +1,4 @@
-import { PathsObject } from "openapi3-ts";
+import type { PathsObject } from "openapi3-ts";
 
 const draftFileUploadPath = "/api/v3/projects/{slug}/draft/files/{filePath}";
 

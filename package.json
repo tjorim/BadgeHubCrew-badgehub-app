@@ -14,35 +14,30 @@
   "author": "",
   "type": "module",
   "scripts": {
-    "test": "npm run test --workspaces",
-    "build": "npm run build --workspaces",
-    "check:ts": "npm run check:ts --workspaces",
-    "start": "npm run start --workspace=packages/backend",
-    "dev": "concurrently -k -c 'auto' 'npm:dev:*'",
-    "dev:frontend": "npm run dev --workspace=packages/frontend",
-    "test-db:up": "npm run --workspace=packages/backend test-db:up | exit 0",
-    "backup": "docker exec -it badgehub-db /usr/bin/pg_dump --username badgehub badgehub -f /var/backup/data-backup-`date +\"%Y-%m-%dT%H:%m\"`.sql",    
-    "dev:backend": "npm run test-db:up && npm run dev --workspace=packages/backend",
+    "test": "pnpm -r test",
+    "build": "pnpm -r build",
+    "check:ts": "pnpm --filter frontend check:ts && pnpm --filter badgehub-api check:ts",
+    "start": "pnpm --filter badgehub-api start",
+    "dev": "concurrently -k -c 'auto' 'pnpm --filter frontend dev' 'pnpm --filter badgehub-api dev'",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "test-db:up": "pnpm --filter badgehub-api run test-db:up | exit 0",
+    "backup": "docker exec -it badgehub-db /usr/bin/pg_dump --username badgehub badgehub -f /var/backup/data-backup-`date +\"%Y-%m-%dT%H:%m\"`.sql",
+    "dev:backend": "pnpm --filter badgehub-api run test-db:up && pnpm --filter badgehub-api dev",
     "dump-db": "docker exec -it badgehub-db /usr/bin/pg_dump --username badgehub --schema badgehub badgehub > mockup-data.sql",
-    "prepare": "husky",
-    "lint-staged": "pretty-quick --staged",
-    "lint": "pretty-quick --check",
-    "lint:fix": "pretty-quick",
-    "validate": "npm run lint && npm run check:ts && npm run build && npm run test"
+    "prepare": "lefthook install",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "validate": "pnpm run lint && pnpm run check:ts && pnpm run build && pnpm run test"
   },
   "dependencies": {
-    "@ts-rest/core": "^3.53.0-rc.1",
-    "zod": "^3.25.42"
+    "@ts-rest/core": "3.53.0-rc.1",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "typescript": "^5.8.3",
+    "@biomejs/biome": "2.5.3",
     "concurrently": "9.1.2",
-    "husky": "^9.0.11",
-    "prettier": "^3.2.5",
-    "pretty-quick": "^4.0.0"
+    "lefthook": "^2.1.10",
+    "typescript": "^7.0.2"
   },
-  "workspaces": [
-    "packages/frontend",
-    "packages/backend"
-  ]
+  "packageManager": "pnpm@11.13.0"
 }

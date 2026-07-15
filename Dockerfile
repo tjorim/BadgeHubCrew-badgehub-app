@@ -2,19 +2,18 @@ FROM node:24-bookworm-slim
 
 # First install dependencies without any source code affecting the docker cache
 WORKDIR /home/node/app
-COPY package*.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-RUN mkdir ./packages
-RUN mkdir ./packages/backend
+RUN mkdir -p ./packages/backend ./packages/frontend
 COPY packages/backend/package.json ./packages/backend/
-RUN mkdir ./packages/frontend
 COPY packages/frontend/package.json ./packages/frontend/
 
-RUN npm ci --ignore-scripts
+RUN corepack enable
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # Copy the rest of the source code and build the application
 COPY . .
-RUN npm run build
+RUN pnpm run build
 
 # Setup env and dirs for running the application
 WORKDIR packages/backend
@@ -22,4 +21,4 @@ RUN mkdir -p /home/node/.pm2 logs pids && chown -R node:node /home/node/.pm2 log
 USER node
 EXPOSE 8081
 ENV NODE_ENV=production
-CMD ["npm", "run", "start:pm2"]
+CMD ["pnpm", "run", "start:pm2"]

@@ -1,4 +1,3 @@
-import { describe, expect, it, vi } from "vitest";
 import {
   dummyApps,
   privateTsRestClientBuilder,
@@ -7,6 +6,7 @@ import {
   screen,
   waitFor,
 } from "@__test__";
+import { describe, expect, it, vi } from "vitest";
 import MyProjectsPage from "./MyProjectsPage.tsx";
 
 describe("MyProjectsPage", () => {

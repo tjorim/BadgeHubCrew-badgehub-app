@@ -1,5 +1,5 @@
-import React from "react";
-import { SortOption } from "@sharedComponents/AppsGrid/Filters.tsx";
+import type { SortOption } from "@sharedComponents/AppsGrid/Filters.tsx";
+import type React from "react";
 
 const NO_FILTER_OPTION_VALUE = "All";
 export const OptionSelectorWithTitle: React.FC<
@@ -31,14 +31,16 @@ export const OptionSelectorWithTitle: React.FC<
         data-testid={selectionId}
         className="select select-sm select-bordered w-full"
         value={value === undefined ? NO_FILTER_OPTION_VALUE : String(value)}
-        onChange={(e) =>
-          onValueSelection(
+        onChange={(e) => {
+          const selected =
             e.target.value === NO_FILTER_OPTION_VALUE
               ? undefined
-              : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (e.target.value as any)
-          )
-        }
+              : e.target.value;
+          // Union of onValueSelection handlers; filter-clear passes undefined.
+          (onValueSelection as (value: string | typeof selected) => void)(
+            selected
+          );
+        }}
       >
         <option value={NO_FILTER_OPTION_VALUE}>{noValueSetName}</option>
         {(Object.keys(valueMap ?? {}) as Array<keyof typeof valueMap>).map(

@@ -1,6 +1,6 @@
 import { __tsCheckSame } from "@shared/zodUtils/zodTypeComparison";
-import { DatedData, datedDataSchema } from "./DatedData";
 import { z } from "zod/v3";
+import { type DatedData, datedDataSchema } from "./DatedData";
 
 export interface FileMetadata extends DatedData {
   dir: string; // directory of the file in the project, empty string if top level

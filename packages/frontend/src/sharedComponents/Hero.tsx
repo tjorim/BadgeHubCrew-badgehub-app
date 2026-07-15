@@ -1,5 +1,5 @@
-import React from "react";
 import { MLink } from "@sharedComponents/MLink.tsx";
+import type React from "react";
 
 const Hero: React.FC = () => (
   <section className="text-center mb-12 pt-8">
@@ -11,10 +11,9 @@ const Hero: React.FC = () => (
       your own.
     </p>
     <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-      <a
-        href="#apps-grid"
-        onClick={(e) => {
-          e.preventDefault();
+      <button
+        type="button"
+        onClick={() => {
           document
             .getElementById("apps-grid")
             ?.scrollIntoView({ behavior: "smooth" });
@@ -22,11 +21,8 @@ const Hero: React.FC = () => (
         className="btn btn-lg btn-explore"
       >
         Explore Projects
-      </a>
-      <MLink
-        to="/page/create-project"
-        className="btn btn-neutral btn-lg"
-      >
+      </button>
+      <MLink to="/page/create-project" className="btn btn-neutral btn-lg">
         Upload Your Creation
       </MLink>
     </div>

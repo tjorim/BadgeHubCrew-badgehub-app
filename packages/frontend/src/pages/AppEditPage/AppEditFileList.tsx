@@ -1,8 +1,8 @@
-import React from "react";
 import { FileListItem } from "@pages/AppEditPage/FileListItem.tsx";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
-import { User } from "@sharedComponents/keycloakSession/SessionContext.tsx";
-import Keycloak from "keycloak-js";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import type { User } from "@sharedComponents/keycloakSession/SessionContext.tsx";
+import type Keycloak from "keycloak-js";
+import type React from "react";
 
 interface AppEditFilePreviewProps {
   user?: User; // Optional user prop for authentication
@@ -39,9 +39,7 @@ const AppEditFileList: React.FC<AppEditFilePreviewProps> = ({
     <section className="card bg-base-200 shadow-lg text-left mt-8">
       <div className="card-body">
         <h2 className="card-title text-2xl mb-2">Files</h2>
-        <h3 className="text-lg font-medium mb-2">
-          Project Files:
-        </h3>
+        <h3 className="text-lg font-medium mb-2">Project Files:</h3>
         {files.length > 0 ? (
           <ul className="list-none text-sm space-y-1">
             {files.map((file) => (
@@ -60,9 +58,7 @@ const AppEditFileList: React.FC<AppEditFilePreviewProps> = ({
             ))}
           </ul>
         ) : (
-          <p className="opacity-50 italic">
-            No files in this project version.
-          </p>
+          <p className="opacity-50 italic">No files in this project version.</p>
         )}
       </div>
     </section>

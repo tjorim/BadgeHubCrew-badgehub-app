@@ -1,15 +1,15 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
-import { publicTsRestClient as defaultTsRestClient } from "../../api/tsRestClient.ts";
 import { ERROR_ICON_URL } from "@config.ts";
-import { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries.ts";
 import { useAsyncResource } from "@hooks/useAsyncResource.ts";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import type { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries.ts";
 import {
   normalizePublicProjectError,
   publicProjectErrorFromStatus,
   publicProjectErrorMessage,
 } from "@utils/publicProjectErrors.ts";
+import type React from "react";
+import { Link } from "react-router-dom";
+import { publicTsRestClient as defaultTsRestClient } from "../../api/tsRestClient.ts";
 
 /**
  * Renders a single project item in the list.
@@ -35,9 +35,7 @@ const ProjectItem: React.FC<{ project: ProjectSummary }> = ({ project }) => (
         {project.name}
       </Link>
       {project.categories && project.categories.length > 0 && (
-        <p className="text-xs opacity-60">
-          {project.categories.join(", ")}
-        </p>
+        <p className="text-xs opacity-60">{project.categories.join(", ")}</p>
       )}
     </div>
   </div>
@@ -48,8 +46,8 @@ const ProjectItem: React.FC<{ project: ProjectSummary }> = ({ project }) => (
  */
 const SkeletonLoader: React.FC = () => (
   <>
-    {[...Array(3)].map((_, i) => (
-      <div key={i} className="flex animate-pulse items-start space-x-3">
+    {["skeleton-1", "skeleton-2", "skeleton-3"].map((id) => (
+      <div key={id} className="flex animate-pulse items-start space-x-3">
         <div className="skeleton h-12 w-12 flex-shrink-0 rounded-md"></div>
         <div className="flex-grow space-y-2 pt-1">
           <div className="skeleton h-4 w-3/4 rounded"></div>
@@ -67,24 +65,25 @@ const AppSidebarSimilar: React.FC<{
   project: ProjectDetails;
   tsRestClient: typeof defaultTsRestClient;
 }> = ({ project, tsRestClient = defaultTsRestClient }) => {
-  const { data: similarProjects, error, loading } = useAsyncResource(
-    async () => {
-      if (!project.idp_user_id) {
-        return [];
-      }
-      const result = await tsRestClient.getProjectSummaries({
-        query: {
-          userId: project.idp_user_id,
-          pageLength: 4,
-        },
-      });
-      if (result.status === 200) {
-        return result.body.filter((p) => p.slug !== project.slug).slice(0, 3);
-      }
-      throw new Error(publicProjectErrorFromStatus(result.status));
-    },
-    [project.idp_user_id, project.slug, tsRestClient]
-  );
+  const {
+    data: similarProjects,
+    error,
+    loading,
+  } = useAsyncResource(async () => {
+    if (!project.idp_user_id) {
+      return [];
+    }
+    const result = await tsRestClient.getProjectSummaries({
+      query: {
+        userId: project.idp_user_id,
+        pageLength: 4,
+      },
+    });
+    if (result.status === 200) {
+      return result.body.filter((p) => p.slug !== project.slug).slice(0, 3);
+    }
+    throw new Error(publicProjectErrorFromStatus(result.status));
+  }, [project.idp_user_id, project.slug, tsRestClient]);
 
   const renderContent = () => {
     if (loading) {
@@ -112,10 +111,11 @@ const AppSidebarSimilar: React.FC<{
   return (
     <section className="card w-full max-w-sm bg-base-200 shadow-lg">
       <div className="card-body p-6">
-      <h2 className="mb-4 border-b border-base-300 pb-2 text-xl font-semibold">
-        Other Projects by {project.version.app_metadata.author || "this author"}
-      </h2>
-      <div className="space-y-4">{renderContent()}</div>
+        <h2 className="mb-4 border-b border-base-300 pb-2 text-xl font-semibold">
+          Other Projects by{" "}
+          {project.version.app_metadata.author || "this author"}
+        </h2>
+        <div className="space-y-4">{renderContent()}</div>
       </div>
     </section>
   );

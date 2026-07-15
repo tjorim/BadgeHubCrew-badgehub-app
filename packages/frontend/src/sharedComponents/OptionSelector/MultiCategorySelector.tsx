@@ -1,10 +1,10 @@
-import React from "react";
-import { MultiOptionSelectorWithTitle } from "@sharedComponents/OptionSelector/MultiOptionSelectorWithTitle.tsx";
 import {
-  CategoryName,
+  type CategoryName,
   getAllCategoryNames,
   isAdminCategory,
 } from "@shared/domain/readModels/project/Category.ts";
+import { MultiOptionSelectorWithTitle } from "@sharedComponents/OptionSelector/MultiOptionSelectorWithTitle.tsx";
+import type React from "react";
 import { useState } from "react";
 
 export const MultiCategorySelector: React.FC<{
@@ -37,9 +37,7 @@ export const MultiCategorySelector: React.FC<{
         value={selectedCategories}
         onValueSelection={handleSelection}
       />
-      {limitError && (
-        <p className="text-xs text-error mt-2">{limitError}</p>
-      )}
+      {limitError && <p className="text-xs text-error mt-2">{limitError}</p>}
     </div>
   );
 };

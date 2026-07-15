@@ -1,5 +1,5 @@
-import { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
-import { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries.ts";
+import type { ProjectDetails } from "@shared/domain/readModels/project/ProjectDetails.ts";
+import type { ProjectSummary } from "@shared/domain/readModels/project/ProjectSummaries.ts";
 
 type DummyData = {
   slug: string;

@@ -1,8 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@__test__";
-import userEvent from "@testing-library/user-event";
-import AppEditTokenManager from "./AppEditTokenManager.tsx";
 import { getFreshAuthorizedTsRestClient } from "@api/tsRestClient.ts";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import AppEditTokenManager from "./AppEditTokenManager.tsx";
 
 vi.mock("@api/tsRestClient.ts", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@api/tsRestClient.ts")>();
@@ -14,7 +14,7 @@ vi.mock("@api/tsRestClient.ts", async (importOriginal) => {
 
 const keycloak = {
   updateToken: vi.fn().mockResolvedValue(true),
-} as any;
+} as unknown as import("keycloak-js").default;
 
 const baseClient = {
   getProjectApiTokenMetadata: vi.fn(),
@@ -31,9 +31,7 @@ describe("AppEditTokenManager", () => {
 
     render(<AppEditTokenManager slug="demo" keycloak={keycloak} />);
 
-    expect(
-      await screen.findByText(/no active api token/i)
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/no active api token/i)).toBeInTheDocument();
   });
 
   it("creates a new token and shows it", async () => {

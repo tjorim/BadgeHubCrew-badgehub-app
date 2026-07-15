@@ -1,4 +1,3 @@
-import pg from "pg";
 import {
   POSTGRES_DB,
   POSTGRES_HOST,
@@ -6,6 +5,7 @@ import {
   POSTGRES_PORT,
   POSTGRES_USER,
 } from "@config";
+import pg from "pg";
 
 let pool: pg.Pool;
 export const getPool = () => {
