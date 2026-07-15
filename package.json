@@ -24,7 +24,7 @@
     "backup": "docker exec -it badgehub-db /usr/bin/pg_dump --username badgehub badgehub -f /var/backup/data-backup-`date +\"%Y-%m-%dT%H:%m\"`.sql",
     "dev:backend": "pnpm --filter badgehub-api run test-db:up && pnpm --filter badgehub-api dev",
     "dump-db": "docker exec -it badgehub-db /usr/bin/pg_dump --username badgehub --schema badgehub badgehub > mockup-data.sql",
-    "prepare": "lefthook install",
+    "prepare": "command -v git >/dev/null 2>&1 || exit 0; lefthook install",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "check:deps": "pnpm peers check",
