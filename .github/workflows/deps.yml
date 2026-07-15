@@ -1,0 +1,24 @@
+name: Dependencies
+
+on:
+  pull_request:
+    paths:
+      - pnpm-lock.yaml
+  push:
+    branches: [master]
+    paths:
+      - pnpm-lock.yaml
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile 2>&1 | tee install.log
+      - run: pnpm peers check
+      - name: No deprecated packages
+        run: '! grep -qi deprecated install.log'

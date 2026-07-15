@@ -27,6 +27,7 @@
     "prepare": "lefthook install",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
+    "check:deps": "pnpm peers check",
     "validate": "pnpm run lint && pnpm run check:ts && pnpm run build && pnpm run test"
   },
   "dependencies": {

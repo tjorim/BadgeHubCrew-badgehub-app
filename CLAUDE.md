@@ -18,7 +18,9 @@ pnpm run build            # Build all workspaces
 pnpm run check:ts         # TypeScript type checking across all packages
 pnpm run lint             # Biome format + lint check
 pnpm run lint:fix         # Biome auto-fix format + safe lint fixes
+pnpm run check:deps       # pnpm peers check (run after changing deps)
 pnpm run validate         # Full validation: lint + check:ts + build + test
+# CI: .github/workflows/deps.yml runs peers + deprecation checks when pnpm-lock.yaml changes
 ```
 
 ### Testing
