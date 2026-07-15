@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 const MAX_VISIBLE_TAGS_PER_GROUP = 1;
 
@@ -15,14 +15,13 @@ const TagGroup: React.FC<{
   const hiddenLabel = hiddenTags.join(", ");
 
   return (
-    <div
-      role="group"
+    <fieldset
       aria-label={label}
-      className="flex min-w-0 flex-1 items-center gap-1.5"
+      className="m-0 flex min-w-0 flex-1 items-center gap-1.5 border-0 p-0"
     >
-      {visibleTags.map((tag, index) => (
+      {visibleTags.map((tag) => (
         <span
-          key={`${tag}-${index}`}
+          key={tag}
           className={`${badgeClassName} min-w-0 text-xs font-semibold`}
           title={tag}
         >
@@ -30,7 +29,7 @@ const TagGroup: React.FC<{
         </span>
       ))}
       {hiddenTags.length > 0 && (
-        <span
+        <output
           className="shrink-0 cursor-help text-xs font-medium opacity-60"
           aria-label={`${hiddenTags.length} more ${
             hiddenTags.length === 1 ? singularLabel : label.toLowerCase()
@@ -38,9 +37,9 @@ const TagGroup: React.FC<{
           title={`More ${label.toLowerCase()}: ${hiddenLabel}`}
         >
           +{hiddenTags.length}
-        </span>
+        </output>
       )}
-    </div>
+    </fieldset>
   );
 };
 
