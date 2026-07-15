@@ -86,7 +86,7 @@ runs the backend through PM2. The backend serves the compiled frontend.
 
 ## Style and commits
 
-Follow the existing Prettier configuration and Conventional Commits described
+Follow the existing Biome configuration and Conventional Commits described
 in `CONTRIBUTING.md`. Keep changes focused and add or update tests for behavior
 changes.
 

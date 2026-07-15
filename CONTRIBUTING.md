@@ -23,8 +23,8 @@ dotenv files, credentials, generated build output, coverage, or `node_modules`.
 ## Development workflow
 
 Follow the [README](README.md) to install dependencies, configure the backend,
-start PostgreSQL, and run the application. Node.js 24.4.1 and npm are the
-supported development toolchain.
+start PostgreSQL, and run the application. Use Node.js 24 and the pnpm version
+declared in `package.json`.
 
 Changes to shared API contracts belong in `packages/shared`; update both the
 frontend and backend consumers in the same pull request. Database schema
@@ -33,7 +33,7 @@ changes require a new migration with tested up and down SQL.
 Before pushing, run:
 
 ```bash
-npm run validate
+pnpm run validate
 ```
 
 If a check cannot run in your environment, explain that clearly in the pull

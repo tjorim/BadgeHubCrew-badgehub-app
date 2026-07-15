@@ -6,10 +6,10 @@ and DaisyUI. It consumes the shared ts-rest contracts from `packages/shared`.
 Run commands from the repository root unless noted otherwise:
 
 ```bash
-npm run dev
-npm run build --workspace=packages/frontend
-npm run check:ts --workspace=packages/frontend
-npm run test --workspace=packages/frontend
+pnpm run dev
+pnpm --filter frontend build
+pnpm --filter frontend check:ts
+pnpm --filter frontend test
 ```
 
 During development, Vite listens on port 5173 and serves assets referenced by

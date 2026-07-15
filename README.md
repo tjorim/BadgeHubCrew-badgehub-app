@@ -3,35 +3,36 @@
 # BadgeHub App
 
 BadgeHub is a monorepo containing a Node.js REST API and a React frontend. The
-frontend, backend, and shared ts-rest contracts live in npm workspaces.
+frontend, backend, and shared ts-rest contracts live in pnpm workspaces.
 
 ## Prerequisites
 
-- Node.js 24.4.1 (see `.nvmrc` and `.tool-versions`)
-- npm
+- Node.js 24.4.1 (see `.nvmrc`; `.tool-versions` may select a newer Node 24 release)
+- Corepack and pnpm
 - Docker with Docker Compose
 - A Keycloak realm and public OpenID Connect client for authenticated flows
 
 ## Quick start
 
-Install dependencies and create the backend environment file:
+Enable pnpm, install dependencies, and create the backend environment file:
 
 ```bash
-npm ci
+corepack enable
+pnpm install --frozen-lockfile
 cp packages/backend/.env.example packages/backend/.env
 ```
 
 Review `packages/backend/.env`, then start and seed the test database:
 
 ```bash
-npm run test-db:up
-npm run repopulate-db
+pnpm run test-db:up
+pnpm run repopulate-db
 ```
 
 Start the frontend and backend together:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 Open <http://localhost:8081>. Vite listens on port 5173, but it only supplies
@@ -40,13 +41,13 @@ development assets; the backend serves the HTML application and API on port 8081
 Stop the test database when finished:
 
 ```bash
-npm run test-db:down
+pnpm run test-db:down
 ```
 
 ### Using another PostgreSQL port
 
 The test database binds only to localhost. If port 5432 is occupied, change
-`POSTGRES_PORT` in `packages/backend/.env` before running `npm run test-db:up`.
+`POSTGRES_PORT` in `packages/backend/.env` before running `pnpm run test-db:up`.
 The backend and Docker Compose use the same value.
 
 ## Authentication
@@ -69,17 +70,9 @@ Infrastructure examples live under `infra/keycloak/`; production infrastructure
 is maintained separately in the
 [badgehub-infra repository](https://github.com/BadgeHubCrew/badgehub-infra/tree/main/docs).
 
-### Running locally
-The most convenient way to run BadgeHub locally is this way:
-- configure the `.env` file to use the dev keycloak server, like it is done in the `.env.example` file.
-- start the test database with docker: `pnpm run test-db:up`
-- if this is your first time running BadgeHub, or the populate db script was updated, you should also do:
-  ```bash
-  pnpm --filter badgehub-api run repopulate-db
-  ```
-- start the frontend and backend with this command: `pnpm run dev`
+## Test data
 
-`npm run repopulate-db` runs migrations and then **deletes and recreates** the
+`pnpm run repopulate-db` runs migrations and then **deletes and recreates** the
 BadgeHub fixture records. Do not point it at a database containing data you
 want to keep.
 
@@ -93,54 +86,34 @@ before repopulating the database.
 Backend tests require the test database and fixtures:
 
 ```bash
-pnpm --filter badgehub-api run db-migrate:create -- <migration-name>
+pnpm run test-db:up
+pnpm run repopulate-db
+pnpm run test
 ```
 
 Frontend tests can run independently:
 
 ```bash
-pnpm --filter badgehub-api run db-migrate:up
+pnpm --filter frontend test
 ```
 
 Run all repository checks before opening a pull request:
 
 ```bash
-pnpm --filter badgehub-api run db-migrate:down
+pnpm run validate
 ```
 
-The individual checks are `npm run lint`, `npm run check:ts`, `npm run build`,
-and `npm run test`.
+The individual checks are `pnpm run lint`, `pnpm run check:ts`,
+`pnpm run build`, and `pnpm run test`.
 
 ## Database migrations
 
-### Testing
-The unit test require the test database to be up and filled in.
-So first do:
-`pnpm run test-db:up`
-
-And if this is the very first time, or the populate db script was updated, you should also do:
-`pnpm --filter badgehub-api run repopulate-db`
-
-Then to run the tests, do:
-`pnpm run test`
- 
-## - Production -
-
-In production, use the production docker compose file `docker-compose.production.yml`.
-The `NODE_ENV` environment file is set to `production`, there's no watcher and
-PM2 is used to run Node.js multithreaded.
-
-The first time, a Docker container is created. Make sure the `dist` directory
-contains the latest build to be copied to the container.
-Also the `public` directory and `package.json` and `pnpm-lock.yaml` will
-be copied.
-
-To start:
+Migration files live in `packages/backend/migrations/`. Use the root commands:
 
 ```bash
-npm run db-migrate:create -- <migration-name>
-npm run db-migrate:up
-npm run db-migrate:down
+pnpm run db-migrate:create -- <migration-name>
+pnpm run db-migrate:up
+pnpm run db-migrate:down
 ```
 
 Fill in both generated SQL files and verify the up and down directions. The
@@ -158,7 +131,7 @@ docker compose --env-file .env.prod up -d --build --wait
 ```
 
 The application is available on `EXPOSED_PORT` (9001 by default). The image
-build compiles both workspaces, and the backend serves the built frontend. Stop
+build compiles all workspaces, and the backend serves the built frontend. Stop
 the example stack with:
 
 ```bash
