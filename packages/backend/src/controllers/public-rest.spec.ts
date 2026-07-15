@@ -11,33 +11,33 @@ import type express from "express";
 import request from "supertest";
 import { beforeEach, describe, expect, test } from "vitest";
 
-describe(
-  "Public API Routes",
-  () => {
-    let app: ReturnType<typeof express>;
-    beforeEach(() => {
-      app = createExpressServer();
-    });
+describe("Public API Routes", {
+  timeout: isInDebugMode() ? 3600_000 : undefined,
+}, () => {
+  let app: ReturnType<typeof express>;
+  beforeEach(() => {
+    app = createExpressServer();
+  });
 
-    test("GET /api/v3/badges", async () => {
-      const res = await request(app).get("/api/v3/badges");
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toContain("why2025");
-    });
+  test("GET /api/v3/badges", async () => {
+    const res = await request(app).get("/api/v3/badges");
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toContain("why2025");
+  });
 
-    test("GET /api/v3/project-summaries", async () => {
-      const res = await request(app).get("/api/v3/project-summaries");
-      expect(res.statusCode).toBe(200);
-      expect(
-        res.body.find((app: ProjectSummary) => app.name === "PixelPulse")
-      ).toBeDefined();
-      expect(
-        res.body.find((app: ProjectSummary) => app.slug === "codecraft")
-      ).toMatchInlineSnapshot(
-        {
-          installs: expect.any(Number),
-        },
-        `
+  test("GET /api/v3/project-summaries", async () => {
+    const res = await request(app).get("/api/v3/project-summaries");
+    expect(res.statusCode).toBe(200);
+    expect(
+      res.body.find((app: ProjectSummary) => app.name === "PixelPulse")
+    ).toBeDefined();
+    expect(
+      res.body.find((app: ProjectSummary) => app.slug === "codecraft")
+    ).toMatchInlineSnapshot(
+      {
+        installs: expect.any(Number),
+      },
+      `
         {
           "badges": [
             "mch2022",
@@ -63,243 +63,233 @@ describe(
           "slug": "codecraft",
         }
       `
-      );
-    });
+    );
+  });
 
-    test("GET /api/v3/project-summaries should not contain unpublished apps", async () => {
-      const res = await request(app).get("/api/v3/project-summaries");
-      expect(res.statusCode).toBe(200);
-      expect(
-        res.body.find((app: ProjectSummary) => !app.published_at)
-      ).toBeUndefined();
-    });
+  test("GET /api/v3/project-summaries should not contain unpublished apps", async () => {
+    const res = await request(app).get("/api/v3/project-summaries");
+    expect(res.statusCode).toBe(200);
+    expect(
+      res.body.find((app: ProjectSummary) => !app.published_at)
+    ).toBeUndefined();
+  });
 
-    test("GET /api/v3/project-summaries should contain apps with non-0 number of installs", async () => {
-      const res = await request(app).get("/api/v3/project-summaries");
-      expect(res.statusCode).toBe(200);
-      expect(
-        res.body.filter((app: ProjectSummary) => app.installs).length
-      ).toBeGreaterThan(0);
-    });
+  test("GET /api/v3/project-summaries should contain apps with non-0 number of installs", async () => {
+    const res = await request(app).get("/api/v3/project-summaries");
+    expect(res.statusCode).toBe(200);
+    expect(
+      res.body.filter((app: ProjectSummary) => app.installs).length
+    ).toBeGreaterThan(0);
+  });
 
-    test("GET /api/v3/project-summaries should allow sorting by installs", async () => {
-      const res = await request(app).get(
-        "/api/v3/project-summaries?orderBy=installs"
-      );
-      expect(res.statusCode).toBe(200);
-      const summaries = res.body as ProjectSummary[];
-      const sortedExpected = summaries
-        .map((p) => p.installs)
-        .sort((a, b) => b - a);
-      expect(
-        summaries.map((app: ProjectSummary) => app.installs)
-      ).toStrictEqual(sortedExpected);
-    });
+  test("GET /api/v3/project-summaries should allow sorting by installs", async () => {
+    const res = await request(app).get(
+      "/api/v3/project-summaries?orderBy=installs"
+    );
+    expect(res.statusCode).toBe(200);
+    const summaries = res.body as ProjectSummary[];
+    const sortedExpected = summaries
+      .map((p) => p.installs)
+      .sort((a, b) => b - a);
+    expect(summaries.map((app: ProjectSummary) => app.installs)).toStrictEqual(
+      sortedExpected
+    );
+  });
 
-    test("reporting an install should update installs in project summaries", async () => {
-      const projectSlug = "codecraft";
-      const baselineRes = await request(app).get("/api/v3/project-summaries");
-      expect(baselineRes.statusCode).toBe(200);
-      const baselineSummaries = baselineRes.body as ProjectSummary[];
-      const baselineInstalls = baselineSummaries.find(
-        (summary) => summary.slug === projectSlug
-      )?.installs;
-      expect(typeof baselineInstalls).toBe("number");
+  test("reporting an install should update installs in project summaries", async () => {
+    const projectSlug = "codecraft";
+    const baselineRes = await request(app).get("/api/v3/project-summaries");
+    expect(baselineRes.statusCode).toBe(200);
+    const baselineSummaries = baselineRes.body as ProjectSummary[];
+    const baselineInstalls = baselineSummaries.find(
+      (summary) => summary.slug === projectSlug
+    )?.installs;
+    expect(typeof baselineInstalls).toBe("number");
 
-      const reportRes = await request(app).post(
+    const reportRes = await request(app).post(
+      `/api/v3/projects/${projectSlug}/rev1/report/install?id=${randomUUID()}`
+    );
+    expect(reportRes.statusCode).toBe(204);
+
+    await new PostgreSQLBadgeHubMetadata().refreshReports();
+
+    const updatedRes = await request(app).get("/api/v3/project-summaries");
+    expect(updatedRes.statusCode).toBe(200);
+    const updatedSummaries = updatedRes.body as ProjectSummary[];
+    const updatedInstalls = updatedSummaries.find(
+      (summary) => summary.slug === projectSlug
+    )?.installs;
+
+    expect(updatedInstalls).toBeGreaterThanOrEqual(
+      (baselineInstalls as number) + 1
+    );
+  });
+
+  test("reporting an install should accept a JSON string body", async () => {
+    const projectSlug = "codecraft";
+
+    const reportRes = await request(app)
+      .post(
         `/api/v3/projects/${projectSlug}/rev1/report/install?id=${randomUUID()}`
-      );
-      expect(reportRes.statusCode).toBe(204);
+      )
+      .set("Content-Type", "application/json")
+      .send('"some string"');
 
-      await new PostgreSQLBadgeHubMetadata().refreshReports();
+    expect(reportRes.statusCode).toBe(204);
+  });
 
-      const updatedRes = await request(app).get("/api/v3/project-summaries");
-      expect(updatedRes.statusCode).toBe(200);
-      const updatedSummaries = updatedRes.body as ProjectSummary[];
-      const updatedInstalls = updatedSummaries.find(
-        (summary) => summary.slug === projectSlug
-      )?.installs;
+  test("GET /api/v3/project-summaries should sort by default using published_at", async () => {
+    const res = await request(app).get("/api/v3/project-summaries");
+    expect(res.statusCode).toBe(200);
+    const summaries = res.body as ProjectSummary[];
 
-      expect(updatedInstalls).toBeGreaterThanOrEqual(
-        (baselineInstalls as number) + 1
-      );
-    });
+    const sortedExpected = summaries
+      .map((p) => p.published_at)
+      .sort((a, b) => Date.parse(b ?? "") - Date.parse(a ?? ""));
+    expect(
+      summaries.map((app: ProjectSummary) => app.published_at)
+    ).toStrictEqual(sortedExpected);
+  });
 
-    test("reporting an install should accept a JSON string body", async () => {
-      const projectSlug = "codecraft";
+  test("GET /api/v3/project-summaries should not contain hidden apps unless the slug is given", async () => {
+    const res = await request(app).get("/api/v3/project-summaries");
+    expect(res.statusCode).toBe(200);
+    expect(
+      res.body.find((app: ProjectSummary) => app.slug === "nanogames")
+    ).toBeUndefined();
+    expect(res.body.find((app: ProjectSummary) => app.hidden)).toBeUndefined();
 
-      const reportRes = await request(app)
-        .post(
-          `/api/v3/projects/${projectSlug}/rev1/report/install?id=${randomUUID()}`
-        )
-        .set("Content-Type", "application/json")
-        .send('"some string"');
+    const withSlugRes = await request(app).get(
+      "/api/v3/project-summaries?slugs=nanogames"
+    );
+    expect(withSlugRes.statusCode).toBe(200);
+    expect(
+      withSlugRes.body.find((app: ProjectSummary) => app.slug === "nanogames")
+        ?.hidden
+    ).toBe(true);
+  });
 
-      expect(reportRes.statusCode).toBe(204);
-    });
+  test("GET /api/v3/project-summaries with device filter", async () => {
+    const res = await request(app).get(
+      "/api/v3/project-summaries?badge=why2025"
+    );
+    expect(res.statusCode).toBe(200);
+    expect(
+      res.body.every((app: ProjectSummary) => app.badges?.includes("why2025"))
+    ).toBe(true);
+    expect(
+      res.body.find((app: ProjectSummary) => app.slug === "codecraft")
+    ).toBeDefined();
+  });
 
-    test("GET /api/v3/project-summaries should sort by default using published_at", async () => {
-      const res = await request(app).get("/api/v3/project-summaries");
-      expect(res.statusCode).toBe(200);
-      const summaries = res.body as ProjectSummary[];
+  test("GET /api/v3/project-summaries with category filter", async () => {
+    const res = await request(app).get(
+      "/api/v3/project-summaries?category=Silly"
+    );
+    expect(res.statusCode).toBe(200);
+    expect(res.body.length).toMatchInlineSnapshot(`4`);
+    expect(
+      res.body.every((app: ProjectSummary) => app.categories?.includes("Silly"))
+    ).toBe(true);
+    expect(
+      res.body.find((app: ProjectSummary) => app.categories?.includes("Silly"))
+    ).toBeDefined();
+  });
 
-      const sortedExpected = summaries
-        .map((p) => p.published_at)
-        .sort((a, b) => Date.parse(b ?? "") - Date.parse(a ?? ""));
-      expect(
-        summaries.map((app: ProjectSummary) => app.published_at)
-      ).toStrictEqual(sortedExpected);
-    });
+  test("GET /api/v3/project-summaries with category name in search", async () => {
+    const res = await request(app).get(
+      "/api/v3/project-summaries?search=Uncategorised"
+    );
+    expect(res.statusCode).toBe(200);
+    expect(res.body.length).toMatchInlineSnapshot(`2`);
+    expect(
+      res.body.every((app: ProjectSummary) =>
+        app.categories?.includes("Uncategorised")
+      )
+    ).toBe(true);
+    expect(
+      res.body.find((app: ProjectSummary) =>
+        app.categories?.includes("Uncategorised")
+      )
+    ).toBeDefined();
+  });
 
-    test("GET /api/v3/project-summaries should not contain hidden apps unless the slug is given", async () => {
-      const res = await request(app).get("/api/v3/project-summaries");
-      expect(res.statusCode).toBe(200);
-      expect(
-        res.body.find((app: ProjectSummary) => app.slug === "nanogames")
-      ).toBeUndefined();
-      expect(
-        res.body.find((app: ProjectSummary) => app.hidden)
-      ).toBeUndefined();
+  test("GET /api/v3/project-summaries with search query filter searching for name", async () => {
+    const res = await request(app).get(
+      "/api/v3/project-summaries?search=oDecrafTE"
+    );
+    expect(res.statusCode).toBe(200);
+    const result: ProjectSummary[] = res.body;
+    expect(result.length).toBe(1);
+    expect(result[0]?.slug).toEqual("codecrafter");
+  });
 
-      const withSlugRes = await request(app).get(
-        "/api/v3/project-summaries?slugs=nanogames"
-      );
-      expect(withSlugRes.statusCode).toBe(200);
-      expect(
-        withSlugRes.body.find((app: ProjectSummary) => app.slug === "nanogames")
-          ?.hidden
-      ).toBe(true);
-    });
+  test("GET /api/v3/project-summaries with search query filter searching for description", async () => {
+    const res = await request(app).get(
+      "/api/v3/project-summaries?search=" +
+        encodeURIComponent("interesting things")
+    );
+    expect(res.statusCode).toBe(200);
+    const result: ProjectSummary[] = res.body;
+    expect(result.length).toBeGreaterThanOrEqual(1);
+    expect(
+      result.every((app: ProjectSummary) =>
+        app.description?.includes("interesting things")
+      )
+    ).toBe(true);
+  });
 
-    test("GET /api/v3/project-summaries with device filter", async () => {
-      const res = await request(app).get(
-        "/api/v3/project-summaries?badge=why2025"
-      );
-      expect(res.statusCode).toBe(200);
-      expect(
-        res.body.every((app: ProjectSummary) => app.badges?.includes("why2025"))
-      ).toBe(true);
-      expect(
-        res.body.find((app: ProjectSummary) => app.slug === "codecraft")
-      ).toBeDefined();
-    });
-
-    test("GET /api/v3/project-summaries with category filter", async () => {
-      const res = await request(app).get(
-        "/api/v3/project-summaries?category=Silly"
-      );
-      expect(res.statusCode).toBe(200);
-      expect(res.body.length).toMatchInlineSnapshot(`4`);
-      expect(
-        res.body.every((app: ProjectSummary) =>
+  test("GET /api/v3/project-summaries with device and category filters", async () => {
+    const res = await request(app).get(
+      "/api/v3/project-summaries?badge=troopers23&category=Silly"
+    );
+    expect(res.statusCode).toBe(200);
+    expect(res.body.length).toBeGreaterThan(0);
+    expect(
+      res.body.every(
+        (app: ProjectSummary) =>
+          app.badges?.includes("troopers23") &&
           app.categories?.includes("Silly")
-        )
-      ).toBe(true);
-      expect(
-        res.body.find((app: ProjectSummary) =>
-          app.categories?.includes("Silly")
-        )
-      ).toBeDefined();
-    });
+      )
+    ).toBe(true);
+    expect(
+      res.body.find((app: ProjectSummary) => app.categories?.includes("Silly"))
+    ).toBeDefined();
+  });
 
-    test("GET /api/v3/project-summaries with category name in search", async () => {
-      const res = await request(app).get(
-        "/api/v3/project-summaries?search=Uncategorised"
-      );
-      expect(res.statusCode).toBe(200);
-      expect(res.body.length).toMatchInlineSnapshot(`2`);
-      expect(
-        res.body.every((app: ProjectSummary) =>
-          app.categories?.includes("Uncategorised")
-        )
-      ).toBe(true);
-      expect(
-        res.body.find((app: ProjectSummary) =>
-          app.categories?.includes("Uncategorised")
-        )
-      ).toBeDefined();
-    });
+  test("GET /api/v3/project-summariesslugs=codecraft,codecrafter", async () => {
+    const res = await request(app).get(
+      "/api/v3/project-summaries?slugs=codecraft,codecrafter"
+    );
+    expect(res.statusCode).toBe(200);
+    expect(res.body.map((p: ProjectSummary) => p.slug)).toEqual([
+      "codecraft",
+      "codecrafter",
+    ]);
+  });
 
-    test("GET /api/v3/project-summaries with search query filter searching for name", async () => {
-      const res = await request(app).get(
-        "/api/v3/project-summaries?search=oDecrafTE"
-      );
-      expect(res.statusCode).toBe(200);
-      const result: ProjectSummary[] = res.body;
-      expect(result.length).toBe(1);
-      expect(result[0]?.slug).toEqual("codecrafter");
-    });
+  test("GET /api/v3/project-summaries?slugs=codecraft", async () => {
+    const res = await request(app).get(
+      "/api/v3/project-summaries?slugs=codecraft"
+    );
+    expect(res.statusCode).toBe(200);
+    expect(res.body.length).toBe(1);
+    expect(res.body.map((p: ProjectSummary) => p.slug)).toEqual(["codecraft"]);
+  });
 
-    test("GET /api/v3/project-summaries with search query filter searching for description", async () => {
-      const res = await request(app).get(
-        "/api/v3/project-summaries?search=" +
-          encodeURIComponent("interesting things")
-      );
-      expect(res.statusCode).toBe(200);
-      const result: ProjectSummary[] = res.body;
-      expect(result.length).toBeGreaterThanOrEqual(1);
-      expect(
-        result.every((app: ProjectSummary) =>
-          app.description?.includes("interesting things")
-        )
-      ).toBe(true);
-    });
+  test("GET /api/v3/projects/non-existent should return 404", async () => {
+    const res = await request(app).get("/api/v3/projects/non-existent");
+    expect(res.statusCode).toBe(404);
+  });
 
-    test("GET /api/v3/project-summaries with device and category filters", async () => {
-      const res = await request(app).get(
-        "/api/v3/project-summaries?badge=troopers23&category=Silly"
-      );
-      expect(res.statusCode).toBe(200);
-      expect(res.body.length).toBeGreaterThan(0);
-      expect(
-        res.body.every(
-          (app: ProjectSummary) =>
-            app.badges?.includes("troopers23") &&
-            app.categories?.includes("Silly")
-        )
-      ).toBe(true);
-      expect(
-        res.body.find((app: ProjectSummary) =>
-          app.categories?.includes("Silly")
-        )
-      ).toBeDefined();
-    });
+  test("GET /api/v3/projects/codecraft", async () => {
+    const res = await request(app).get("/api/v3/projects/codecraft");
+    expect(res.statusCode).toBe(200);
 
-    test("GET /api/v3/project-summariesslugs=codecraft,codecrafter", async () => {
-      const res = await request(app).get(
-        "/api/v3/project-summaries?slugs=codecraft,codecrafter"
-      );
-      expect(res.statusCode).toBe(200);
-      expect(res.body.map((p: ProjectSummary) => p.slug)).toEqual([
-        "codecraft",
-        "codecrafter",
-      ]);
-    });
+    const project = res.body as ProjectDetails;
 
-    test("GET /api/v3/project-summaries?slugs=codecraft", async () => {
-      const res = await request(app).get(
-        "/api/v3/project-summaries?slugs=codecraft"
-      );
-      expect(res.statusCode).toBe(200);
-      expect(res.body.length).toBe(1);
-      expect(res.body.map((p: ProjectSummary) => p.slug)).toEqual([
-        "codecraft",
-      ]);
-    });
-
-    test("GET /api/v3/projects/non-existent should return 404", async () => {
-      const res = await request(app).get("/api/v3/projects/non-existent");
-      expect(res.statusCode).toBe(404);
-    });
-
-    test("GET /api/v3/projects/codecraft", async () => {
-      const res = await request(app).get("/api/v3/projects/codecraft");
-      expect(res.statusCode).toBe(200);
-
-      const project = res.body as ProjectDetails;
-
-      const { version, ...restProject } = project;
-      expect(restProject).toMatchInlineSnapshot(`
+    const { version, ...restProject } = project;
+    expect(restProject).toMatchInlineSnapshot(`
         {
           "created_at": "2024-05-22T14:01:16.975Z",
           "idp_user_id": "CyberSherpa",
@@ -309,9 +299,9 @@ describe(
         }
       `);
 
-      expect(version).toBeDefined();
-      const { app_metadata, files, ...restVersion } = version ?? {};
-      expect(app_metadata).toMatchInlineSnapshot(`
+    expect(version).toBeDefined();
+    const { app_metadata, files, ...restVersion } = version ?? {};
+    expect(app_metadata).toMatchInlineSnapshot(`
         {
           "author": "CyberSherpa",
           "badges": [
@@ -330,11 +320,11 @@ describe(
           "name": "CodeCraft",
         }
       `);
-      const sortedFiles = files
-        .map((f) => f.sha256)
-        .sort()
-        .map((sha) => files.find((f) => f.sha256 === sha));
-      expect(sortedFiles).toMatchInlineSnapshot(`
+    const sortedFiles = files
+      .map((f) => f.sha256)
+      .sort()
+      .map((sha) => files.find((f) => f.sha256 === sha));
+    expect(sortedFiles).toMatchInlineSnapshot(`
         [
           {
             "created_at": "2024-05-22T14:01:16.975Z",
@@ -380,7 +370,7 @@ describe(
         ]
       `);
 
-      expect(restVersion).toMatchInlineSnapshot(`
+    expect(restVersion).toMatchInlineSnapshot(`
         {
           "blur_hash": null,
           "project_slug": "codecraft",
@@ -388,15 +378,15 @@ describe(
           "revision": 1,
         }
       `);
-    });
+  });
 
-    test("GET /api/v3/projects/codecraft/rev1", async () => {
-      const res = await request(app).get("/api/v3/projects/codecraft/rev1");
-      expect(res.statusCode).toBe(200);
-      const project = res.body as ProjectDetails;
+  test("GET /api/v3/projects/codecraft/rev1", async () => {
+    const res = await request(app).get("/api/v3/projects/codecraft/rev1");
+    expect(res.statusCode).toBe(200);
+    const project = res.body as ProjectDetails;
 
-      const { version, ...restProject } = project;
-      expect(restProject).toMatchInlineSnapshot(`
+    const { version, ...restProject } = project;
+    expect(restProject).toMatchInlineSnapshot(`
         {
           "created_at": "2024-05-22T14:01:16.975Z",
           "idp_user_id": "CyberSherpa",
@@ -406,9 +396,9 @@ describe(
         }
       `);
 
-      expect(version).toBeDefined();
-      const { app_metadata, files, ...restVersion } = version ?? {};
-      expect(restVersion).toMatchInlineSnapshot(`
+    expect(version).toBeDefined();
+    const { app_metadata, files, ...restVersion } = version ?? {};
+    expect(restVersion).toMatchInlineSnapshot(`
         {
           "blur_hash": null,
           "project_slug": "codecraft",
@@ -416,7 +406,7 @@ describe(
           "revision": 1,
         }
       `);
-      expect(app_metadata).toMatchInlineSnapshot(`
+    expect(app_metadata).toMatchInlineSnapshot(`
         {
           "author": "CyberSherpa",
           "badges": [
@@ -435,12 +425,12 @@ describe(
           "name": "CodeCraft",
         }
       `);
-      const sortedFiles = files
-        .map((f) => f.sha256)
-        .sort()
-        .map((sha) => files.find((f) => f.sha256 === sha));
-      expect(sortedFiles).toMatchInlineSnapshot(
-        `
+    const sortedFiles = files
+      .map((f) => f.sha256)
+      .sort()
+      .map((sha) => files.find((f) => f.sha256 === sha));
+    expect(sortedFiles).toMatchInlineSnapshot(
+      `
         [
           {
             "created_at": "2024-05-22T14:01:16.975Z",
@@ -485,148 +475,140 @@ describe(
           },
         ]
       `
+    );
+  });
+
+  test("GET /api/v3/projects/codecraft/rev2 (unpublished version)", async () => {
+    const res = await request(app).get("/api/v3/projects/codecraft/rev2");
+    expect(res.statusCode).toBe(404);
+  });
+
+  test.each([
+    "latest",
+    "rev1",
+  ])("GET /projects/{slug}/%s/files/metadata.json", async (revision) => {
+    const getRes = await request(app).get(
+      `/api/v3/projects/codecraft/${revision}/files/metadata.json`
+    );
+    expect(getRes.statusCode).toBe(200);
+    const metadata = JSON.parse(getRes.text) as AppMetadataJSON; // TODO, seems like we are returning the wrong content-type since we need to use .text here.
+    expect(metadata.name).toEqual("CodeCraft");
+  });
+
+  test("GET files using url prop should work same as from path", async () => {
+    const res = await request(app).get("/api/v3/projects/codecraft/rev1");
+    expect(res.statusCode).toBe(200);
+    const project = res.body as ProjectDetails;
+
+    const files = project.version.files;
+    expect(files.length).toBeGreaterThan(0); // Sanity check
+    expect(project.version.published_at).toBeDefined(); // Sanity check
+    for (const file of files) {
+      const requestFromFilePath = await request(app).get(
+        `/api/v3/projects/codecraft/rev${project.version.revision}/files/${encodeURIComponent(file.full_path)}`
       );
-    });
+      expect(requestFromFilePath.statusCode).toBe(200);
+      const requestFromUrl = await request(app).get(new URL(file.url).pathname);
+      expect(requestFromUrl.statusCode).toBe(200);
+      expect(requestFromFilePath.text).toEqual(requestFromUrl.text);
+    }
+  });
 
-    test("GET /api/v3/projects/codecraft/rev2 (unpublished version)", async () => {
-      const res = await request(app).get("/api/v3/projects/codecraft/rev2");
-      expect(res.statusCode).toBe(404);
-    });
+  test.each([
+    "latest",
+    "rev1",
+  ])("GET /projects/{slug}/%s/files/__init__.py", async (revision) => {
+    const getRes = await request(app).get(
+      `/api/v3/projects/codecraft/${revision}/files/__init__.py`
+    );
+    expect(getRes.statusCode).toBe(200);
+    expect(getRes.text).toEqual("print('Hello world from the CodeCraft app')");
+    expect(getRes.headers["content-disposition"]).toEqual(
+      'attachment; filename="__init__.py"'
+    );
+  });
 
+  test.each([
+    "latest",
+    "rev1",
+  ])("GET /projects/{slug}/%s/files/icon5.png sets Content-Type and renders inline", async (revision) => {
+    const getRes = await request(app).get(
+      `/api/v3/projects/codecraft/${revision}/files/icon5.png`
+    );
+    expect(getRes.statusCode).toBe(200);
+    expect(getRes.headers["content-type"]).toEqual("image/png");
+    expect(getRes.headers["content-disposition"]).toEqual(
+      'inline; filename="icon5.png"'
+    );
+  });
+
+  describe("ping should return pong", () => {
     test.each([
-      "latest",
-      "rev1",
+      { id: "testid", mac: "testmac" },
+      { id: "testid", mac: "testmac" },
+      { id: "testid", mac: "" },
+      { id: "testid2", mac: undefined },
+      { id: undefined, mac: undefined },
+    ])("GET /api/v3/ping id=$id, mac=$mac", async ({ id, mac }) => {
+      let url = `/api/v3/ping`;
+      if (id) {
+        url += `?id=${id}`;
+      }
+      if (mac) {
+        url += `&mac=${mac}`;
+      }
+      const getRes = await request(app).get(url);
+      expect(getRes.statusCode).toBe(200);
+      expect(getRes.text).toBe('"pong"');
+    });
+  });
+
+  describe("unpublished versions should not be requestable", () => {
+    test.each([
+      "rev3",
+      "rev2",
     ])("GET /projects/{slug}/%s/files/metadata.json", async (revision) => {
       const getRes = await request(app).get(
         `/api/v3/projects/codecraft/${revision}/files/metadata.json`
       );
-      expect(getRes.statusCode).toBe(200);
-      const metadata = JSON.parse(getRes.text) as AppMetadataJSON; // TODO, seems like we are returning the wrong content-type since we need to use .text here.
-      expect(metadata.name).toEqual("CodeCraft");
-    });
-
-    test("GET files using url prop should work same as from path", async () => {
-      const res = await request(app).get("/api/v3/projects/codecraft/rev1");
-      expect(res.statusCode).toBe(200);
-      const project = res.body as ProjectDetails;
-
-      const files = project.version.files;
-      expect(files.length).toBeGreaterThan(0); // Sanity check
-      expect(project.version.published_at).toBeDefined(); // Sanity check
-      for (const file of files) {
-        const requestFromFilePath = await request(app).get(
-          `/api/v3/projects/codecraft/rev${project.version.revision}/files/${encodeURIComponent(file.full_path)}`
-        );
-        expect(requestFromFilePath.statusCode).toBe(200);
-        const requestFromUrl = await request(app).get(
-          new URL(file.url).pathname
-        );
-        expect(requestFromUrl.statusCode).toBe(200);
-        expect(requestFromFilePath.text).toEqual(requestFromUrl.text);
-      }
+      expect(getRes.statusCode).toBe(404);
     });
 
     test.each([
-      "latest",
-      "rev1",
-    ])("GET /projects/{slug}/%s/files/__init__.py", async (revision) => {
+      "rev0",
+      "rev2",
+      "rev3",
+    ])("GET /projects/{slug}/%s", async (revision) => {
       const getRes = await request(app).get(
-        `/api/v3/projects/codecraft/${revision}/files/__init__.py`
+        `/api/v3/projects/codecraft/${revision}`
       );
+      expect(getRes.statusCode).toBe(404);
+    });
+  });
+
+  describe("project-summaries fields query parameter", () => {
+    test("GET /api/v3/project-latest-revisions", async () => {
+      const getRes = await request(app).get(`/api/v3/project-latest-revisions`);
       expect(getRes.statusCode).toBe(200);
-      expect(getRes.text).toEqual(
-        "print('Hello world from the CodeCraft app')"
-      );
-      expect(getRes.headers["content-disposition"]).toEqual(
-        'attachment; filename="__init__.py"'
-      );
-    });
-
-    test.each([
-      "latest",
-      "rev1",
-    ])("GET /projects/{slug}/%s/files/icon5.png sets Content-Type and renders inline", async (revision) => {
-      const getRes = await request(app).get(
-        `/api/v3/projects/codecraft/${revision}/files/icon5.png`
-      );
-      expect(getRes.statusCode).toBe(200);
-      expect(getRes.headers["content-type"]).toEqual("image/png");
-      expect(getRes.headers["content-disposition"]).toEqual(
-        'inline; filename="icon5.png"'
-      );
-    });
-
-    describe("ping should return pong", () => {
-      test.each([
-        { id: "testid", mac: "testmac" },
-        { id: "testid", mac: "testmac" },
-        { id: "testid", mac: "" },
-        { id: "testid2", mac: undefined },
-        { id: undefined, mac: undefined },
-      ])("GET /api/v3/ping id=$id, mac=$mac", async ({ id, mac }) => {
-        let url = `/api/v3/ping`;
-        if (id) {
-          url += `?id=${id}`;
-        }
-        if (mac) {
-          url += `&mac=${mac}`;
-        }
-        const getRes = await request(app).get(url);
-        expect(getRes.statusCode).toBe(200);
-        expect(getRes.text).toBe('"pong"');
-      });
-    });
-
-    describe("unpublished versions should not be requestable", () => {
-      test.each([
-        "rev3",
-        "rev2",
-      ])("GET /projects/{slug}/%s/files/metadata.json", async (revision) => {
-        const getRes = await request(app).get(
-          `/api/v3/projects/codecraft/${revision}/files/metadata.json`
-        );
-        expect(getRes.statusCode).toBe(404);
-      });
-
-      test.each([
-        "rev0",
-        "rev2",
-        "rev3",
-      ])("GET /projects/{slug}/%s", async (revision) => {
-        const getRes = await request(app).get(
-          `/api/v3/projects/codecraft/${revision}`
-        );
-        expect(getRes.statusCode).toBe(404);
-      });
-    });
-
-    describe("project-summaries fields query parameter", () => {
-      test("GET /api/v3/project-latest-revisions", async () => {
-        const getRes = await request(app).get(
-          `/api/v3/project-latest-revisions`
-        );
-        expect(getRes.statusCode).toBe(200);
-        const projectRevisionMap = getRes.body as ProjectLatestRevisions;
-        expect(Object.keys(projectRevisionMap).length).toBeGreaterThanOrEqual(
-          20
-        );
-        expect(
-          projectRevisionMap.find((p) => p.slug === "codecraft")
-        ).toMatchInlineSnapshot(`
+      const projectRevisionMap = getRes.body as ProjectLatestRevisions;
+      expect(Object.keys(projectRevisionMap).length).toBeGreaterThanOrEqual(20);
+      expect(
+        projectRevisionMap.find((p) => p.slug === "codecraft")
+      ).toMatchInlineSnapshot(`
             {
               "revision": 1,
               "slug": "codecraft",
             }
           `);
-      });
-      test("GET /api/v3/project-latest-revisions?slugs=codecraft,codecrafter", async () => {
-        const getRes = await request(app).get(
-          `/api/v3/project-latest-revisions?slugs=codecraft,codecrafter`
-        );
-        expect(getRes.statusCode).toBe(200);
-        const projectRevisionMap = getRes.body as ProjectLatestRevisions;
-        expect(Object.keys(projectRevisionMap)).toHaveLength(2);
-        expect(projectRevisionMap).toMatchInlineSnapshot(`
+    });
+    test("GET /api/v3/project-latest-revisions?slugs=codecraft,codecrafter", async () => {
+      const getRes = await request(app).get(
+        `/api/v3/project-latest-revisions?slugs=codecraft,codecrafter`
+      );
+      expect(getRes.statusCode).toBe(200);
+      const projectRevisionMap = getRes.body as ProjectLatestRevisions;
+      expect(Object.keys(projectRevisionMap)).toHaveLength(2);
+      expect(projectRevisionMap).toMatchInlineSnapshot(`
           [
             {
               "revision": 1,
@@ -638,16 +620,16 @@ describe(
             },
           ]
         `);
-      });
+    });
 
-      test("GET /api/v3/project-latest-revisions?slugs=codecraft", async () => {
-        const getRes = await request(app).get(
-          `/api/v3/project-latest-revisions?slugs=codecraft`
-        );
-        expect(getRes.statusCode).toBe(200);
-        const projectRevisionMap = getRes.body as ProjectLatestRevisions;
-        expect(Object.keys(projectRevisionMap)).toHaveLength(1);
-        expect(projectRevisionMap).toMatchInlineSnapshot(`
+    test("GET /api/v3/project-latest-revisions?slugs=codecraft", async () => {
+      const getRes = await request(app).get(
+        `/api/v3/project-latest-revisions?slugs=codecraft`
+      );
+      expect(getRes.statusCode).toBe(200);
+      const projectRevisionMap = getRes.body as ProjectLatestRevisions;
+      expect(Object.keys(projectRevisionMap)).toHaveLength(1);
+      expect(projectRevisionMap).toMatchInlineSnapshot(`
           [
             {
               "revision": 1,
@@ -655,26 +637,26 @@ describe(
             },
           ]
         `);
-      });
+    });
 
-      test("GET /api/v3/project-latest-revisions/codecraft", async () => {
-        const getRes = await request(app).get(
-          `/api/v3/project-latest-revisions/codecraft`
-        );
-        expect(getRes.statusCode).toBe(200);
-        const projectRevisionMap = getRes.body as number;
-        expect(projectRevisionMap).toBe(1);
-      });
+    test("GET /api/v3/project-latest-revisions/codecraft", async () => {
+      const getRes = await request(app).get(
+        `/api/v3/project-latest-revisions/codecraft`
+      );
+      expect(getRes.statusCode).toBe(200);
+      const projectRevisionMap = getRes.body as number;
+      expect(projectRevisionMap).toBe(1);
+    });
 
-      test("GET /api/v3/stats", async () => {
-        const getRes = await request(app).get(`/api/v3/stats`);
-        expect(getRes.statusCode).toBe(200);
-        const stats: BadgeHubStats = getRes.body;
-        expect(stats.authors).toBeGreaterThan(0);
-        expect(stats.projects).toBeGreaterThan(0);
-        // expect(stats.badges).toBeGreaterThan(0);
-        expect(stats.authors).toBeGreaterThan(0);
-        expect(Object.keys(stats)).toMatchInlineSnapshot(`
+    test("GET /api/v3/stats", async () => {
+      const getRes = await request(app).get(`/api/v3/stats`);
+      expect(getRes.statusCode).toBe(200);
+      const stats: BadgeHubStats = getRes.body;
+      expect(stats.authors).toBeGreaterThan(0);
+      expect(stats.projects).toBeGreaterThan(0);
+      // expect(stats.badges).toBeGreaterThan(0);
+      expect(stats.authors).toBeGreaterThan(0);
+      expect(Object.keys(stats)).toMatchInlineSnapshot(`
           [
             "crashed_projects",
             "crashes",
@@ -687,8 +669,6 @@ describe(
             "badges",
           ]
         `);
-      });
     });
-  },
-  { timeout: isInDebugMode() ? 3600_000 : undefined }
-);
+  });
+});

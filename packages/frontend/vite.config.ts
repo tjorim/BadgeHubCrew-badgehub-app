@@ -1,8 +1,6 @@
-import * as path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 const publicStaticFileDir = "static";
 
@@ -14,12 +12,11 @@ export default defineConfig({
     cors: true, // allow the backend origin to load Vite assets
     allowedHosts: true, // allow any Host header (e.g. op5b.local)
   },
-  plugins: [tailwindcss(), ...react(), tsconfigPaths()],
+  // Use tsconfig "paths" (@*, @shared/*) natively — no vite-tsconfig-paths needed
   resolve: {
-    alias: {
-      "@shared": path.resolve(__dirname, "../shared/src"),
-    },
+    tsconfigPaths: true,
   },
+  plugins: [tailwindcss(), ...react()],
   build: {
     rollupOptions: {
       output: {
