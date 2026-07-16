@@ -1,10 +1,12 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for coding agents working in this repository. Human setup and
+contribution instructions live in `README.md` and `CONTRIBUTING.md`.
 
 ## Commands
 
-### Development
+Run commands from the repository root:
+
 ```bash
 pnpm run dev              # Start both frontend (Vite :5173) and backend (:8081) concurrently
 pnpm run test-db:up       # Start PostgreSQL test DB via Docker
@@ -49,39 +51,45 @@ pnpm run lint:fix           # Auto-fix with Biome (format + safe lint fixes)
 
 ## Architecture
 
-### Monorepo Structure
-- `packages/frontend` — React 19 + Vite + Tailwind CSS v4 + DaisyUI v5
-- `packages/backend` — Express + PostgreSQL REST API
-- `packages/shared` — Shared TypeScript types, Zod schemas, and **ts-rest API contracts**
+- `packages/frontend`: React 19, Vite, Tailwind CSS v4, and DaisyUI v5
+- `packages/backend`: Express, PostgreSQL, and PM2
+- `packages/shared`: shared types, Zod schemas, and ts-rest API contracts
+- `packages/backend/migrations`: db-migrate JavaScript and SQL migrations
 
-The key architectural pattern is **ts-rest**: API contracts are defined once in `packages/shared/src/contracts/` and consumed by both frontend (as typed API client) and backend (as route definitions). This ensures end-to-end type safety without code generation.
+API contracts are defined once under `packages/shared/src/contracts` and
+consumed by both the typed frontend client and backend routers. Update all
+consumers when a contract changes.
 
-### Frontend Dev Mode (Important)
-The frontend dev script copies `index-indirect-dev.html` → `dist/index.html` before starting Vite. The backend serves `dist/index.html` (not the Vite dev server directly). This indirect HTML loads Vite assets dynamically via `@vite/client`, allowing the backend URL to serve the app in development.
+## Frontend development
 
-**Do not add CDN links for Tailwind or DaisyUI** to `index-indirect-dev.html` — Vite injects CSS from `src/index.css` automatically.
+The frontend script copies `index-indirect-dev.html` to `dist/index.html` before
+starting Vite on port 5173. The backend serves that HTML on port 8081 and
+injects runtime configuration. Test the application through port 8081.
 
-### CSS / Styling
-- Tailwind CSS v4 uses `@tailwindcss/vite` plugin in `vite.config.ts` (NOT `@tailwindcss/postcss`)
-- `postcss.config.js` must remain empty (`export default {}`)
-- CSS entry: `packages/frontend/src/index.css` with `@import "tailwindcss"` and `@plugin "daisyui"`
-- DaisyUI themes configured: light, dark, dracula, synthwave, cyberpunk, nord, forest, aqua, luxury, coffee
+Tailwind is provided by `@tailwindcss/vite`; `postcss.config.js` intentionally
+stays empty. Do not add Tailwind or DaisyUI CDN links to the HTML templates.
 
-### Authentication
-Keycloak + JWT. The frontend uses `keycloak-js` wrapped in a `SessionProvider`. The backend validates JWTs via the `jose` library. Local Keycloak config lives in `infra/keycloak/`.
+## Authentication and database
 
-### Database
-PostgreSQL with `db-migrate` for migrations. Migration files are in `packages/backend/src/db/migrations/`. SQL queries use `sql-template-tag` for tagged template literals.
+The frontend uses `keycloak-js`; the backend verifies JWTs with `jose`. Never
+put Keycloak client secrets in frontend code. There are no bundled application
+credentials.
 
-### API Documentation
-Swagger UI is served by the backend at runtime, generated from ts-rest contracts via `@ts-rest/open-api`.
+Database changes require a migration with both up and down SQL. Fixture
+repopulation is destructive. `DEV_USER_SUB` can make generated projects belong
+to a development Keycloak user.
 
-### Production
-Docker + PM2. The `Dockerfile` is multi-stage; the backend serves the built frontend static assets. Deployed via GitHub Actions on push to `main`.
+## Production
 
-## Commit Convention
-Follow [Conventional Commits](https://www.conventionalcommits.org/) with these types:
-`build`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `style`, `test`, `devex`, `clean`, `chore`, `revert`, `wip`, `deps`, `types`, `config`, `claude`
+The single-stage Dockerfile installs dependencies, builds both workspaces, and
+runs the backend through PM2. The backend serves the compiled frontend.
 
-## Node Version
-It's Node 24.4.1 but should already be correctly set up in the environment. If not, ask the user to fix it.
+## Style and commits
+
+Follow the existing Biome configuration and Conventional Commits described
+in `CONTRIBUTING.md`. Keep changes focused and add or update tests for behavior
+changes.
+
+## Node version
+
+Use the Node version pinned in `.nvmrc` and `.tool-versions`.

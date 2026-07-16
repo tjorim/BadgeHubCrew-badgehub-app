@@ -1,14 +1,11 @@
 services:
   db:
-    container_name: badgehub-test-db
     image: postgres:16
     env_file:
-      - .env.test
+      - .env
     ports:
-      - 5432:5432
-    volumes:
-      - ./mockup-data.sql:/docker-entrypoint-initdb.d/data.sql
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 1s
       retries: 30

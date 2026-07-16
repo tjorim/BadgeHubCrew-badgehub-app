@@ -6,7 +6,7 @@
     "database": { "ENV": "POSTGRES_DB" },
     "user": { "ENV": "POSTGRES_USER" },
     "password": { "ENV": "POSTGRES_PASSWORD" },
-    "port": "5432",
+    "port": { "ENV": "POSTGRES_PORT" },
     "schema": "badgehub"
   }
 }

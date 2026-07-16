@@ -1,117 +1,154 @@
+[<img src="assets/badgehub-logo.svg" align="right" alt="BadgeHub logo" width="200">](#readme)
 
-[<img src="assets/badgehub-logo.svg" align="right" alt="BadgeHub logo" width="200">](#readme) 
-# BadgeHub App: API and Frontend Code for BadgeHub
+# BadgeHub App
 
-> Monorepo with both Node.js REST API and React frontend
+BadgeHub is a monorepo containing a Node.js REST API and a React frontend. The
+frontend, backend, and shared ts-rest contracts live in pnpm workspaces.
+
+## Prerequisites
+
+- Node.js 24.4.1 (see `.nvmrc`; `.tool-versions` may select a newer Node 24 release)
+- Corepack and pnpm
+- Docker with Docker Compose
+- A Keycloak realm and public OpenID Connect client for authenticated flows
+
+## Quick start
+
+Enable pnpm, install dependencies, and create the backend environment file:
+
+```bash
+corepack enable
+pnpm install --frozen-lockfile
+cp packages/backend/.env.example packages/backend/.env
+```
+
+Review `packages/backend/.env`, then start and seed the test database:
+
+```bash
+pnpm run test-db:up
+pnpm run repopulate-db
+```
+
+Start the frontend and backend together:
+
+```bash
+pnpm run dev
+```
+
+Open <http://localhost:8081>. Vite listens on port 5173, but it only supplies
+development assets; the backend serves the HTML application and API on port 8081.
+
+Stop the test database when finished:
+
+```bash
+pnpm run test-db:down
+```
+
+### Using another PostgreSQL port
+
+The test database binds only to localhost. If port 5432 is occupied, change
+`POSTGRES_PORT` in `packages/backend/.env` before running `pnpm run test-db:up`.
+The backend and Docker Compose use the same value.
+
 ## Authentication
-BadgeHub supports authentication via JWT. This is used with Keycloak. To setup Keycloak for either production or local development and related clients, please refer to [badgehub-infra GitHub repo](https://github.com/BadgeHubCrew/badgehub-infra/tree/main/docs)
 
-## - Development -
-### Install
+Anonymous catalog browsing does not require an account. Creating and editing
+projects requires a user in the Keycloak realm configured by these backend
+environment variables:
 
-Make sure [Docker](https://www.docker.com/get-started/) is installed and running.
-
-Before running, copy the `.env.example` into `.env`
-
-```bash
-cp .env.example .env
+```dotenv
+KEYCLOAK_BASE_URL=https://your-keycloak.example
+KEYCLOAK_REALM=your-realm
+KEYCLOAK_CLIENT_ID=your-public-client
 ```
 
-and fill out the details.
+The client must enable the standard authorization-code flow, allow the local
+BadgeHub URL as a redirect URI and web origin, and use PKCE. BadgeHub does not
+ship with a default username or password. Ask the project maintainers for
+access to a shared development realm, or configure your own Keycloak instance.
+Infrastructure examples live under `infra/keycloak/`; production infrastructure
+is maintained separately in the
+[badgehub-infra repository](https://github.com/BadgeHubCrew/badgehub-infra/tree/main/docs).
 
-### Running locally
-The most convenient way to run BadgeHub locally is this way:
-- configure the `.env` file to use the dev keycloak server, like it is done in the `.env.example` file.
-- start the test database with docker: `pnpm run test-db:up`
-- if this is your first time running BadgeHub, or the populate db script was updated, you should also do:
-  ```bash
-  pnpm --filter badgehub-api run repopulate-db
-  ```
-- start the frontend and backend with this command: `pnpm run dev`
+## Test data
 
-### Database Migrations
+`pnpm run repopulate-db` runs migrations and then **deletes and recreates** the
+BadgeHub fixture records. Do not point it at a database containing data you
+want to keep.
 
-In order to make sure that we can keep track of the database schema, we use [db-migrate](https://db-migrate.readthedocs.io/en/latest/).
-This allows us to track the database changes along with git and provide a framework for migrating data and rolling back changes.
-So when a change to the database schema is needed, a new migration should be created instead of manually changing the database.
-To create a new migration, follow the steps below.
+Fixture projects use synthetic owner identifiers by default. To make every
+fixture project editable by your development account, set `DEV_USER_SUB` in
+`packages/backend/.env` to the `sub` claim from that user's Keycloak token
+before repopulating the database.
 
-#### Create a new migration
+## Testing and validation
 
-```bash
-pnpm --filter badgehub-api run db-migrate:create -- <migration-name>
-```
-
-This will create a new migration file in the `migrations` directory with the name `<timestamp>-<migration-name>.js` as well as 2 sql files, one for the up migration and one for the down migration.
-
-#### Fill in the down and up migration sql files with the necessary changes to the database schema.
-
-These sql commands should take care of changing the database schema as well as migrating the data if necessary.
-
-#### Run the migration to test it.
+Backend tests require the test database and fixtures:
 
 ```bash
-pnpm --filter badgehub-api run db-migrate:up
+pnpm run test-db:up
+pnpm run repopulate-db
+pnpm run test
 ```
 
-#### Run the down migration to test it.
+Frontend tests can run independently:
 
 ```bash
-pnpm --filter badgehub-api run db-migrate:down
+pnpm --filter frontend test
 ```
 
-#### Commit the migration files to git.
-
-When the code is deployed, the up migrations will be run automatically before starting the server.
-
-### Testing
-The unit test require the test database to be up and filled in.
-So first do:
-`pnpm run test-db:up`
-
-And if this is the very first time, or the populate db script was updated, you should also do:
-`pnpm --filter badgehub-api run repopulate-db`
-
-Then to run the tests, do:
-`pnpm run test`
- 
-## - Production -
-
-In production, use the production docker compose file `docker-compose.production.yml`.
-The `NODE_ENV` environment file is set to `production`, there's no watcher and
-PM2 is used to run Node.js multithreaded.
-
-The first time, a Docker container is created. Make sure the `dist` directory
-contains the latest build to be copied to the container.
-Also the `public` directory and `package.json` and `pnpm-lock.yaml` will
-be copied.
-
-To start:
+Run all repository checks before opening a pull request:
 
 ```bash
-docker compose --file docker-compose.production.yml up --detach
+pnpm run validate
 ```
 
-Then visit [http://localhost:9001/](http://localhost:9001/) for the production BadgeHub homepage
-and [http://localhost:9002/](http://localhost:9002/) for PG_Admin, the UI for the database.
+The individual checks are `pnpm run lint`, `pnpm run check:ts`,
+`pnpm run build`, and `pnpm run test`.
 
-To wind down:
+## Database migrations
+
+Migration files live in `packages/backend/migrations/`. Use the root commands:
 
 ```bash
-docker compose --file docker-compose.production.yml down
+pnpm run db-migrate:create -- <migration-name>
+pnpm run db-migrate:up
+pnpm run db-migrate:down
 ```
-### Infra repo
-The docker compose files used for running BadgeHub in production are maintained in the [badgehub-infra GitHub repo](https://github.com/badgehubcrew/badgehub-infra)
 
+Fill in both generated SQL files and verify the up and down directions. The
+application automatically runs pending up migrations during startup.
 
-## Tools used
+## Production container
 
-- [Express](https://expressjs.com/), a framework for Node.js
-- [pnpm](https://pnpm.io/) for package management
-- [ts-rest](https://ts-rest.com/) for a type safe http controller, contract and client without code generation
-- [zod](https://github.com/colinhacks/zod) for defining and checking json schemas
-- [sql-template-tag](https://github.com/blakeembrey/sql-template-tag) for more easily writing SQL queries
-- [tsx](https://tsx.is/) for running TypeScript files in Node.js
-- [db-migrate](https://db-migrate.readthedocs.io/en/latest/) for database migrations
-- [PM2](https://pm2.keymetrics.io/) for managing Node.js processes
-- [BlurHash](https://blurha.sh/) for creating BlurHash strings
+The repository includes a standalone Compose example:
+
+```bash
+cd infra/badgehub
+cp .env.prod.example .env.prod
+# Replace CHANGE_ME and review every public URL and Keycloak value.
+docker compose --env-file .env.prod up -d --build --wait
+```
+
+The application is available on `EXPOSED_PORT` (9001 by default). The image
+build compiles all workspaces, and the backend serves the built frontend. Stop
+the example stack with:
+
+```bash
+docker compose --env-file .env.prod down
+```
+
+For a complete production environment with TLS, backups, monitoring, and
+Keycloak, use infrastructure appropriate to your deployment rather than
+treating this example as a full operations stack.
+
+## Main technologies
+
+- React, Vite, Tailwind CSS, and DaisyUI
+- Express and PostgreSQL
+- ts-rest and Zod for shared API contracts
+- db-migrate for database migrations
+- Keycloak and JWT authentication
+- PM2 for the production Node.js process
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes.

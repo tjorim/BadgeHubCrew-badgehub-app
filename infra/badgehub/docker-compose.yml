@@ -1,51 +1,38 @@
 services:
   db:
-    container_name: badgehub-db
     image: postgres:16
     restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file:
+      - .env.prod
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./mockup-data.sql:/docker-entrypoint-initdb.d/data.sql
-      - ./backup:/var/backup
-    networks:
-      - badgehub_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   badgehub:
     build: ../..
     ports:
-      - "${EXPOSED_PORT}:8081"
+      - "${EXPOSED_PORT:-9001}:8081"
     restart: unless-stopped
-    environment:
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      NODE_ENV: ${NODE_ENV}
-      KEYCLOAK_BASE_URL: ${KEYCLOAK_BASE_URL}
-      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
-      CATEGORY_NAMES: ${CATEGORY_NAMES}
-      ADMIN_CATEGORY_NAMES: ${ADMIN_CATEGORY_NAMES}
-      BADGE_SLUGS: ${BADGE_SLUGS}
-      BADGEHUB_API_BASE_URL: ${BADGEHUB_API_BASE_URL}
-      REFRESH_REPORTS_INTERVAL_SEC: ${REFRESH_REPORTS_INTERVAL_SEC}
-      MQTT_USER: ${MQTT_USER}
-      MQTT_PASSWD: ${MQTT_PASSWD}
-      MQTT_TOPIC: ${MQTT_TOPIC}
-      MQTT_SERVER: ${MQTT_SERVER}
-      MQTT_INTERVAL_SEC: ${MQTT_INTERVAL_SEC}
+    env_file:
+      - .env.prod
     depends_on:
-      - db
-    networks:
-      - badgehub_network
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:8081/').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
 volumes:
   postgres_data:
-
-networks:    
-  badgehub_network:
-    name: badgehub_network
