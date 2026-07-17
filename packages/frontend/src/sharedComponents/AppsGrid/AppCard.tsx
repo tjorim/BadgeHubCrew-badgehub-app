@@ -1,4 +1,5 @@
 import { ERROR_ICON_URL, FALLBACK_ICON_URL } from "@config.ts";
+import AppCardTags from "@sharedComponents/AppsGrid/AppCardTags.tsx";
 import { DownloadIcon } from "@sharedComponents/AppsGrid/DownloadIcon.tsx";
 import GitLink from "@sharedComponents/GitLink.tsx";
 import { useSession } from "@sharedComponents/keycloakSession/SessionContext.tsx";
@@ -133,54 +134,7 @@ const AppCard: React.FC<
           {description}
         </p>
 
-        {/* Tags section pushed to bottom */}
-        <div className="mt-auto mb-3">
-          {(() => {
-            const MAX_VISIBLE_TAGS = 3;
-            const allTags = [
-              ...(categories?.map((cat, index) => ({
-                text: cat,
-                type: "category",
-                id: `category-${index}`,
-              })) ?? []),
-              ...(badges?.map((badge, index) => ({
-                text: badge,
-                type: "badge",
-                id: `badge-${index}`,
-              })) ?? []),
-            ];
-            const visibleTags = allTags.slice(0, MAX_VISIBLE_TAGS);
-            const hiddenCount = allTags.length - MAX_VISIBLE_TAGS;
-
-            return (
-              <>
-                {visibleTags.map((tag) => (
-                  <span
-                    key={tag.id}
-                    className={`${
-                      tag.type === "category"
-                        ? "badge badge-neutral"
-                        : "badge badge-success"
-                    } text-xs font-semibold mr-2`}
-                  >
-                    {tag.text}
-                  </span>
-                ))}
-                {hiddenCount > 0 && (
-                  <span
-                    className="text-xs opacity-50 font-medium cursor-help"
-                    title={allTags
-                      .slice(MAX_VISIBLE_TAGS)
-                      .map((tag) => tag.text)
-                      .join(", ")}
-                  >
-                    +{hiddenCount} more
-                  </span>
-                )}
-              </>
-            );
-          })()}
-        </div>
+        <AppCardTags categories={categories} badges={badges} />
       </div>
 
       {/* Footer with stats */}
